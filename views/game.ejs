@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Mechanic</title>
+    <link rel="stylesheet" href="/styles/shared.css" />
+    <link rel="stylesheet" href="/styles/game-display.css" />
+    <link rel="stylesheet" href="/styles/waiting-room.css" />
+  </head>
+  <body>
+    <aside id="waiting-room">
+      <%- include('includes/game-display/waiting-room', {room: room}) %>
+    </aside>
+    <div id="game-content">
+      <div id="info-board-cards">
+        <div id="info-board">
+          <section id="info">
+            <%- include('includes/game-display/info') %>
+          </section>
+          <section id="board">
+            <%- include('includes/game-display/board') %>
+          </section>
+        </div>
+        <section id="cards"></section>
+      </div>
+      <section id="radio-phone">
+        <%- include('includes/game-display/radio-phone') %>
+      </section>
+    </div>
+    <!-- SCRIPTS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/game.js"></script>
+    <script src="/scripts/waiting-room.js"></script>
+    <script src="/scripts/board.js"></script>
+    <script src="/scripts/radio-phone.js"></script>
+    <script src="/scripts/info.js"></script>
+  </body>
+</html>

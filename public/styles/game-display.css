@@ -1,0 +1,53 @@
+/* IMPORT SECTION STYLES */
+@import "game-display/radio-phone.css";
+@import "game-display/board.css";
+
+/* DEFINE SIZING OF GAME CONTENT SECTIONS */
+body {
+  display: flex;
+  justify-content: right;
+  margin: 0;
+}
+
+#game-content {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+}
+
+#info-board-cards {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+#radio-phone {
+  height: 100%;
+  width: 18rem;
+  /* background-color: rgb(135, 96, 135); */
+}
+
+#cards {
+  width: 100%;
+  height: 12rem;
+  background-color: rgb(84, 133, 84);
+}
+
+#info-board {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+#info {
+  background-color: rgb(155, 114, 114);
+  height: 100%;
+  width: 20rem;
+}
+
+#board {
+  background-color: rgb(94, 94, 162);
+  height: 100%;
+  width: 100%;
+}

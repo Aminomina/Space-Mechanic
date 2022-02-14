@@ -1,0 +1,124 @@
+@keyframes incoming-message {
+  0% {
+    background-color: black;
+  }
+  20% {
+    background-color: var(--green-placeholder);
+  }
+  0% {
+    background-color: black;
+  }
+}
+
+#radio-phone {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: rgb(93, 89, 84);
+}
+
+#radio-sine-container {
+  height: 10%;
+  background-color: rgb(0, 0, 0);
+  margin: 4%;
+  border-radius: 10px;
+}
+
+#radio-sine-container.incoming {
+  animation-name: incoming-message;
+  animation-duration: 2s;
+}
+
+#radio-label {
+  text-align: center;
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.5rem;
+}
+
+#radio-display {
+  height: 75%;
+  background-color: rgb(0, 0, 0);
+  margin: 4%;
+  border-radius: 10px;
+  /* Font Styling */
+  color: var(--green-text);
+  /* text-transform: uppercase; */
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+#radio-messages {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  height: 15rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#radio-messages::-webkit-scrollbar {
+  display: none;
+}
+
+#radio-messages li {
+  width: 15rem;
+  overflow-wrap: break-word;
+  margin: 0.5rem 0;
+}
+
+#radio-entry-box {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(0, 0, 0);
+  margin: 4%;
+  border-radius: 10px;
+}
+
+#radio-entry-box textarea {
+  /* Entry Box Styling */
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background-color: black;
+  border-color: black;
+  margin: 6px;
+  /* Font Styling */
+  color: var(--green-text);
+  /* text-transform: uppercase; */
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+#radio-entry-box ::placeholder {
+  color: var(--green-placeholder);
+}
+
+#radio-phone ::selection {
+  color: black;
+  background-color: var(--green-text);
+}
+
+#radio-entry-box button {
+  background-color: transparent;
+  border: transparent;
+  margin-bottom: 10px;
+  /* Font Styling */
+  color: var(--green-placeholder);
+  /* text-transform: uppercase; */
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+#radio-entry-box button:hover {
+  cursor: pointer;
+  color: var(--green-text);
+}

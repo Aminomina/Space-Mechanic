@@ -1,0 +1,25 @@
+aside {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  text-align: center;
+}
+
+#joined-players {
+  display: flex;
+  justify-content: center;
+}
+
+#joined-players li {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  margin: 1rem;
+}
+
+#joined-players img {
+  height: 3rem;
+  width: 3rem;
+}

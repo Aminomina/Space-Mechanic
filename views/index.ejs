@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Mechanic</title>
+    <!-- STYLES -->
+    <link rel="stylesheet" href="/styles/shared.css" />
+    <link rel="stylesheet" href="/styles/landing-page.css" />
+  </head>
+  <body>
+    <div id="background"></div>
+    <header>
+      <h3>Do you have what it takes to be a</h3>
+      <h1>SPACE MECHANIC</h1>
+      <h2>A Strategy Game</h2>
+      <p>
+        The year is 3500. The galaxy is bustling with hundreds of life-bearing
+        planets, each with countless factories, ships, satellites, and other
+        machines! And when things go down, there’s only one person to call: the
+        space mechanic!
+      </p>
+      <p>
+        You’re fresh out of your apprenticeship and itching to earn some of
+        those sweet intersystem quills! After all, that retirement condo on Mars
+        won’t pay for itself. So grab your toolbox, lace up your safety-toe
+        shoes, and fire up the spaceship! It’s time to fix some machines!
+      </p>
+    </header>
+    <main>
+      <!-- %- include('includes/landing-page/waiting-room') %> -->
+      <div class="this-or-that">
+        <form id="start-new-game" action="/" method="POST">
+          <button type="submit" id="new-game-button">Start a New Game</button>
+        </form>
+      </div>
+      <div><h3>OR</h3></div>
+      <div class="this-or-that">
+        <form id="join-room" method="get">
+          <label for="room-input">Enter a Room Code</label>
+          <div>
+            <input type="text" id="room-input" />
+            <button type="submit" id="join-room-button">Join</button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <!-- SCRIPTS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/landing-page.js"></script>
+    <!-- <script src="/scripts/waiting-room.js"></script> -->
+  </body>
+</html>

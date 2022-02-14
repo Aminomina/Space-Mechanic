@@ -1,0 +1,46 @@
+html {
+  --green-text: rgb(87, 164, 78);
+  --green-placeholder: rgb(49, 111, 44);
+}
+
+body {
+  color: rgb(54, 50, 46);
+}
+
+#background {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: linear-gradient(rgb(187, 178, 166), rgb(147, 138, 126));
+}
+
+button {
+  font: inherit;
+  padding: 0.4rem 1.3rem;
+  background-color: rgb(86, 81, 79);
+  border: 1px solid rgb(86, 81, 79);
+  color: rgb(187, 178, 166);
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: rgb(54, 50, 46);
+  border-color: rgb(54, 50, 46);
+}
+
+input {
+  font: inherit;
+  color: rgb(54, 50, 46);
+  border: 1px solid rgb(204, 204, 204);
+  width: 8rem;
+  padding: 0.4 rem;
+  margin: 0.5rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}

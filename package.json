@@ -1,0 +1,21 @@
+{
+  "name": "space-mechanic",
+  "version": "0.0.1",
+  "description": "A test file demonstrating the chat feature for an online board game",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "Anna Lugthart",
+  "license": "",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "socket.io": "^4.4.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
