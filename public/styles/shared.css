@@ -1,6 +1,10 @@
 html {
   --green-text: rgb(87, 164, 78);
   --green-placeholder: rgb(49, 111, 44);
+
+  --button: rgb(86, 81, 79);
+  --button-hover: rgb(54, 50, 46);
+  --button-disabled: rgb(115, 109, 107);
 }
 
 body {
@@ -20,15 +24,25 @@ body {
 button {
   font: inherit;
   padding: 0.4rem 1.3rem;
-  background-color: rgb(86, 81, 79);
-  border: 1px solid rgb(86, 81, 79);
+  background-color: var(--button);
+  border: 1px solid var(--button);
   color: rgb(187, 178, 166);
   border-radius: 4px;
 }
 
 button:hover {
-  background-color: rgb(54, 50, 46);
-  border-color: rgb(54, 50, 46);
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+button.disabled {
+  background-color: var(--button-disabled);
+  border: 1px solid var(--button-disabled);
+}
+
+button.disabled:hover {
+  background-color: var(--button-disabled);
+  border: 1px solid var(--button-disabled);
 }
 
 input {

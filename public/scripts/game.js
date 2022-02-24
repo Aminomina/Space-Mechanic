@@ -7,12 +7,16 @@ let userList = {};
 // FUNCTIONS
 function initializePlayerInfo() {
   i = 0;
-  for (const id in userList) {
-    userList[key].order = i;
-    userList[key].money = 500;
-    userList[key].exp = 0;
+  for (const user of userList) {
+    user.order = i;
+    user.money = 500;
+    user.exp = 0;
     i++;
   }
+}
+
+function requestJobsArray() {
+  socket.emit("generate jobs", roomId);
 }
 
 // SOCKET.IO
@@ -23,4 +27,7 @@ socket.on("start game", function () {
   gameContentElement.style.display = "flex";
   initializePlayerInfo();
   drawGrid();
+  infoShowPlayerListElement();
+  requestJobsArray(); // NEEDS TO BE SENT BY ONLY 1 PLAYER
+  // openRollDiceDialogue(30);
 });

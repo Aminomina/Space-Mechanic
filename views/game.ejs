@@ -13,6 +13,11 @@
     <aside id="waiting-room">
       <%- include('includes/game-display/waiting-room', {room: room}) %>
     </aside>
+    <aside id="dialogue-box">
+      <section id="roll-dice">
+        <%- include('includes/game-display/roll-dice') %>
+      </section>
+    </aside>
     <div id="game-content">
       <div id="info-board-cards">
         <div id="info-board">
@@ -29,6 +34,7 @@
         <%- include('includes/game-display/radio-phone') %>
       </section>
     </div>
+    <div id="templates"><%- include('includes/game-display/templates') %></div>
     <!-- SCRIPTS -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="/scripts/game.js"></script>
@@ -36,5 +42,7 @@
     <script src="/scripts/board.js"></script>
     <script src="/scripts/radio-phone.js"></script>
     <script src="/scripts/info.js"></script>
+    <script src="/scripts/dialogue-boxes.js"></script>
+    <script src="/scrips/planets.js"></script>
   </body>
 </html>

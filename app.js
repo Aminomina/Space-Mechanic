@@ -30,7 +30,7 @@ const numRooms = 5;
 for (var i = 0; i < numRooms; i++) {
   const room = {
     id: i + 1,
-    users: {},
+    users: [],
     numRounds: 5,
     inUse: false,
     isStarted: false,
@@ -41,19 +41,18 @@ for (var i = 0; i < numRooms; i++) {
 
 // FUNCTIONS
 //   Assign player color
-function assignPlayerColor(room, playerId) {
+function assignPlayerColor(users) {
   const playerColors = ["red", "blue", "purple", "green"];
   for (const color of playerColors) {
     let isTaken = false;
-    for (const id in room.users) {
-      if (room.users[id][1] === color) {
+    for (const user of users) {
+      if (user.color === color) {
         isTaken = true;
       }
     }
     if (!isTaken) {
       // If color isn't taken, assign to new player
-      room.users[playerId][1] = color;
-      return;
+      return color;
     }
   }
 }
@@ -121,7 +120,7 @@ io.on("connection", (socket) => {
       console.log("Game has already begun!");
       io.to(socket.id).emit("kick out", 1);
       return;
-    } else if (Object.keys(room.users).length >= 4) {
+    } else if (room.users.length >= 4) {
       // Room is full
       console.log("Room is full!");
       io.to(socket.id).emit("kick out", 0);
@@ -134,11 +133,12 @@ io.on("connection", (socket) => {
       socket.join(room.id);
       // Assign new player a default name and color
       room.playerCounter++;
-      room.users[socket.id] = ["Player" + room.playerCounter, ""];
-      io.to(socket.id).emit("assign name", room.users[socket.id]);
-      assignPlayerColor(room, socket.id);
+      let user = { id: socket.id, name: "Player" + room.playerCounter };
+      io.to(socket.id).emit("assign name", user.name);
+      user.color = assignPlayerColor(room.users);
+      room.users.push(user);
       io.to(room.id).emit("player list update", room.users);
-      console.log("player connected");
+      console.log("player joined room " + roomId);
       return;
     }
   });
@@ -146,41 +146,86 @@ io.on("connection", (socket) => {
   // User disconnects
   socket.on("disconnect", () => {
     for (const room of rooms) {
-      if (socket.id in room.users) {
-        console.log(room.users[socket.id] + " disconnected");
-        delete room.users[socket.id];
-        io.to(room.id).emit("player list update", room.users);
-        if (!Object.keys(room.users).length) {
-          room.inUse = false;
-          room.isStarted = false;
-          room.playerCounter = 0;
-          console.log("Room " + room.id + " is now open.");
-        } else {
+      console.log(room.users);
+      for (let i = 0; i < room.users.length; i++) {
+        if (room.users[i].id === socket.id) {
+          room.users.splice(i, 1);
           io.to(room.id).emit("player list update", room.users);
+          if (!room.users.length) {
+            room.inUse = false;
+            room.isStarted = false;
+            room.playerCounter = 0;
+            console.log("Room " + room.id + " is now open.");
+          } else {
+            io.to(room.id).emit("player list update", room.users);
+          }
+          return;
         }
       }
     }
   });
+
   // User updates their name
   socket.on("update name", (data) => {
     const room = rooms[data.roomId - 1];
-    room.users[socket.id][0] = data.userName;
+    for (const user of room.users) {
+      if (user.id === socket.id) {
+        user.name = data.userName;
+      }
+    }
     io.to(room.id).emit("player list update", room.users);
     return;
   });
+
   // User sends a message
   socket.on("chat message", (data) => {
     const room = rooms[data.roomId - 1];
     console.log(data);
-    data.message = room.users[socket.id][0] + ": " + data.message;
+    for (const user of room.users) {
+      if (user.id === socket.id) {
+        data.message = user.name + ": " + data.message;
+      }
+    }
     io.to(room.id).emit("chat message", data.message);
   });
+
   // Game begins
   socket.on("start game", (roomId) => {
     const room = rooms[roomId - 1];
     room.isStarted = true;
     console.log("let the games begin!");
     io.to(room.id).emit("start game");
+  });
+
+  // User requests a jobs array
+  socket.on("generate jobs", (roomId) => {
+    const room = rooms[roomId - 1];
+    const jobsArray = [
+      {
+        name: "Gigantus",
+        coordinates: [-10, 10],
+        jobType: 1,
+        difficulty: 1.25,
+        reward: 390,
+      },
+      {
+        name: "Ark",
+        coordinates: [-80, -55],
+        jobType: 0,
+        difficulty: 1.25,
+        reward: 375,
+        hazardPay: 50,
+      },
+      {
+        name: "Androga",
+        coordinates: [80, 50],
+        jobType: 3,
+        difficulty: 1,
+        reward: 400,
+      },
+    ];
+    console.log("Sending jobs!");
+    io.to(room.id).emit("display jobs", jobsArray);
   });
 });
 

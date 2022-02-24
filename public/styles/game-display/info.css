@@ -1,0 +1,79 @@
+#info {
+  background-color: rgb(187, 178, 166);
+}
+
+#info nav {
+  background-color: rgb(140, 124, 103);
+}
+
+#info nav:hover {
+  cursor: pointer;
+}
+
+#info-tabs ul {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 auto;
+}
+
+#info-tabs li {
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+#info-tabs li.active {
+  background-color: rgb(187, 178, 166);
+}
+
+#info-content {
+  padding: 0;
+}
+
+#info-content ul {
+  margin: 0;
+}
+
+#info-content article {
+  display: none;
+}
+
+#info-content article.active {
+  display: block;
+}
+
+.info-player-entry {
+  padding: 0.5rem 1rem;
+  display: none;
+}
+
+.info-player-entry.red {
+  background-color: rgb(189, 156, 156);
+}
+
+.info-player-entry.green {
+  background-color: rgb(164, 199, 167);
+}
+
+.info-player-entry.blue {
+  background-color: rgb(160, 173, 202);
+}
+
+.info-player-entry.purple {
+  background-color: rgb(195, 166, 199);
+}
+
+.info-player-name img {
+  height: 2rem;
+  width: 2rem;
+}
+
+.info-player-stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-player-stats img {
+  height: 1.5rem;
+  width: 1.5rem;
+}

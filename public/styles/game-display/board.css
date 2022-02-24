@@ -2,9 +2,70 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 canvas {
   border: 2px solid black;
-  height: 25rem;
+  height: 384px;
+}
+
+#jobs {
+  height: 384px;
+  width: 576px;
+  position: absolute;
+  margin: 0;
+}
+
+#jobs li {
+  position: absolute;
+}
+
+#jobs li img {
+  z-index: 1;
+  position: relative;
+  left: -8px;
+  top: -8px;
+  height: 16px;
+  width: 16px;
+}
+
+#jobs li .bubble {
+  display: block;
+  z-index: 0;
+  cursor: default;
+  opacity: 0;
+  min-width: 81px;
+  position: relative;
+  background-color: rgb(187, 178, 166);
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+#jobs li img:hover {
+  left: -10px;
+  top: -10px;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+}
+
+#jobs li img:hover + .bubble {
+  display: block;
+  z-index: 2;
+  opacity: 1;
+}
+
+#jobs li .name {
+  font-size: 1rem;
+  margin: 0.25rem 0;
+}
+
+#jobs li p {
+  font-size: 0.75rem;
+  margin: 0.1rem 0;
+}
+
+#jobs li .hazard-pay {
+  display: none;
 }

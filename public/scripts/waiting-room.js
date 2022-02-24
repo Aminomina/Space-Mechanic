@@ -41,7 +41,7 @@ socket.on("room query", function () {
 
 // Player is assigned a default name upon joining
 socket.on("assign name", function (defaultName) {
-  userName = defaultName[0];
+  userName = defaultName;
   updateName(userName);
 });
 
@@ -52,12 +52,12 @@ socket.on("player list update", function (users) {
   while (joinedPlayersElement.lastElementChild) {
     joinedPlayersElement.removeChild(joinedPlayersElement.lastElementChild);
   }
-  for (user in users) {
+  for (const user of users) {
     const playerElement = document.createElement("li");
     const playerImage = document.createElement("img");
-    playerElement.textContent = users[user][0];
+    playerElement.textContent = user.name;
     playerImage.alt = "A wrench icon";
-    playerImage.src = "/images/wrench-" + users[user][1] + ".png";
+    playerImage.src = "/images/wrench-" + user.color + ".png";
     playerElement.appendChild(playerImage);
     joinedPlayersElement.appendChild(playerElement);
   }
