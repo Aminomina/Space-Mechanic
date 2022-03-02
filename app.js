@@ -35,6 +35,7 @@ for (var i = 0; i < numRooms; i++) {
     inUse: false,
     isStarted: false,
     playerCounter: 0,
+    ranks: [],
   };
   rooms.push(room);
 }
@@ -57,6 +58,92 @@ function assignPlayerColor(users) {
   }
 }
 
+//   Convert roll array to ranking array
+function rollToRank(rollArray) {
+  const rankArray = new Array(rollArray.length).fill(0);
+  let rank = 1;
+  let instances = 0;
+  let roll;
+  while (rank <= rollArray.length) {
+    roll = Math.max(...rollArray);
+    for (let j = 0; j < rollArray.length; j++) {
+      if (rollArray[j] === roll) {
+        if (roll !== 0) {
+          rankArray[j] = rank;
+          rollArray[j] = 0;
+        }
+        instances++;
+      }
+    }
+    rank += instances;
+    instances = 0;
+  }
+  return rankArray;
+}
+
+//   Check for a tie                              MODIFY TO EXCLUDE DUPLICATE ZEROS
+function checkForTie(rollArray) {
+  for (let i = 0; i < rollArray.length; i++) {
+    let tiedUsers = [i];
+    for (let j = i + 1; j < rollArray.length; j++) {
+      if (rollArray[j] === rollArray[i] && rollArray[j] !== 0) {
+        tiedUsers.push(j);
+      }
+    }
+    if (tiedUsers.length > 1) {
+      // Tie found
+      return tiedUsers;
+    }
+  }
+  // Tie not found
+  return false;
+}
+
+//   Prompt some players to re-roll
+function reRoll(roomId, playerIndices) {
+  // Set roll back to 0 for each player
+  const room = rooms[roomId - 1];
+  const tieString = generateTieString(roomId, playerIndices);
+  for (const playerIndex of playerIndices) {
+    room.users[playerIndex].isReady = false;
+  }
+  io.to(room.id).emit("reroll", {
+    playerIndices: playerIndices,
+    tieString: tieString,
+  });
+}
+
+//   Generate tie string
+function generateTieString(roomId, playerIndices) {
+  const room = rooms[roomId - 1];
+  const numPlayers = playerIndices.length;
+  const ranking = room.ranks[playerIndices[0]];
+  let messageText = "";
+  console.log(numPlayers);
+  if (numPlayers === 2) {
+    messageText +=
+      room.users[playerIndices[0]].name +
+      " and " +
+      room.users[playerIndices[1]].name;
+  } else {
+    for (i = 0; i < numPlayers - 1; i++) {
+      messageText += room.users[playerIndices[i]].name + ", ";
+    }
+    messageText += "and " + room.users[playerIndices[numPlayers - 1]].name;
+  }
+  messageText += " are tied for ";
+  if (ranking === 1) {
+    messageText += "1st place.";
+  } else if (ranking === 2) {
+    messageText += "2nd place.";
+  } else if (ranking === 3) {
+    messageText += "3rd place.";
+  } else if (ranking === 4) {
+    messageText += "4th place.";
+  }
+  return messageText;
+}
+
 // ROUTES
 //   Home Page
 app.get("/", function (req, res) {
@@ -67,7 +154,6 @@ app.get("/", function (req, res) {
 app.get("/game/:id", function (req, res) {
   const roomId = req.params.id;
   for (const room of rooms) {
-    console.log(room.id);
     if (room.id == roomId) {
       return res.render("game", { room: room });
     }
@@ -133,8 +219,15 @@ io.on("connection", (socket) => {
       socket.join(room.id);
       // Assign new player a default name and color
       room.playerCounter++;
-      let user = { id: socket.id, name: "Player" + room.playerCounter };
-      io.to(socket.id).emit("assign name", user.name);
+      let user = {
+        id: socket.id,
+        name: "Player" + room.playerCounter,
+        money: 500,
+        exp: 0,
+        roll: 0,
+        isReady: false,
+      };
+      io.to(socket.id).emit("assign name", user.name, user.id);
       user.color = assignPlayerColor(room.users);
       room.users.push(user);
       io.to(room.id).emit("player list update", room.users);
@@ -180,7 +273,6 @@ io.on("connection", (socket) => {
   // User sends a message
   socket.on("chat message", (data) => {
     const room = rooms[data.roomId - 1];
-    console.log(data);
     for (const user of room.users) {
       if (user.id === socket.id) {
         data.message = user.name + ": " + data.message;
@@ -195,6 +287,70 @@ io.on("connection", (socket) => {
     room.isStarted = true;
     console.log("let the games begin!");
     io.to(room.id).emit("start game");
+  });
+
+  // A user rolls dice at the beginning of a round
+  socket.on("all roll", (data) => {
+    const room = rooms[data.roomId - 1];
+    // Set roll, isReady
+    room.users[data.userIndex].roll = data.rollResult;
+    room.users[data.userIndex].isReady = true;
+    io.to(room.id).emit("all roll result", {
+      userIndex: data.userIndex,
+      rollResult: data.rollResult,
+    });
+    // Check if other users are ready
+    if (!room.users.some((user) => !user.isReady)) {
+      // All users are ready
+      console.log("All users are ready!");
+      // create roll array, check for ties
+      let rolls = [];
+      for (const user of room.users) {
+        console.log(user.roll);
+        rolls.push(user.roll);
+        user.roll = 0;
+      }
+      console.log(rolls);
+      if (!rolls.some((roll) => roll === 0)) {
+        // Not in tie breaker scenario
+        room.ranks = rollToRank(rolls);
+        let tiedPlayers = checkForTie(room.ranks);
+        console.log(rolls);
+        console.log(room.ranks);
+        if (tiedPlayers) {
+          console.log("Tie!");
+          reRoll(room.id, tiedPlayers);
+        } else {
+          io.to(room.id).emit("all roll complete", room.ranks);
+        }
+      } else {
+        // Tie breaker scenario
+        console.log("tie breaker scenario");
+        console.log(rolls);
+        let ranks = rollToRank(rolls);
+        console.log(ranks);
+        for (let i = 0; i < room.users.length; i++) {
+          console.log("testing");
+
+          if (ranks[i] !== 0) {
+            console.log("ding!");
+            room.ranks[i] += ranks[i] - 1;
+          }
+        }
+        console.log(room.ranks);
+        let tiedPlayers = checkForTie(room.ranks);
+        console.log(room.ranks);
+        console.log(tiedPlayers);
+        if (tiedPlayers) {
+          console.log("Tie!");
+          reRoll(room.id, tiedPlayers);
+        } else {
+          io.to(room.id).emit("all roll complete", room.ranks);
+        }
+      }
+    } else {
+      console.log("Not all users are ready!");
+    }
   });
 
   // User requests a jobs array

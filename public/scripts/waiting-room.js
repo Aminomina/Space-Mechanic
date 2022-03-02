@@ -40,9 +40,11 @@ socket.on("room query", function () {
 });
 
 // Player is assigned a default name upon joining
-socket.on("assign name", function (defaultName) {
+socket.on("assign name", function (defaultName, assignedId) {
   userName = defaultName;
   updateName(userName);
+  userId = assignedId;
+  console.log(userId);
 });
 
 // Server updates player list

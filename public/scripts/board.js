@@ -68,7 +68,6 @@ function drawJob(job) {
   }
 
   jobsListElement.appendChild(jobElement);
-  console.log(boardCoordinates);
   jobElement.style.top = boardCoordinates[1] + "px";
   jobElement.style.left = boardCoordinates[0] + "px";
 
@@ -91,7 +90,6 @@ function drawJob(job) {
 // SOCKET.IO
 // Server sends the planet array for a new round
 socket.on("display jobs", function (jobsArray) {
-  // console.log(jobsArray);
   for (const job of jobsArray) {
     drawJob(job);
   }

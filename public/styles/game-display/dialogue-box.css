@@ -1,7 +1,27 @@
-#roll-dice {
+#roll-dice,
+#roll-result {
   display: none;
 }
 
-#roll-result {
+#all-roll-dice,
+.all-roll-x,
+.player-order {
+  display: none;
+}
+
+#roll-players-list {
+  display: flex;
+  justify-content: center;
+}
+
+.roll-player-entry {
+  display: none;
+  flex-direction: column;
+  justify-content: left;
+  align-items: center;
+  margin: 0 2rem;
+}
+
+#tie-message {
   display: none;
 }
