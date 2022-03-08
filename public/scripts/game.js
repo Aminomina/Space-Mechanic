@@ -32,22 +32,15 @@ const game = {
   requestJobsArray: function () {
     socket.emit("generate jobs", roomId);
   },
+  startRound: function () {
+    dialogue.dialogueBox.style.display = "none";
+    info.showPlayerList();
+    if (userId === userList[0].id) {
+      console.log("I'm the active player!");
+      game.requestJobsArray();
+    }
+  },
 };
-
-// function initializePlayerInfo() {
-//   i = 0;
-//   for (const user of userList) {
-//     user.order = i;
-//     if (user.id === userId) {
-//       userIndex = i;
-//     }
-//     i++;
-//   }
-// }
-
-// function requestJobsArray() {
-//   socket.emit("generate jobs", roomId);
-// }
 
 function newRound() {
   // Dialogue opens, each player receives a random card from the home deck
@@ -69,8 +62,9 @@ socket.on("start game", function () {
   waitingRoomElement.style.display = "none";
   gameContentElement.style.display = "flex";
   game.initializePlayerInfo();
-  drawGrid();
-  infoShowPlayerListElement();
+  console.log(board.sectionElement);
+  board.drawGrid();
+  info.showPlayerList();
   dialogue.openAllRollDice();
 
   // if (userId === userList[0].id) {

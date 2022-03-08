@@ -21,13 +21,28 @@ canvas {
   position: absolute;
 }
 
-#jobs li img {
+#jobs li .icon {
   z-index: 1;
   position: relative;
   left: -8px;
   top: -8px;
   height: 16px;
   width: 16px;
+  font-size: 14px;
+}
+
+#jobs li .icon img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+#jobs li .icon .image-number {
+  position: absolute;
+  height: 85%;
+  width: 100%;
+  text-align: center;
+  color: rgb(213, 205, 101);
 }
 
 #jobs li .bubble {
@@ -42,15 +57,16 @@ canvas {
   border-radius: 5px;
 }
 
-#jobs li img:hover {
+#jobs li .icon:hover {
   left: -10px;
   top: -10px;
   height: 20px;
   width: 20px;
   cursor: pointer;
+  font-size: 17.5px;
 }
 
-#jobs li img:hover + .bubble {
+#jobs li .icon:hover + .bubble {
   display: block;
   z-index: 2;
   opacity: 1;

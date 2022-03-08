@@ -1,44 +1,45 @@
-// SETUP AND VARIABLES
-const infoPlayersTabElement = document.getElementById("info-players-tab");
-const infoRulesTabElement = document.getElementById("info-rules-tab");
-const infoSettingsTabElement = document.getElementById("info-settings-tab");
-const infoPlayersElement = document.getElementById("info-players");
-const infoRulesElement = document.getElementById("info-rules");
-const infoSettingsElement = document.getElementById("info-settings");
-const infoPlayerEntryElements = document.querySelectorAll(".info-player-entry");
-const infoPlayerNameIcons = document.querySelectorAll(".info-player-name img");
-const infoPlayerNameElements = document.querySelectorAll(
-  ".info-player-name span"
-);
-const infoPlayerMoneyIcons = document.querySelectorAll(
-  ".info-player-money img"
-);
-const infoPlayerMoneyElements = document.querySelectorAll(
-  ".info-player-money span"
-);
-const infoPlayerExpIcons = document.querySelectorAll(".info-player-exp img");
-const infoPlayerExpElements = document.querySelectorAll(
-  ".info-player-exp span"
-);
+// Properties, methods, and event listeners for the info tab
 
-// FUNCTIONS
-function infoShowPlayerListElement(user, index) {
-  for (let i = 0; i < userList.length; i++) {
-    infoPlayerEntryElements[i].style.display = "block";
-    infoPlayerEntryElements[i].classList.add(userList[i].color);
-    infoPlayerNameElements[i].textContent = userList[i].name;
-    infoPlayerMoneyElements[i].textContent = userList[i].money;
-    infoPlayerExpElements[i].textContent = userList[i].exp;
-    infoPlayerNameIcons[i].src = "/images/wrench-" + userList[i].color + ".png";
-  }
-}
+const info = {
+  // PROPERTIES
+  playersTabElement: document.getElementById("info-players-tab"),
+  rulesTabElement: document.getElementById("info-rules-tab"),
+  settingsTabElement: document.getElementById("info-settings-tab"),
+  playersElement: document.getElementById("info-players"),
+  rulesElement: document.getElementById("info-rules"),
+  settingsElement: document.getElementById("info-settings"),
+  playerEntryElements: document.querySelectorAll(".info-player-entry"),
+  playerNameIcons: document.querySelectorAll(".info-player-name img"),
+  playerNameElements: document.querySelectorAll(".info-player-name span"),
+  playerMoneyIcons: document.querySelectorAll(".info-player-money img"),
+  playerMoneyElements: document.querySelectorAll(".info-player-money span"),
+  playerExpIcons: document.querySelectorAll(".info-player-exp img"),
+  playerExpElements: document.querySelectorAll(".info-player-exp span"),
 
-function infoDisplayPlayers(userList) {}
+  // METHODS
+  showPlayerList: function () {
+    for (let i = 0; i < userList.length; i++) {
+      info.playerEntryElements[i].style.display = "block";
+      info.playerEntryElements[i].classList.remove(
+        "red",
+        "blue",
+        "purple",
+        "green"
+      );
+      info.playerEntryElements[i].classList.add(userList[i].color);
+      info.playerNameElements[i].textContent = userList[i].name;
+      info.playerMoneyElements[i].textContent = userList[i].money;
+      info.playerExpElements[i].textContent = userList[i].exp;
+      info.playerNameIcons[i].src =
+        "/images/wrench-" + userList[i].color + ".png";
+    }
+  },
+};
 
 // EVENT LISTENERS
 //   Click on Players Tab
 console.log("players");
-infoPlayersTabElement.addEventListener("click", function () {
+info.playersTabElement.addEventListener("click", function () {
   const activeTabElement = document.querySelector("#info-tabs .active");
   const activeContentElement = document.querySelector(
     "#info-content article.active"
@@ -46,12 +47,12 @@ infoPlayersTabElement.addEventListener("click", function () {
 
   activeTabElement.classList.remove("active");
   activeContentElement.classList.remove("active");
-  infoPlayersTabElement.classList.add("active");
-  infoPlayersElement.classList.add("active");
+  info.playersTabElement.classList.add("active");
+  info.playersElement.classList.add("active");
 });
 
 //   Click on Rules Tab
-infoRulesTabElement.addEventListener("click", function () {
+info.rulesTabElement.addEventListener("click", function () {
   console.log("rules");
   const activeTabElement = document.querySelector("#info-tabs .active");
   const activeContentElement = document.querySelector(
@@ -60,12 +61,12 @@ infoRulesTabElement.addEventListener("click", function () {
 
   activeTabElement.classList.remove("active");
   activeContentElement.classList.remove("active");
-  infoRulesTabElement.classList.add("active");
-  infoRulesElement.classList.add("active");
+  info.rulesTabElement.classList.add("active");
+  info.rulesElement.classList.add("active");
 });
 
 //   Click on Settings Tab
-infoSettingsTabElement.addEventListener("click", function () {
+info.settingsTabElement.addEventListener("click", function () {
   console.log("settings");
   const activeTabElement = document.querySelector("#info-tabs .active");
   const activeContentElement = document.querySelector(
@@ -74,6 +75,6 @@ infoSettingsTabElement.addEventListener("click", function () {
 
   activeTabElement.classList.remove("active");
   activeContentElement.classList.remove("active");
-  infoSettingsTabElement.classList.add("active");
-  infoSettingsElement.classList.add("active");
+  info.settingsTabElement.classList.add("active");
+  info.settingsElement.classList.add("active");
 });

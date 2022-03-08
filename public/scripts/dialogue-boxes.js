@@ -1,35 +1,32 @@
-// VARIABLES
-const dialogueBoxElement = document.getElementById("dialogue-box");
-const rollXButtonElement = document.getElementById("roll-x");
-const allRollXButtonElements = document.querySelectorAll(".all-roll-x");
-let numDie = 0;
-let isDieRolled = false;
-
-// FUNCTIONS
-function rollDice(numDie) {
-  return Math.floor(Math.random() * numDie + 1);
-}
-
-// function openDialogue(dialogueId) {
-//   const activeDialogue = document.getElementById(dialogueId);
-//   activeDialogue.style.display = "block";
-// }
+// Dice Rolls, Card Draws, etc.
 
 const dialogue = {
+  // PROPERTIES
+  dialogueBox: document.getElementById("dialogue-box"),
+  rollXButton: document.getElementById("roll-x"),
+  allRollXButtons: document.querySelectorAll(".all-roll-x"),
+  numDie: 0,
+  isDieRolled: false,
+
+  // METHODS
+  randomInt: function (intVal) {
+    return Math.floor(Math.random() * intVal + 1);
+  },
+
   openRollDice: function (numSides) {
-    isDieRolled = false;
+    dialogue.isDieRolled = false;
     // Define Variables
     const rollDiceElement = document.getElementById("roll-dice");
     const dieSidesElement = document.getElementById("die-sides");
     // Display appropriate elements
-    dialogueBoxElement.style.display = "block";
+    dialogue.dialogueBox.style.display = "block";
     rollDiceElement.style.display = "block";
-    numDie = numSides;
-    dieSidesElement.textContent = numDie;
+    dialogue.numDie = numSides;
+    dieSidesElement.textContent = dialogue.numDie;
   },
 
-  openAllRollDice: function (numSides = 4) {
-    isDieRolled = false;
+  openAllRollDice: function (numSides = 12) {
+    dialogue.isDieRolled = false;
     // Define Variables
     const allRollDiceElement = document.getElementById("all-roll-dice");
     const dieSidesElement =
@@ -38,16 +35,20 @@ const dialogue = {
       document.querySelectorAll(".roll-player-entry");
     const playerNameElements = document.querySelectorAll(".all-player-name");
     // Display appropriate elements
-    dialogueBoxElement.style.display = "block";
+    dialogue.dialogueBox.style.display = "block";
     allRollDiceElement.style.display = "block";
     for (let i = 0; i < userList.length; i++) {
       playerNameElements[i].textContent = userList[i].name;
       rollPlayerEntryElements[i].style.display = "flex";
     }
-    numDie = numSides;
-    dieSidesElement.textContent = numDie;
-    allRollXButtonElements[userIndex].style.display = "block";
+    dialogue.numDie = numSides;
+    dieSidesElement.textContent = dialogue.numDie;
+    dialogue.allRollXButtons[userIndex].style.display = "block";
   },
+
+  // closeAllRollDice: function () {
+
+  // },
 
   showRollOrder: function () {
     // Define Variables
@@ -56,10 +57,8 @@ const dialogue = {
     const playerOrderElements = document.querySelectorAll(".player-order");
     const rollResultElements = document.querySelectorAll(".all-roll-result");
     const tieMessageElement = document.getElementById("tie-message");
-
     // Hide Players
     rollPlayersListElement.style.display = "none";
-
     // Reorder players and prep rankings
     for (let i = 0; i < userList.length; i++) {
       playerNameElements[i].textContent = userList[i].name;
@@ -67,36 +66,36 @@ const dialogue = {
       playerOrderElements[i].style.display = "block";
     }
     // Display players with rankings
-    allRollXButtonElements[userIndex].style.display = "none";
+    dialogue.allRollXButtons[userIndex].style.display = "none";
     tieMessageElement.style.display = "none";
     rollPlayersListElement.style.display = "flex";
   },
 };
 
 // EVENT LISTENERS
-rollXButtonElement.addEventListener("click", function () {
-  if (!isDieRolled) {
+dialogue.rollXButton.addEventListener("click", function () {
+  if (!dialogue.isDieRolled) {
     const rollResultElement = document.getElementById("roll-result");
     const rollResultNumberElement = document.querySelector("#roll-result span");
-    rollResultNumberElement.textContent = rollDice(numDie);
-    isDieRolled = true;
-    rollXButtonElement.classList.add("disabled");
+    rollResultNumberElement.textContent = dialogue.randomInt(dialogue.numDie);
+    dialogue.isDieRolled = true;
+    dialogue.rollXButton.classList.add("disabled");
     rollResultElement.style.display = "block";
   }
 });
 
 // userIndex not yet defined so add event listener to all buttons
-allRollXButtonElements.forEach((button) => {
+dialogue.allRollXButtons.forEach((button) => {
   button.addEventListener("click", function () {
     let rollResult;
-    if (!isDieRolled) {
+    if (!dialogue.isDieRolled) {
       // const rollResultElement =
       // document.querySelectorAll(".all-roll-result")[userIndex];
-      rollResult = rollDice(numDie);
+      rollResult = dialogue.randomInt(dialogue.numDie);
       socket.emit("all roll", { roomId, userIndex, rollResult });
       // rollResultElement.textContent = rollResult;
-      isDieRolled = true;
-      allRollXButtonElements[userIndex].classList.add("disabled");
+      dialogue.isDieRolled = true;
+      dialogue.allRollXButtons[userIndex].classList.add("disabled");
     }
   });
 });
@@ -118,8 +117,8 @@ socket.on("reroll", function (data) {
     rollResultElements[playerIndex].textContent = "Reroll!";
     if (playerIndex === userIndex) {
       console.log("I need to re-roll!");
-      allRollXButtonElements[userIndex].classList.remove("disabled");
-      isDieRolled = false;
+      dialogue.allRollXButtons[userIndex].classList.remove("disabled");
+      dialogue.isDieRolled = false;
     }
   }
 });
@@ -127,4 +126,5 @@ socket.on("reroll", function (data) {
 socket.on("all roll complete", function (rankArray) {
   game.reorderPlayers(rankArray);
   dialogue.showRollOrder();
+  setTimeout(game.startRound, 500);
 });

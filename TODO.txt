@@ -1,0 +1,6 @@
+- Split app.js into smaller files for socket.io, functions,
+  etc.
+
+- Fix enter submit bug in chat section
+
+- Error handling for non-existant rooms/invalid urls

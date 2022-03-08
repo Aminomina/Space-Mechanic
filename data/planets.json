@@ -3,8 +3,7 @@
     {
       "name": "Androga",
       "system": "Drogan Space",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-14, -7],
       "hazard-type": 0,
       "description": "A haven of science and reason…and a bunch of nerdy aliens who can’t fix their own machines.",
       "difficulty": 1
@@ -12,17 +11,15 @@
     {
       "name": "Mars",
       "system": "Humanis",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-6, 16],
       "hazard-type": 0,
-      "description": "There’s few more pleasant spots in the galaxy. They say it used to be a barren, red rock.",
+      "description": "There’s few more pleasant locations in the galaxy. They say it used to be a barren, red rock.",
       "difficulty": 1
     },
     {
       "name": "Earth",
       "system": "Humanis",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-6, 16],
       "hazard-type": 0,
       "description": "It’s not all that bad, except for the uninhabitable hot-zone around the equator. They say it used to be a nice place…",
       "difficulty": 1
@@ -30,8 +27,7 @@
     {
       "name": "Titan",
       "system": "Humanis",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-6, 16],
       "hazard-type": 0,
       "description": "The floating cities are a sight to see! Just keep your tools secure and make sure not to drop anything.",
       "difficulty": 1
@@ -39,8 +35,7 @@
     {
       "name": "Drema",
       "system": "Bracha",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [12, 23],
       "hazard-type": 0,
       "description": "Once humanity’s sworn enemy, Drema is now a very welcoming planet.",
       "difficulty-description": "Multiply job difficulty by 0.75x for improved mood from polite clients.",
@@ -49,8 +44,7 @@
     {
       "name": "Technorion",
       "system": "Gierlios",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [13, -18],
       "hazard-type": 0,
       "description": "The whole planet is one big machine! I guess that’s what happens when engineering gets an unlimited budget…",
       "difficulty": 1
@@ -60,8 +54,7 @@
     {
       "name": "Gigantus",
       "system": "Gullivar",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [40, 5],
       "hazard-type": 0,
       "description": "An abundance of oxygen on this planet means everything is really big…including the machines!",
       "difficulty-description": "Multiply job difficulty by 1.25x for difficult-to-service giant machines.",
@@ -70,8 +63,7 @@
     {
       "name": "Minituras",
       "system": "Gullivar",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [40, 5],
       "hazard-type": 0,
       "description": "What is this, model making? Everything is so tiny!",
       "difficulty-description": "Multiply job difficulty by 1.25 for difficult to service tiny machines.",
@@ -80,8 +72,7 @@
     {
       "name": "Ark",
       "system": "X0E7",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [3, 38],
       "hazard-type": 1,
       "description": "Covered in violent, stormy seas, this planet was uninhabited until the discovery of valuable minerals buried within its crust. Resources spent, a hardy people still cling to life on the old mining platforms.",
       "hazard-pay": 50,
@@ -92,8 +83,7 @@
     {
       "name": "Jola",
       "system": "X0C3",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-72, -16],
       "hazard-type": 3,
       "description": "The oldest of the outer colonies, this small moon is a pleasant destination…as long as you’re not around for a hurricane.",
       "hazard-pay": 50,
@@ -103,8 +93,7 @@
     {
       "name": "O'Fiver",
       "system": "X0G9",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-39, 23],
       "hazard-type": 2,
       "description": "A desert world of cattle ranchers and outlaws.",
       "hazard-pay": 50,
@@ -114,8 +103,7 @@
     {
       "name": "Calvorus",
       "system": "Yolkus",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [52, -18],
       "hazard-type": 0,
       "description": "Moving around in 3.7 Gs is a workout!",
       "difficulty-description": "Multiply job difficulty by 1.25x for exhaustion.",
@@ -124,8 +112,7 @@
     {
       "name": "Arborius",
       "system": "X0E2",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-14, -33],
       "hazard-type": 1,
       "description": "Clean air, clear lakes, and…giant carnivorous birds?",
       "hazard-pay": 50,
@@ -136,8 +123,7 @@
     {
       "name": "Automatus",
       "system": "Machina",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [39, 45],
       "hazard-type": 0,
       "description": "Everyone’s a robot! Consider it a privilege you’re here. Mechanics are the only organic beings allowed on the planet!",
       "difficulty-description": "Multiply job difficulty by 0.75x for appreciative clients.",
@@ -146,8 +132,7 @@
     {
       "name": "Slugora",
       "system": "Slimuria",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [4, -42],
       "hazard-type": 1,
       "description": "It’s just so…slimy.",
       "hazard-pay": 50,
@@ -158,8 +143,7 @@
     {
       "name": "Verna",
       "system": "X05G",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [28, -35],
       "hazard-type": 0,
       "description": "This planet’s inside out! Barren rock on the surface, abundant life within.",
       "difficulty": 1
@@ -169,8 +153,7 @@
     {
       "name": "Silencia",
       "system": "Mandra",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [81, -56],
       "hazard-type": 0,
       "description": "As long as the floaty people don’t bother you, it’s a good gig. For what it’s worth, they’re very polite.",
       "difficulty-description": "Multiply job difficulty by 0.75x for improved mood from polite clients.",
@@ -179,8 +162,7 @@
     {
       "name": "Sliponuras",
       "system": "X2A2",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [73, 19],
       "hazard-type": 1,
       "description": "Dark clouds and heavy rains perpetually afflict this planet.",
       "hazard-pay": 50,
@@ -191,8 +173,7 @@
     {
       "name": "Asthamie",
       "system": "X37B",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-48, 51],
       "hazard-type": 1,
       "description": "An undeniably creepy planet. It’s hot, foggy, and buggy. But what you really have to watch out for are the tree-vampires.",
       "hazard-pay": 50,
@@ -202,8 +183,7 @@
     {
       "name": "Scorchiuras",
       "system": "Isiyot",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-70, 19],
       "hazard-type": 1,
       "description": "Prepare to get toasty. It’s risky work, but the hazard pay is good!",
       "hazard-pay": 100,
@@ -214,8 +194,7 @@
     {
       "name": "Freziuras",
       "system": "Isiyot",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-70, 19],
       "hazard-type": 1,
       "description": "Don’t forget your winter coat and maybe bring the hot cocoa, too.",
       "hazard-pay": 100,
@@ -226,8 +205,7 @@
     {
       "name": "Memoria",
       "system": "X3GA",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-73, -33],
       "hazard-type": 1,
       "description": "You might be tempted to bring your swimsuit, but don’t. There’s ghosts in the water!",
       "hazard-pay": 50,
@@ -238,8 +216,7 @@
     {
       "name": "Alchemus",
       "system": "X211",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-81, -47],
       "hazard-type": 1,
       "description": "Everybody knows magic and machines don’t mix! You never know what you’re going to encounter on this planet.",
       "hazard-pay": 50,
@@ -250,8 +227,7 @@
     {
       "name": "Sanguina",
       "system": "X11B",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [-54, -46],
       "hazard-type": 1,
       "description": "The vampires are cause for concern, but even worse is how outdated their machines are!",
       "hazard-pay": 50,
@@ -262,10 +238,9 @@
     {
       "name": "Doon",
       "system": "X3D0",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [78, -12],
       "hazard-type": 1,
-      "description": "A sparsely populated planet covered in spicy sand. Watch out for those ground snakes, though.",
+      "description": "A sparsely populated planet covered in spicy sand. Watch out for those ground snakes!",
       "hazard-pay": 50,
       "hazard-description": "Roll 12 for injury by ground snakes at the beginning of each day. If attacked, end your turn and spend the rest of the week in the hospital.",
       "difficulty-description": "Multiply job difficulty by 1.25 for the spicy air.",
@@ -274,8 +249,7 @@
     {
       "name": "Haulas",
       "system": "X18B",
-      "x-coord": 0,
-      "y-coord": 0,
+      "coordinates": [82, 31],
       "hazard-type": 0,
       "description": "Without enough atmosphere to regulate temperature, the colonists on this planet live in giant rolling cities that eternally chase the sun.",
       "difficulty-description": "Multiply job difficulty by 1.25 for stress from the ever looming shadow of certain death.",

@@ -4,6 +4,7 @@ const messagesElement = document.getElementById("radio-messages");
 const radioEntryElement = document.getElementById("radio-entry-box");
 const radioInputElement = document.getElementById("radio-entry-input");
 
+// EVENT LISTENERS
 // User sends a message
 radioEntryElement.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -14,6 +15,7 @@ radioEntryElement.addEventListener("submit", function (event) {
   }
 });
 
+// FUNCTIONS
 // Also submit if enter key is pressed
 function checkSubmit(event) {
   if (
@@ -28,6 +30,7 @@ function checkSubmit(event) {
   }
 }
 
+// SOCKET.IO
 // User receives a message
 socket.on("chat message", function (msg) {
   const item = document.createElement("li");
