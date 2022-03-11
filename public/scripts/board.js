@@ -41,23 +41,25 @@ const board = {
   },
 
   // Adds a job to the board
-  drawJob: function (job, xOffset = 0, yOffset = 0, numJobs = 1) {
+  drawJob: function (job, indices, xOffset = 0, yOffset = 0, numJobs = 1) {
     const jobTypes = ["PM", "Op Impacted", "Op Halted", "Catastrophic Failure"];
 
     // Clone job icon from template
     const jobElement = document
-      .getElementById("job-icon-template")
+      .querySelector("#templates .job-icon-template")
       .cloneNode(true);
     const jobIconElement = jobElement.children[0];
     const jobBubbleElement = jobElement.children[1];
-    // const jobImageNumberElement = jobElement.children[2];
-
+    const jobIndicesElement = jobElement.children[2];
     const canvasRect = board.canvas.getBoundingClientRect();
     const boardRect = board.sectionElement.getBoundingClientRect();
     const boardCoordinates = [
       (job.coordinates[0] + xOffset + 90) * 3.2,
       (-job.coordinates[1] - yOffset + 60) * 3.2,
     ];
+
+    // Add an event listener to the icon
+    jobIconElement.addEventListener("click", dialogue.openJobDetail);
 
     // Filling in values
     jobBubbleElement.children[0].textContent = job.name;
@@ -68,14 +70,26 @@ const board = {
       jobIconElement.children[1].textContent = numJobs;
       jobBubbleElement.children[1].textContent = numJobs + " jobs";
     }
-    jobBubbleElement.children[2].textContent =
-      "Base Difficulty: " + job.difficulty + "x";
-    jobBubbleElement.children[3].textContent = "Base Pay: $" + job.reward;
-    if ("hazardPay" in job) {
+    if (parseFloat(job.difficulty) > 0) {
+      jobBubbleElement.children[2].textContent =
+        "+" + job.difficulty + "x Difficulty";
+      jobBubbleElement.children[2].style.display = "block";
+    } else if (parseFloat(job.difficulty) < 0) {
+      jobBubbleElement.children[2].textContent =
+        job.difficulty + "x Difficulty";
+      jobBubbleElement.children[2].style.display = "block";
+    } else {
+      jobBubbleElement.children[2].textContent = "";
+      jobBubbleElement.children[2].style.display = "none";
+    }
+    jobBubbleElement.children[3].textContent =
+      "Base Reward: $" + job["base-reward"];
+    if ("hazard-pay" in job) {
       jobBubbleElement.children[4].textContent =
-        "Hazard Pay: $" + job.hazardPay + "/day";
+        "Hazard Pay: $" + job["hazard-pay"] + "/Day";
       jobBubbleElement.children[4].style.display = "block";
     }
+    jobIndicesElement.textContent = indices;
 
     board.jobsListElement.appendChild(jobElement);
     jobElement.style.top = boardCoordinates[1] + "px";
@@ -101,7 +115,6 @@ const board = {
     let pi = 3.14;
     if (jobClusterIndices.length === 2) {
       // Pair of planets
-      console.log("pair of planets");
       let radius = 3;
       for (let i = 0; i < 2; i++) {
         // Calculate offset
@@ -111,13 +124,13 @@ const board = {
         if (typeof jobClusterIndices[i] !== "object") {
           // One job
           let jobIndex = jobClusterIndices[i];
-          board.drawJob(jobsArray[jobIndex], xOffset, yOffset);
+          board.drawJob(jobsArray[jobIndex], jobIndex, xOffset, yOffset);
         } else {
-          // Multiple jobs
-          console.log("multiple jobs on planet");
+          // Multiple jobs on planet
           let jobIndex = jobClusterIndices[i][0];
           board.drawJob(
             jobsArray[jobIndex],
+            jobClusterIndices[i],
             xOffset,
             yOffset,
             jobClusterIndices[i].length
@@ -127,7 +140,6 @@ const board = {
     } else if (jobClusterIndices.length > 2) {
       numSides = jobClusterIndices.length;
       // Triad of planets
-      console.log("triad of planets");
       let radius = 3 / Math.sin(pi / numSides);
       for (let i = 0; i < numSides; i++) {
         // Calculate offset
@@ -137,13 +149,13 @@ const board = {
         if (typeof jobClusterIndices[i] !== "object") {
           // One job
           let jobIndex = jobClusterIndices[i];
-          board.drawJob(jobsArray[jobIndex], xOffset, yOffset);
+          board.drawJob(jobsArray[jobIndex], jobIndex, xOffset, yOffset);
         } else {
-          // Multiple jobs
-          console.log("multiple jobs on planet");
+          // Multiple jobs on planet
           let jobIndex = jobClusterIndices[i][0];
           board.drawJob(
             jobsArray[jobIndex],
+            jobClusterIndices[i],
             xOffset,
             yOffset,
             jobClusterIndices[i].length
@@ -164,16 +176,20 @@ const board = {
 // SOCKET.IO
 // Server sends the planet array for a new round
 socket.on("display jobs", function (data) {
+  console.log(data.jobsArray);
+
+  // Sync client's job array with new array from server
+  game.jobsArray = data.jobsArray;
+  // Draw each job in correct location
   for (const systemIndex of data.jobIndices) {
     if (typeof systemIndex !== "object") {
       // Only one job in system
-      // console.log(data.jobsArray[systemIndex]);
-      board.drawJob(data.jobsArray[systemIndex]);
+      board.drawJob(data.jobsArray[systemIndex], systemIndex);
     } else if (systemIndex.length === 1) {
-      console.log("One planet in system, multiple jobs");
-      console.log(systemIndex[0][0]);
+      // One planet in system, multiple jobs
       board.drawJob(
         data.jobsArray[systemIndex[0][0]],
+        systemIndex[0],
         0,
         0,
         systemIndex[0].length

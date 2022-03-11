@@ -149,6 +149,9 @@ const gameSetup = {
   },
   // Generate an array of jobs
   generateJobs: function (roomId) {
+    const locationIndices = [
+      0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7,
+    ];
     const room = rooms[roomId - 1];
     const numPlayers = room.users.length;
     const numJobs = [10, 10, 10]; //           PLACEHOLDER VALUES, USE NUMPLAYERS
@@ -159,11 +162,34 @@ const gameSetup = {
     const fileData = fs.readFileSync(filePath);
     const storedPlanets = JSON.parse(fileData);
 
-    console.log("-------");
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < numJobs[i]; j++) {
-        let selection = Math.floor(Math.random() * storedPlanets[i].length);
-        jobsArray.push(storedPlanets[i][selection]);
+        // Select job type and location
+        const jobInfo = {
+          typeIndex: 3 - Math.floor(Math.sqrt(Math.random() * 16)),
+          locIndex:
+            locationIndices[Math.floor(Math.random() * locationIndices.length)],
+        };
+        // job.typeIndex = 3 - Math.floor(Math.sqrt(Math.random() * 16));
+        // Select a job location
+        // job.locIndex =
+        //   locationIndices[Math.floor(Math.random() * locationIndices.length)];
+
+        // Select a planet
+        const planet =
+          storedPlanets[i][Math.floor(Math.random() * storedPlanets[i].length)];
+
+        // let planetSelection = Math.floor(
+        //   Math.random() * storedPlanets[i].length
+        // );
+        // let job = storedPlanets[i][planetSelection];
+
+        let job = {
+          ...jobInfo,
+          ...planet,
+        };
+
+        jobsArray.push(job);
       }
     }
 

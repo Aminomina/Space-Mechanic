@@ -4,3 +4,5 @@
 - Fix enter submit bug in chat section
 
 - Error handling for non-existant rooms/invalid urls
+
+- Job bubbles sometimes cut off at top (fixed on reload?)

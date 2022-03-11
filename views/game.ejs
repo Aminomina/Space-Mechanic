@@ -10,17 +10,27 @@
     <link rel="stylesheet" href="/styles/waiting-room.css" />
   </head>
   <body>
+    <!-- WAITING ROOM -->
     <aside id="waiting-room">
       <%- include('includes/game-display/waiting-room', {room: room}) %>
     </aside>
+    <!-- DIALOGUE BOX -->
     <aside id="dialogue-box">
+      <div id="dialogue-box-controls">
+        <%- include('includes/game-display/dialogue-box-controls') %>
+      </div>
       <section id="roll-dice">
         <%- include('includes/game-display/roll-dice') %>
       </section>
       <section id="all-roll-dice">
         <%- include('includes/game-display/all-roll-dice') %>
       </section>
+      <section id="job-detail">
+        <%- include('includes/game-display/job-detail') %>
+      </section>
     </aside>
+    <div id="backdrop"></div>
+    <!-- GAME CONTENT -->
     <div id="game-content">
       <div id="info-board-cards">
         <div id="info-board">
@@ -37,6 +47,7 @@
         <%- include('includes/game-display/radio-phone') %>
       </section>
     </div>
+    <!-- TEMPLATES -->
     <div id="templates"><%- include('includes/game-display/templates') %></div>
     <!-- SCRIPTS -->
     <script src="/socket.io/socket.io.js"></script>
@@ -46,6 +57,6 @@
     <script src="/scripts/radio-phone.js"></script>
     <script src="/scripts/info.js"></script>
     <script src="/scripts/dialogue-boxes.js"></script>
-    <script src="/scrips/planets.js"></script>
+    <script src="/scripts/job-data.js"></script>
   </body>
 </html>

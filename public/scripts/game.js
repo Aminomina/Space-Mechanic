@@ -8,6 +8,9 @@ let userIndex;
 
 // FUNCTIONS
 const game = {
+  // Properties
+  jobsArray: [],
+  // Methods
   reorderPlayers: function (rollArray) {
     let index;
     let newUserList = [];
@@ -65,7 +68,9 @@ socket.on("start game", function () {
   console.log(board.sectionElement);
   board.drawGrid();
   info.showPlayerList();
-  dialogue.openAllRollDice();
+  // dialogue.openAllRollDice();
+  // dialogue.openJobDetail();
+  game.startRound();
 
   // if (userId === userList[0].id) {
   //   console.log("I'm the active player!");
