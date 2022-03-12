@@ -1,38 +1,42 @@
-// SETUP AND VARIABLES
-const sineContainterElement = document.getElementById("radio-sine-container");
-const messagesElement = document.getElementById("radio-messages");
-const radioEntryElement = document.getElementById("radio-entry-box");
-const radioInputElement = document.getElementById("radio-entry-input");
+// Chat Functionality
+
+const chat = {
+  // PROPERTIES
+  inputElement: document.getElementById("radio-entry-input"),
+  entryElement: document.getElementById("radio-entry-box"),
+  // METHODS
+};
 
 // EVENT LISTENERS
 // User sends a message
-radioEntryElement.addEventListener("submit", function (event) {
+chat.entryElement.addEventListener("submit", function (event) {
   event.preventDefault();
-  const message = radioInputElement.value;
-  if (radioInputElement.value) {
+  const message = chat.inputElement.value;
+  if (chat.inputElement.value) {
     socket.emit("chat message", { message, roomId });
-    radioInputElement.value = "";
+    chat.inputElement.value = "";
   }
 });
 
-// FUNCTIONS
-// Also submit if enter key is pressed
-function checkSubmit(event) {
+chat.entryElement.addEventListener("keypress", function (event) {
   if (
     event &&
-    event.keyCode == 13 &&
+    event.key === "Enter" &&
     !event.shiftKey &&
-    radioInputElement.value
+    chat.inputElement.value
   ) {
-    const message = radioInputElement.value;
+    event.preventDefault();
+    const message = chat.inputElement.value;
     socket.emit("chat message", { message, roomId });
-    radioInputElement.value = "";
+    chat.inputElement.value = "";
   }
-}
+});
 
 // SOCKET.IO
 // User receives a message
 socket.on("chat message", function (msg) {
+  sineContainterElement = document.getElementById("radio-sine-container");
+  messagesElement = document.getElementById("radio-messages");
   const item = document.createElement("li");
   item.textContent = msg;
   messagesElement.appendChild(item);
@@ -41,11 +45,4 @@ socket.on("chat message", function (msg) {
   void sineContainterElement.offsetWidth; // trigger the reset
   sineContainterElement.classList.add("incoming"); // play animation
   console.log("hello");
-});
-
-// Prevent new line when enter is pressed in text area
-$("textarea").keydown(function (event) {
-  if (event.keyCode == 13) {
-    event.preventDefault();
-  }
 });

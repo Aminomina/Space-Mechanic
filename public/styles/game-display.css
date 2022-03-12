@@ -29,6 +29,7 @@ body {
   display: none;
   height: 100vh;
   width: 100vw;
+  margin-bottom: -20px;
 }
 
 #info-board-cards {

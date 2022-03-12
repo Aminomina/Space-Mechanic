@@ -48,6 +48,7 @@ const dialogue = {
     dialogue.numDie = numSides;
     dieSidesElement.textContent = dialogue.numDie;
     dialogue.allRollXButtons[userIndex].style.display = "block";
+    dialogue.backdropElement.style.display = "block";
   },
 
   showRollOrder: function () {
@@ -170,6 +171,10 @@ const dialogue = {
       "click",
       dialogue.closeDialogueBox
     );
+    dialogue.backdropElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
     dialogue.upArrowElement.addEventListener("click", dialogue.scrollUp);
     dialogue.downArrowElement.addEventListener("click", dialogue.scrollDown);
   },
@@ -182,6 +187,10 @@ const dialogue = {
     dialogue.backdropElement.style.display = "none";
     dialogue.dialogueBox.className = "";
 
+    dialogue.closeWindowElement.removeEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
     dialogue.closeWindowElement.removeEventListener(
       "click",
       dialogue.closeDialogueBox
@@ -255,15 +264,6 @@ const dialogue = {
       detailListElement.appendChild(detailEntryElement);
     }
   },
-
-  checkEscape: function (event) {
-    console.log("hi");
-    console.log(event.key);
-    if (event.key === "Escape") {
-      // dialogue.closeDialogueBox;
-      console.log("keypress");
-    }
-  },
 };
 
 // EVENT LISTENERS
@@ -294,8 +294,6 @@ dialogue.allRollXButtons.forEach((button) => {
   });
 });
 
-document.addEventListener("keypress", dialogue.checkEscape);
-
 // SOCKET.IO
 // A user completes their beginning of round dice roll
 socket.on("all roll result", function (data) {
@@ -303,7 +301,7 @@ socket.on("all roll result", function (data) {
   rollResultElements[data.userIndex].textContent = data.rollResult;
 });
 
-// Players are prompted for a re-roll                                       ADD a message that says, "X and X tied for Xth"
+// Players are prompted for a re-roll
 socket.on("reroll", function (data) {
   const rollResultElements = document.querySelectorAll(".all-roll-result");
   const tieMessageElement = document.getElementById("tie-message");

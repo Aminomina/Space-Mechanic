@@ -164,13 +164,6 @@ const board = {
       }
     }
   },
-
-  // Adds a set of jobs to the board
-  // drawJobSet: function (jobsArray) {
-  //   const jobIndices = [0, [1, 9, 12], 2, [[3, 7]], 4, [5, [8, 11]], 6, 10];
-  // },
-
-  // findDuplicateSystems: function (jobsArray) {},
 };
 
 // SOCKET.IO
@@ -199,8 +192,4 @@ socket.on("display jobs", function (data) {
       board.drawJobCluster(data.jobsArray, systemIndex);
     }
   }
-  // const jobBubbleElements = document.querySelectorAll("#jobs .bubble");
-  // for (const bubble of jobBubbleElements) {
-  //   bubble.style.display = "none";
-  // }
 });

@@ -1,14 +1,14 @@
-// VARIABLES
 var socket = io(); // Set up socket.io
 
+// VARIABLES
 let userName;
 let userId;
 let userList = [];
 let userIndex;
 
-// FUNCTIONS
 const game = {
   // Properties
+  isTurn: false,
   jobsArray: [],
   // Methods
   reorderPlayers: function (rollArray) {
@@ -36,27 +36,32 @@ const game = {
     socket.emit("generate jobs", roomId);
   },
   startRound: function () {
-    dialogue.dialogueBox.style.display = "none";
+    // dialogue.dialogueBox.style.display = "none";
+    dialogue.closeDialogueBox();
     info.showPlayerList();
     if (userId === userList[0].id) {
       console.log("I'm the active player!");
       game.requestJobsArray();
+      game.isTurn = true;
+    }
+  },
+  checkEscape: function (event) {
+    if (
+      event.key === "Escape" &&
+      dialogue.dialogueBox.style.display === "block"
+    ) {
+      const isjobDetailVisible =
+        document.getElementById("job-detail").style.display === "block";
+      if (isjobDetailVisible) {
+        dialogue.closeDialogueBox();
+      }
     }
   },
 };
 
-function newRound() {
-  // Dialogue opens, each player receives a random card from the home deck
-  // If any player has a beginning-of-round card, they are prompted and can choose to play it
-  // Waiting screen opens while other players are drawing cards.
-  // A dice roll dialogue opens with as many dice as players.
-  // Each player rolls, and whoever gets the highest roll goes first.
-  // If two players roll the same number, they are prompted to roll again.
-  // Players are ordered left to right in the dialogue with numbers to show the new order for the round.
-  // The player sidebar is set to active and the new order is displayed.
-  // The dialogue closes and the new order is shown on the player tab of the info bar.
-  // A new list of jobs is generated and the first player's turn begins.
-}
+// EVENT LISTENERS
+// Manage Escape key press
+document.addEventListener("keydown", game.checkEscape);
 
 // SOCKET.IO
 // Game begins
@@ -68,13 +73,7 @@ socket.on("start game", function () {
   console.log(board.sectionElement);
   board.drawGrid();
   info.showPlayerList();
-  // dialogue.openAllRollDice();
+  dialogue.openAllRollDice();
   // dialogue.openJobDetail();
-  game.startRound();
-
-  // if (userId === userList[0].id) {
-  //   console.log("I'm the active player!");
-  //   requestJobsArray();
-  // }
-  // openRollDiceDialogue(30);
+  // game.startRound();
 });
