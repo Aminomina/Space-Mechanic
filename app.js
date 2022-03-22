@@ -37,6 +37,8 @@ for (var i = 0; i < numRooms; i++) {
     isStarted: false,
     playerCounter: 0,
     ranks: [],
+    activeUserIndex: 0,
+    jobsArray: [],
   };
   rooms.push(room);
 }
@@ -157,6 +159,7 @@ const gameSetup = {
     const numJobs = [10, 10, 10]; //           PLACEHOLDER VALUES, USE NUMPLAYERS
     let jobsArray = [];
     const filePath = path.join(__dirname, "data", "planets.json");
+    let jobIdCounter = 0;
 
     // Read data from planets.json
     const fileData = fs.readFileSync(filePath);
@@ -166,6 +169,9 @@ const gameSetup = {
       for (let j = 0; j < numJobs[i]; j++) {
         // Select job type and location
         const jobInfo = {
+          id: jobIdCounter,
+          // 0: available, 1: claimed, not fixed, 2: fixed
+          status: 0,
           typeIndex: 3 - Math.floor(Math.sqrt(Math.random() * 16)),
           locIndex:
             locationIndices[Math.floor(Math.random() * locationIndices.length)],
@@ -190,6 +196,7 @@ const gameSetup = {
         };
 
         jobsArray.push(job);
+        jobIdCounter++;
       }
     }
 
@@ -198,6 +205,8 @@ const gameSetup = {
     gameSetup.findDuplicatePlanets(jobsArray, jobIndices);
     // Send jobs
     io.to(room.id).emit("display jobs", { jobsArray, jobIndices });
+
+    room.jobsArray = jobsArray;
 
     // DEBUG
     for (const job of jobsArray) {
@@ -337,6 +346,7 @@ const diceRoll = {
 
   // Check for ties during a roll-for-order
   checkForTie: function (roomId, rollArray) {
+    const room = rooms[roomId - 1];
     for (let i = 0; i < rollArray.length; i++) {
       let tiedUsers = [i];
       for (let j = i + 1; j < rollArray.length; j++) {
@@ -514,78 +524,22 @@ io.on("connection", (socket) => {
   socket.on("generate jobs", (roomId) => {
     const room = rooms[roomId - 1];
     gameSetup.generateJobs(roomId);
+  });
 
-    // const jobsArray = [
-    //   {
-    //     name: "Gigantus",
-    //     coordinates: [-10, 10],
-    //     jobType: 1,
-    //     difficulty: 1.25,
-    //     reward: 390,
-    //   },
-    //   {
-    //     name: "Ark",
-    //     coordinates: [-80, -55],
-    //     jobType: 0,
-    //     difficulty: 1.25,
-    //     reward: 375,
-    //     hazardPay: 50,
-    //   },
-    //   {
-    //     name: "Androga",
-    //     coordinates: [80, 50],
-    //     jobType: 3,
-    //     difficulty: 1,
-    //     reward: 400,
-    //   },
-    // ];
+  socket.on("job chosen", (data) => {
+    const room = rooms[data.roomId - 1];
+
+    // Update jobsArray
+    room.jobsArray[data.jobId].status = 1;
+
+    // Update active player
+    //                                                    FUNCTION THAT UPDATES PLAYER
+
+    io.to(data.roomId).emit("new turn", { jobsArray: room.jobsArray });
   });
 });
 
 // START SERVER
 server.listen(3000, () => {
   console.log("listening on *:3000");
-  //                                             TEST CODE
-  const testArray = [
-    "Shelley",
-    "Verne",
-    "LeGuin",
-    "Mitchell",
-    "Verne",
-    "Vonnegut",
-    "LeGuin",
-    "Verne",
-    "Vonnegut",
-  ];
-  const testOutput = Array(testArray.length);
-  const testHash = {};
-  let testCounter = 0;
-  for (const author of testArray) {
-    if (author in testHash) {
-      const valueIndex = testHash[author];
-      // Value is a duplicate
-      if (typeof testOutput[valueIndex] !== "object") {
-        // 1st duplicate
-        testOutput[valueIndex] = [testOutput[valueIndex], testCounter];
-      } else {
-        // nth duplicate
-        testOutput[valueIndex].push(testCounter);
-      }
-    } else {
-      // Value is not a duplicate
-      testHash[author] = testCounter;
-      testOutput[testCounter] = testCounter;
-    }
-    testCounter++;
-  }
-  // Remove empty indices
-  for (let i = 0; i < testOutput.length; i++) {
-    if (testOutput[i] === undefined) {
-      testOutput.splice(i, 1);
-      i--;
-    }
-  }
-  // console.log(testOutput);
-
-  //                                             END TEST CODE
 });

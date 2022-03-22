@@ -11,6 +11,7 @@ const dialogue = {
   allRollXButtons: document.querySelectorAll(".all-roll-x"),
   numDie: 0,
   isDieRolled: false,
+  activeJobs: [],
 
   // METHODS
   randomInt: function (intVal) {
@@ -92,63 +93,63 @@ const dialogue = {
 
     let jobIndices =
       event.target.parentElement.parentElement.children[2].textContent;
-    planetJobs = [];
+    dialogue.activeJobs = [];
     // Fetch jobs
-    console.log(jobIndices);
     if (typeof jobIndices === "number") {
       // One job
-      planetJobs.push(game.jobsArray[jobIndices]);
+      dialogue.activeJobs.push(game.jobsArray[jobIndices]);
     } else {
       // Multiple jobs
       jobIndices = jobIndices.split(",");
       for (const index of jobIndices) {
-        planetJobs.push(game.jobsArray[index]);
+        dialogue.activeJobs.push(game.jobsArray[index]);
       }
     }
-    console.log(planetJobs);
+
     // Change appropriate values
-    planetNameElement.textContent = planetJobs[0].name;
-    systemNameElement.textContent = planetJobs[0].system;
-    if (parseFloat(planetJobs[0].difficulty) > 0) {
+    planetNameElement.textContent = dialogue.activeJobs[0].name;
+    systemNameElement.textContent = dialogue.activeJobs[0].system;
+    if (parseFloat(dialogue.activeJobs[0].difficulty) > 0) {
       planetStatsElements[0].textContent =
-        "+" + planetJobs[0].difficulty + "x Difficulty";
+        "+" + dialogue.activeJobs[0].difficulty + "x Difficulty";
       planetStatsElements[0].style.display = "block";
-    } else if (parseFloat(planetJobs[0].difficulty) < 0) {
+    } else if (parseFloat(dialogue.activeJobs[0].difficulty) < 0) {
       planetStatsElements[0].textContent =
-        planetJobs[0].difficulty + "x Difficulty";
+        dialogue.activeJobs[0].difficulty + "x Difficulty";
       planetStatsElements[0].style.display = "block";
     } else {
       planetStatsElements[0].textContent = "";
       planetStatsElements[0].style.display = "none";
     }
     planetStatsElements[1].textContent =
-      "Base Reward: $" + planetJobs[0]["base-reward"];
-    if ("hazard-pay" in planetJobs[0]) {
+      "Base Reward: $" + dialogue.activeJobs[0]["base-reward"];
+    if ("hazard-pay" in dialogue.activeJobs[0]) {
       planetStatsElements[2].textContent =
-        "Hazard Pay: $" + planetJobs[0]["hazard-pay"] + "/Day";
+        "Hazard Pay: $" + dialogue.activeJobs[0]["hazard-pay"] + "/Day";
       planetStatsElements[2].style.display = "block";
     } else {
       planetStatsElements[2].textContent = "";
       planetStatsElements[2].style.display = "none";
     }
-    planetDescriptionElement.textContent = planetJobs[0].description;
-    if ("difficulty-description" in planetJobs[0]) {
+    planetDescriptionElement.textContent = dialogue.activeJobs[0].description;
+    if ("difficulty-description" in dialogue.activeJobs[0]) {
       difficultyDescriptionElement.textContent =
-        planetJobs[0]["difficulty-description"];
+        dialogue.activeJobs[0]["difficulty-description"];
       difficultyDescriptionElement.style.display = "block";
     } else {
       difficultyDescriptionElement.textContent = "";
       difficultyDescriptionElement.style.display = "none";
     }
-    if ("hazard-description" in planetJobs[0]) {
+    if ("hazard-description" in dialogue.activeJobs[0]) {
       hazardDescriptionElement.textContent =
-        planetJobs[0]["hazard-description"];
+        dialogue.activeJobs[0]["hazard-description"];
       hazardDescriptionElement.style.display = "block";
     } else {
       hazardDescriptionElement.textContent = "";
       hazardDescriptionElement.style.display = "none";
     }
-    dialogue.loadJobDetails(planetJobs);
+
+    dialogue.loadJobDetails(dialogue.activeJobs);
     // Hide any elements that may be open from before
     for (const sectionElement of dialogue.dialogueBox.children) {
       sectionElement.style.display = "none";
@@ -217,20 +218,21 @@ const dialogue = {
     }
   },
 
-  loadJobDetails: function (planetJobs) {
+  loadJobDetails: function (activeJobs) {
     const detailListElement = document.getElementById("job-detail-list");
     // Remove Any Old Entries
     while (detailListElement.firstChild) {
       detailListElement.removeChild(detailListElement.firstChild);
     }
     // Add New Entries
-    for (const job of planetJobs) {
+    for (const job of activeJobs) {
       const detailEntryTemplate = document.querySelector(
         "#templates .job-detail-entry"
       );
       const detailEntryElement = detailEntryTemplate.cloneNode(true);
       const entryContentElement = detailEntryElement.children[0];
       const entryStatsElement = entryContentElement.children[4];
+      const entryButtonElement = entryContentElement.children[5];
       const entryImageElement = detailEntryElement.children[1];
       const location = jobData.locations[job.locIndex];
       const type = jobData.types[job.typeIndex];
@@ -261,8 +263,34 @@ const dialogue = {
       entryStatsElement.children[2].textContent =
         "Total Reward: $" + totalReward.toFixed(2);
 
+      // Accept Job Button
+      if (game.isTurn) {
+        entryButtonElement.style.display = "block";
+        entryButtonElement.addEventListener("click", dialogue.chooseJob);
+      } else {
+        entryButtonElement.style.display = "none";
+      }
+
       detailListElement.appendChild(detailEntryElement);
     }
+  },
+
+  chooseJob: function (event) {
+    // Define Variables
+    const jobElement = event.target.parentElement.parentElement;
+    const jobListElement = jobElement.parentElement;
+    const jobElementIndex = Array.prototype.indexOf.call(
+      jobListElement.children,
+      jobElement
+    );
+    const jobId = dialogue.activeJobs[jobElementIndex].id;
+
+    // Mark job as claimed
+    // game.jobsArray[jobId].status = 1;
+
+    // Exit dialogue window, send job choice to server
+    dialogue.closeDialogueBox();
+    socket.emit("job chosen", { roomId, userIndex, jobId });
   },
 };
 
@@ -318,6 +346,7 @@ socket.on("reroll", function (data) {
 });
 
 socket.on("all roll complete", function (rankArray) {
+  console.log(rankArray);
   game.reorderPlayers(rankArray);
   dialogue.showRollOrder();
   setTimeout(game.startRound, 500);

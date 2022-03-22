@@ -25,7 +25,7 @@ const game = {
   initializePlayerInfo: function () {
     i = 0;
     for (const user of userList) {
-      user.order = i;
+      // user.order = i;
       if (user.id === userId) {
         userIndex = i;
       }
@@ -39,6 +39,7 @@ const game = {
     // dialogue.dialogueBox.style.display = "none";
     dialogue.closeDialogueBox();
     info.showPlayerList();
+    console.log(userList);
     if (userId === userList[0].id) {
       console.log("I'm the active player!");
       game.requestJobsArray();
@@ -56,6 +57,9 @@ const game = {
         dialogue.closeDialogueBox();
       }
     }
+  },
+  startPlayerTurn: function () {
+    // After start turn
   },
 };
 
