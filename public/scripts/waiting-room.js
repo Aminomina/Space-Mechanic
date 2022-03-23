@@ -1,37 +1,34 @@
-// SETUP & VARIABLES
-// var socket = io(); // Set up socket.io
+// Properties, methods, and event listenters for the waiting room
 
-const waitingRoomElement = document.getElementById("waiting-room");
-const gameContentElement = document.getElementById("game-content");
-const nameFormElement = document.getElementById("name-entry");
-const nameInputElement = document.getElementById("set-name");
-const joinedPlayersElement = document.getElementById("joined-players");
-const startGameButtonElement = document.getElementById("start-game-button");
+// VARIABLES
 const roomId = window.location.pathname.split("/").pop();
 
-// FUNCTIONS
-function updateName(newName) {
-  const playerNameElement = document.getElementById("player-name-display");
-  playerNameElement.textContent = newName;
-}
+const waitingRoom = {
+  // Properties
+  nameFormElement: document.getElementById("name-entry"),
+  startGameButtonElement: document.getElementById("start-game-button"),
 
-function startGame() {
-  socket.emit("start game", roomId);
-}
+  // Methods
+  updateName: function (newName) {
+    const playerNameElement = document.getElementById("player-name-display");
+    playerNameElement.textContent = newName;
+  },
+};
 
 // EVENT LISTENERS
 // User updates their name
-nameFormElement.addEventListener("submit", function (event) {
+waitingRoom.nameFormElement.addEventListener("submit", function (event) {
+  const nameInputElement = document.getElementById("set-name");
   event.preventDefault();
   if (nameInputElement.value) {
     userName = nameInputElement.value;
     socket.emit("update name", { userName, roomId });
     nameInputElement.value = "";
-    updateName(userName);
+    waitingRoom.updateName(userName);
   }
 });
 
-startGameButtonElement.addEventListener("click", startGame);
+waitingRoom.startGameButtonElement.addEventListener("click", game.startGame);
 
 // SOCKET.IO
 // Server queries player for room id
@@ -42,13 +39,14 @@ socket.on("room query", function () {
 // Player is assigned a default name upon joining
 socket.on("assign name", function (defaultName, assignedId) {
   userName = defaultName;
-  updateName(userName);
+  waitingRoom.updateName(userName);
   userId = assignedId;
   console.log(userId);
 });
 
 // Server updates player list
 socket.on("player list update", function (users) {
+  const joinedPlayersElement = document.getElementById("joined-players");
   userList = users;
   console.log(users);
   while (joinedPlayersElement.lastElementChild) {

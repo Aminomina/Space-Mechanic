@@ -1,13 +1,18 @@
-// SETUP AND VARIABLES
-const roomCodeButtonElement = document.getElementById("join-room-button");
-const roomCodeFormElement = document.getElementById("join-room");
+// Properties, Methods, and Event Listeners for the landing page
 
-// FUNCTIONS
-function joinRoom(event) {
-  event.preventDefault();
-  const roomCodeInputElement = document.getElementById("room-input");
-  window.location.href = "/game/" + roomCodeInputElement.value;
-}
+const landingPage = {
+  // Properties
+  roomCodeFormElement: document.getElementById("join-room"),
+  // Methods
+  joinRoom: function (event) {
+    event.preventDefault();
+    const roomCodeInputElement = document.getElementById("room-input");
+    window.location.href = "/game/" + roomCodeInputElement.value;
+  },
+};
 
 // EVENT LISTENERS
-roomCodeFormElement.addEventListener("submit", joinRoom);
+landingPage.roomCodeFormElement.addEventListener(
+  "submit",
+  landingPage.joinRoom
+);

@@ -10,7 +10,12 @@ const game = {
   // Properties
   isTurn: false,
   jobsArray: [],
+  waitingRoomElement: document.getElementById("waiting-room"),
+  gameContentElement: document.getElementById("game-content"),
   // Methods
+  startGame: function () {
+    socket.emit("start game", roomId);
+  },
   reorderPlayers: function (rollArray) {
     let index;
     let newUserList = [];
@@ -71,8 +76,8 @@ document.addEventListener("keydown", game.checkEscape);
 // Game begins
 socket.on("start game", function () {
   // Hide waiting room, show game content
-  waitingRoomElement.style.display = "none";
-  gameContentElement.style.display = "flex";
+  game.waitingRoomElement.style.display = "none";
+  game.gameContentElement.style.display = "flex";
   game.initializePlayerInfo();
   console.log(board.sectionElement);
   board.drawGrid();

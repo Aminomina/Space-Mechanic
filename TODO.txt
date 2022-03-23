@@ -1,6 +1,5 @@
-- Split app.js into smaller files for socket.io, functions,
-  etc.
+- Split app.js into smaller imported files for socket.io,
+  functions, etc.
+  - Focus on readability
 
-- Error handling for non-existant rooms/invalid urls
-
-- Update waiting-room.js and landing-page.js to use object notation
+- Error handling for non-existant rooms, 404, 500 errors

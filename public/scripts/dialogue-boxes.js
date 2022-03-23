@@ -52,6 +52,21 @@ const dialogue = {
     dialogue.backdropElement.style.display = "block";
   },
 
+  reroll: function (tieString, playerIndices) {
+    const rollResultElements = document.querySelectorAll(".all-roll-result");
+    const tieMessageElement = document.getElementById("tie-message");
+    tieMessageElement.textContent = tieString;
+    tieMessageElement.style.display = "block";
+    for (const playerIndex of playerIndices) {
+      rollResultElements[playerIndex].textContent = "Reroll!";
+      if (playerIndex === userIndex) {
+        console.log("I need to re-roll!");
+        dialogue.allRollXButtons[userIndex].classList.remove("disabled");
+        dialogue.isDieRolled = false;
+      }
+    }
+  },
+
   showRollOrder: function () {
     // Define Variables
     const rollPlayersListElement = document.getElementById("roll-players-list");
@@ -331,23 +346,13 @@ socket.on("all roll result", function (data) {
 
 // Players are prompted for a re-roll
 socket.on("reroll", function (data) {
-  const rollResultElements = document.querySelectorAll(".all-roll-result");
-  const tieMessageElement = document.getElementById("tie-message");
-  tieMessageElement.textContent = data.tieString;
-  tieMessageElement.style.display = "block";
-  for (const playerIndex of data.playerIndices) {
-    rollResultElements[playerIndex].textContent = "Reroll!";
-    if (playerIndex === userIndex) {
-      console.log("I need to re-roll!");
-      dialogue.allRollXButtons[userIndex].classList.remove("disabled");
-      dialogue.isDieRolled = false;
-    }
-  }
+  setTimeout(dialogue.reroll, 1000, data.tieString, data.playerIndices);
 });
 
+// Rolls are complete
 socket.on("all roll complete", function (rankArray) {
   console.log(rankArray);
   game.reorderPlayers(rankArray);
-  dialogue.showRollOrder();
-  setTimeout(game.startRound, 500);
+  setTimeout(dialogue.showRollOrder, 1000);
+  setTimeout(game.startRound, 2000);
 });
