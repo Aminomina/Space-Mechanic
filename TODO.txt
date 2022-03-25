@@ -1,5 +1,13 @@
-- Split app.js into smaller imported files for socket.io,
-  functions, etc.
-  - Focus on readability
+HIGH PRIORITY
+- Manage events after player chooses a job
 
-- Error handling for non-existant rooms, 404, 500 errors
+LOW PRIORITY
+- Add vanishing message bubble at top
+  - Could display turns, player actions, etc.
+- Add graphics
+  - Landing page
+  - Error pages
+  - Planet icons
+  - Planet detail
+  - Job detail
+  - Dice

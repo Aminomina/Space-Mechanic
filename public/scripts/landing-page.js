@@ -7,7 +7,9 @@ const landingPage = {
   joinRoom: function (event) {
     event.preventDefault();
     const roomCodeInputElement = document.getElementById("room-input");
-    window.location.href = "/game/" + roomCodeInputElement.value;
+    if (roomCodeInputElement.value) {
+      window.location.href = "/game/" + roomCodeInputElement.value;
+    }
   },
 };
 
