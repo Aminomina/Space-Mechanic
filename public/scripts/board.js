@@ -40,6 +40,14 @@ const board = {
     ctx.stroke();
   },
 
+  // Clear jobs
+  clearJobs: function () {
+    const numChildElements = board.jobsListElement.children.length;
+    for (i = 0; i < numChildElements; i++) {
+      board.jobsListElement.removeChild(board.jobsListElement.children[0]);
+    }
+  },
+
   // Adds a job to the board
   drawJob: function (job, indices, xOffset = 0, yOffset = 0, numJobs = 1) {
     const jobTypes = ["PM", "Op Impacted", "Op Halted", "Catastrophic Failure"];
@@ -112,57 +120,127 @@ const board = {
   },
   // Draw a cluster of jobs in a pair or cluster formation
   drawJobCluster: function (jobsArray, jobClusterIndices) {
-    let pi = 3.14;
-    if (jobClusterIndices.length === 2) {
-      // Pair of planets
-      let radius = 3;
-      for (let i = 0; i < 2; i++) {
-        // Calculate offset
-        let xOffset = radius * Math.cos(pi * (i - 0.75));
-        let yOffset = radius * Math.sin(pi * (i - 0.75));
-        // Check if multiple jobs on planet
-        if (typeof jobClusterIndices[i] !== "object") {
-          // One job
-          let jobIndex = jobClusterIndices[i];
-          board.drawJob(jobsArray[jobIndex], jobIndex, xOffset, yOffset);
-        } else {
-          // Multiple jobs on planet
-          let jobIndex = jobClusterIndices[i][0];
-          board.drawJob(
-            jobsArray[jobIndex],
-            jobClusterIndices[i],
-            xOffset,
-            yOffset,
-            jobClusterIndices[i].length
-          );
-        }
-      }
-    } else if (jobClusterIndices.length > 2) {
-      numSides = jobClusterIndices.length;
-      // Triad of planets
-      let radius = 3 / Math.sin(pi / numSides);
-      for (let i = 0; i < numSides; i++) {
-        // Calculate offset
-        let xOffset = radius * Math.cos(pi * ((2 * i) / numSides - 0.5));
-        let yOffset = radius * Math.sin(pi * ((2 * i) / numSides - 0.5));
-        // Check if multiple jobs on planet
-        if (typeof jobClusterIndices[i] !== "object") {
-          // One job
-          let jobIndex = jobClusterIndices[i];
-          board.drawJob(jobsArray[jobIndex], jobIndex, xOffset, yOffset);
-        } else {
-          // Multiple jobs on planet
-          let jobIndex = jobClusterIndices[i][0];
-          board.drawJob(
-            jobsArray[jobIndex],
-            jobClusterIndices[i],
-            xOffset,
-            yOffset,
-            jobClusterIndices[i].length
-          );
-        }
+    let numPlanets = jobClusterIndices.length;
+    for (let i = 0; i < numPlanets; i++) {
+      // Check if multiple jobs on planet
+      if (typeof jobClusterIndices[i] !== "object") {
+        // One job
+        let jobIndex = jobClusterIndices[i];
+        let job = jobsArray[jobIndex];
+        let xOffset = job["board-offset"][0];
+        let yOffset = job["board-offset"][1];
+        board.drawJob(job, jobIndex, xOffset, yOffset);
+      } else {
+        // Multiple jobs on planet
+        let jobIndex = jobClusterIndices[i][0];
+        let job = jobsArray[jobIndex];
+        let xOffset = job["board-offset"][0];
+        let yOffset = job["board-offset"][1];
+        board.drawJob(
+          job,
+          jobClusterIndices[i],
+          xOffset,
+          yOffset,
+          jobClusterIndices[i].length
+        );
       }
     }
+  },
+  // Move all ship icons to home position
+  homeShips: function () {
+    console.log("Homing ships!");
+    const positions = [
+      [[0, 0, 0]],
+      [
+        [-3.6, -3.6, 45],
+        [3.6, 3.6, 225],
+      ],
+      [
+        [0, -5, 0],
+        [-4.3, 2.5, 120],
+        [4.3, 2.5, 240],
+      ],
+      [
+        [-4.3, -4.3, 45],
+        [4.3, 4.3, 225],
+        [-4.3, 4.3, 135],
+        [4.3, -4.3, 315],
+      ],
+    ];
+    const shipElements = document.querySelectorAll("#ship-icons li");
+    // Make ship icons invisible
+    for (const element of shipElements) {
+      element.style.display = "none";
+    }
+    // Move ship icons into position
+    for (i = 0; i < userList.length; i++) {
+      const user = userList[i];
+      const icon = shipElements[i].children[0];
+      icon.src = `/images/ship-${user.color}.png`;
+      user.coordinates = [0, 0];
+      this.moveShip(i, positions[userList.length - 1][i]);
+      // Make ship icon visible
+      shipElements[i].style.display = "block";
+    }
+  },
+  // Move ship to specified coordinates
+  moveShip: function (userIndex, coordinates) {
+    const boardCoordinates = [
+      (coordinates[0] + 90) * 3.2,
+      (-coordinates[1] + 60) * 3.2,
+    ];
+    const shipElement = document.querySelectorAll("#ship-icons li")[userIndex];
+    const shipIcon = shipElement.children[0];
+    shipElement.style.top = boardCoordinates[1] + "px";
+    shipElement.style.left = boardCoordinates[0] + "px";
+    shipIcon.style.transform = `rotate(${coordinates[2]}deg)`;
+  },
+  // Move ship to a specified job
+  moveShipToJob: function (userIndex, job) {
+    //                                                                          LEFT OFF HERE
+    // Find an open slot, send ship to associated coordinates
+    const slotOffsets = [
+      [
+        [-4.3, -4.3],
+        [4.3, 4.3],
+        [-4.3, 4.3],
+        [4.3, -4.3],
+      ],
+      [
+        [
+          [-1.6, -5.8],
+          [-5.8, -1.6],
+          [4.3, -4.3],
+          [-4.3, 4.3],
+        ],
+        [
+          [1.6, 5.8],
+          [5.8, 1.6],
+          [-4.3, 4.3],
+          [4.3, -4.3],
+        ],
+      ],
+      [
+        [
+          [-3, -5.2],
+          [3, -5.2],
+          [6, 0],
+          [-6, 0],
+        ],
+        [
+          [-3, 5.2],
+          [-6, 0],
+          [3, 5.2],
+          [-3, -5.2],
+        ],
+        [
+          [6, 0],
+          [3, 5.2],
+          [3, -5.2],
+          [-3, 5.2],
+        ],
+      ],
+    ];
   },
 };
 
@@ -170,7 +248,9 @@ const board = {
 // Server sends the planet array for a new round
 socket.on("display jobs", function (data) {
   console.log(data.jobsArray);
-
+  console.log(data.jobIndices);
+  // Clear previous jobs
+  board.clearJobs();
   // Sync client's job array with new array from server
   game.jobsArray = data.jobsArray;
   // Draw each job in correct location

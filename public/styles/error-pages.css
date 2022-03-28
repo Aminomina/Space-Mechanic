@@ -1,0 +1,18 @@
+body {
+  text-align: center;
+  padding: 0 3rem;
+  max-width: 50rem;
+  margin: auto;
+}
+
+main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+img {
+  height: 70vh;
+  margin-top: 1rem;
+  border-radius: 8px;
+}

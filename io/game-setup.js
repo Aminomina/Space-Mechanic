@@ -49,10 +49,15 @@ const gameSetup = {
     // Check for same system, same planet jobs
     let jobIndices = gameSetup.findDuplicateSystems(jobsArray);
     gameSetup.findDuplicatePlanets(jobsArray, jobIndices);
+
+    // Generate board offsets
+    gameSetup.generateBoardOffsets(jobsArray, jobIndices);
+
     // Send jobs
     io.to(room.id).emit("display jobs", { jobsArray, jobIndices });
 
     room.jobsArray = jobsArray;
+    room.jobIndices = jobIndices;
   },
   // Find which jobs in jobsArray in the same system
   findDuplicateSystems: function (jobsArray) {
@@ -122,6 +127,56 @@ const gameSetup = {
           }
         }
         jobIndices[i] = systemIndices;
+      }
+    }
+  },
+  // Offset plotted location for multi-planet systems
+  generateBoardOffsets: function (jobsArray, jobIndices) {
+    const planetOffsets = [
+      [
+        [-2.1, -2.1],
+        [2.1, 2.1],
+      ],
+      [
+        [0, -3.5],
+        [-3, 1.7],
+        [3, 1.7],
+      ],
+    ];
+    for (const systemIndex of jobIndices) {
+      if (typeof systemIndex !== "object") {
+        // One job, one planet
+        let job = jobsArray[systemIndex];
+        job["planets-in-cluster"] = 1;
+      } else {
+        // Multiple jobs
+        if (systemIndex.length === 1) {
+          // One planet
+          for (const jobIndex of systemIndex[0]) {
+            let job = jobsArray[jobIndex];
+            job["planets-in-cluster"] = 1;
+          }
+        } else if (systemIndex.length > 3) {
+          console.log("Too many planets in system!");
+        } else {
+          // 2-3 planets
+          let numPlanets = systemIndex.length;
+          for (i = 0; i < numPlanets; i++) {
+            let job;
+            if (typeof systemIndex[i] !== "object") {
+              // One job on planet
+              job = jobsArray[systemIndex[i]];
+              job["planets-in-cluster"] = numPlanets;
+              job["board-offset"] = planetOffsets[numPlanets - 2][i];
+            } else {
+              for (const jobIndex of systemIndex[i]) {
+                job = jobsArray[jobIndex];
+                job["planets-in-cluster"] = numPlanets;
+                job["board-offset"] = planetOffsets[numPlanets - 2][i];
+              }
+            }
+          }
+        }
       }
     }
   },

@@ -44,6 +44,7 @@ const game = {
     // dialogue.dialogueBox.style.display = "none";
     dialogue.closeDialogueBox();
     info.showPlayerList();
+    board.homeShips();
     console.log(userList);
     if (userId === userList[0].id) {
       console.log("I'm the active player!");
@@ -85,4 +86,9 @@ socket.on("start game", function () {
   dialogue.openAllRollDice();
   // dialogue.openJobDetail();
   // game.startRound();
+});
+// Start of turn
+socket.on("start turn", function () {
+  console.log("It's my turn now!");
+  game.isTurn = true;
 });

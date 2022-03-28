@@ -71,6 +71,10 @@
   display: none;
 }
 
+#all-roll-dice img {
+  height: 5rem;
+}
+
 #roll-players-list {
   display: flex;
   justify-content: center;

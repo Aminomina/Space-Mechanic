@@ -64,6 +64,11 @@ const diceRoll = {
     }
     // Tie not found
     console.log("Tie not found!");
+    room.order = Array(room.users.length);
+    for (i = 0; i < room.users.length; i++) {
+      let index = room.ranks[i] - 1;
+      room.order[index] = i;
+    }
     io.to(roomId).emit("all roll complete", rollArray);
   },
 

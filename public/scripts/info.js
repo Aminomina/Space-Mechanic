@@ -31,7 +31,9 @@ const info = {
       info.playerMoneyElements[i].textContent = userList[i].money;
       info.playerExpElements[i].textContent = userList[i].exp;
       info.playerNameIcons[i].src =
-        "/images/wrench-" + userList[i].color + ".png";
+        "/images/wrench-" + userList[i].color + "-small.png";
+      info.playerMoneyIcons[i].src = "/images/money.png";
+      info.playerExpIcons[i].src = "/images/exp.png";
     }
   },
 };

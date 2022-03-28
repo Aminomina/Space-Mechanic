@@ -13,6 +13,7 @@ const setup = {
       exp: 0,
       roll: 0,
       isReady: false,
+      coordinates: [0, 0],
     };
     io.to(socket.id).emit("assign name", user.name, user.id);
     user.color = setup.generatePlayerColor(room.users);

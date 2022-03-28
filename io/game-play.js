@@ -18,10 +18,37 @@ module.exports = (socket, io) => {
 
     // Update jobsArray
     room.jobsArray[data.jobId].status = 1;
+    console.log(room.id);
+    io.to(room.id).emit("display jobs", {
+      jobsArray: room.jobsArray,
+      jobIndices: room.jobIndices,
+    });
 
     // Update active player
-    //                                                    FUNCTION THAT UPDATES PLAYER
+    room.activeUserIndex++;
 
-    io.to(data.roomId).emit("new turn", { jobsArray: room.jobsArray });
+    console.log(room.users);
+    console.log(room.ranks);
+    console.log(room.activeUserIndex);
+
+    // If end of last player's turn
+    if (room.activeUserIndex >= room.users.length) {
+      // New day
+      console.log("Back to 1st player!");
+      room.activeUserIndex = 0;
+      room.day++;
+      console.log(`Day ${room.day}`);
+      if (room.day > 7) {
+        // New round
+        room.day = 0;
+        room.round++;
+        console.log("New Round!");
+        console.log(`Round ${room.round}`);
+      }
+    }
+
+    // Send new turn request to active player
+    console.log(data.userIndex);
+    io.to(room.users[room.order[room.activeUserIndex]].id).emit("start turn");
   });
 };

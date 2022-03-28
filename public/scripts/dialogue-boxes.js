@@ -279,7 +279,7 @@ const dialogue = {
         "Total Reward: $" + totalReward.toFixed(2);
 
       // Accept Job Button
-      if (game.isTurn) {
+      if (game.isTurn && job.status !== 1) {
         entryButtonElement.style.display = "block";
         entryButtonElement.addEventListener("click", dialogue.chooseJob);
       } else {
@@ -300,11 +300,9 @@ const dialogue = {
     );
     const jobId = dialogue.activeJobs[jobElementIndex].id;
 
-    // Mark job as claimed
-    // game.jobsArray[jobId].status = 1;
-
     // Exit dialogue window, send job choice to server
     dialogue.closeDialogueBox();
+    game.isTurn = false;
     socket.emit("job chosen", { roomId, userIndex, jobId });
   },
 };

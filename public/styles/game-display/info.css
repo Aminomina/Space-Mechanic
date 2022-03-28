@@ -71,9 +71,20 @@
 .info-player-stats {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .info-player-stats img {
   height: 1.5rem;
   width: 1.5rem;
+}
+
+.info-player-money,
+.info-player-exp {
+  display: flex;
+  align-items: center;
+}
+
+.info-player-stats span {
+  margin: 0 0.5rem;
 }

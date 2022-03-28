@@ -10,8 +10,12 @@ for (var i = 0; i < numRooms; i++) {
     isStarted: false,
     playerCounter: 0,
     ranks: [],
+    order: [],
     activeUserIndex: 0,
     jobsArray: [],
+    jobIndices: [],
+    round: 0,
+    day: 1,
   };
   rooms.push(room);
 }
