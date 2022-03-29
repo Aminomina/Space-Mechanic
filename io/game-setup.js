@@ -147,14 +147,12 @@ const gameSetup = {
       if (typeof systemIndex !== "object") {
         // One job, one planet
         let job = jobsArray[systemIndex];
-        job["planets-in-cluster"] = 1;
       } else {
         // Multiple jobs
         if (systemIndex.length === 1) {
           // One planet
           for (const jobIndex of systemIndex[0]) {
             let job = jobsArray[jobIndex];
-            job["planets-in-cluster"] = 1;
           }
         } else if (systemIndex.length > 3) {
           console.log("Too many planets in system!");
@@ -166,12 +164,12 @@ const gameSetup = {
             if (typeof systemIndex[i] !== "object") {
               // One job on planet
               job = jobsArray[systemIndex[i]];
-              job["planets-in-cluster"] = numPlanets;
+              job["pos-in-cluster"] = [i, numPlanets];
               job["board-offset"] = planetOffsets[numPlanets - 2][i];
             } else {
               for (const jobIndex of systemIndex[i]) {
                 job = jobsArray[jobIndex];
-                job["planets-in-cluster"] = numPlanets;
+                job["pos-in-cluster"] = [i, numPlanets];
                 job["board-offset"] = planetOffsets[numPlanets - 2][i];
               }
             }

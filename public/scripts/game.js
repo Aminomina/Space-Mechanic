@@ -8,6 +8,7 @@ let userIndex;
 
 const game = {
   // Properties
+  order: [0, 1, 2, 3],
   isTurn: false,
   jobsArray: [],
   waitingRoomElement: document.getElementById("waiting-room"),
@@ -46,7 +47,7 @@ const game = {
     info.showPlayerList();
     board.homeShips();
     console.log(userList);
-    if (userId === userList[0].id) {
+    if (userId === userList[game.order[0]].id) {
       console.log("I'm the active player!");
       game.requestJobsArray();
       game.isTurn = true;

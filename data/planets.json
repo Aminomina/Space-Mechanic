@@ -185,7 +185,7 @@
     {
       "name": "Silencia",
       "system": "Mandra System",
-      "coordinates": [81, -56],
+      "coordinates": [81, -55],
       "hazard-type": 0,
       "description": "As long as the floaty people don’t bother you, it’s a good gig. For what it’s worth, they’re very polite.",
       "difficulty-description": "Subtract 0.25x difficulty for improved mood from polite clients.",

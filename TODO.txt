@@ -1,13 +1,19 @@
 HIGH PRIORITY
-- Manage events after player chooses a job
+- Introduce turn logic
+  - transit vs. job rounds
+  - roll-to-fix
+  - end turn button
 
 LOW PRIORITY
+- Add flying animation for ships
 - Add vanishing message bubble at top
   - Could display turns, player actions, etc.
+- Enlarge player icon on turn, highlight in players tab
+- Create some distinction for player's piece, tab
+  (marker, flipped color pattern?)
+- Hover effect on ships (name, stats)
 - Add graphics
-  - Landing page
   - Error pages
   - Planet icons
   - Planet detail
   - Job detail
-  - Dice

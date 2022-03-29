@@ -14,14 +14,24 @@ module.exports = (socket, io) => {
   });
   // Player chooses a job
   socket.on("job chosen", (data) => {
+    console.log(`userIndex: ${data.userIndex}`);
     const room = rooms[data.roomId - 1];
 
     // Update jobsArray
     room.jobsArray[data.jobId].status = 1;
     console.log(room.id);
+    //                                         CONSIDER MODIFYING FOR COMPUTATIONALL EFFICIENCY
     io.to(room.id).emit("display jobs", {
       jobsArray: room.jobsArray,
       jobIndices: room.jobIndices,
+    });
+
+    // Update user coordinates
+    room.users[data.userIndex].coordinates =
+      room.jobsArray[data.jobId].coordinates;
+    io.to(room.id).emit("update player location", {
+      userIndex: data.userIndex,
+      jobId: data.jobId,
     });
 
     // Update active player

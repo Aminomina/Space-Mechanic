@@ -69,7 +69,7 @@ const diceRoll = {
       let index = room.ranks[i] - 1;
       room.order[index] = i;
     }
-    io.to(roomId).emit("all roll complete", rollArray);
+    io.to(roomId).emit("all roll complete", room.order);
   },
 
   // Convert roll array to ranking array

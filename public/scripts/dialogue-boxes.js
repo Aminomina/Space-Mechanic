@@ -78,7 +78,7 @@ const dialogue = {
     rollPlayersListElement.style.display = "none";
     // Reorder players and prep rankings
     for (let i = 0; i < userList.length; i++) {
-      playerNameElements[i].textContent = userList[i].name;
+      playerNameElements[i].textContent = userList[game.order[i]].name;
       rollResultElements[i].style.display = "none";
       playerOrderElements[i].style.display = "block";
     }
@@ -348,9 +348,10 @@ socket.on("reroll", function (data) {
 });
 
 // Rolls are complete
-socket.on("all roll complete", function (rankArray) {
-  console.log(rankArray);
-  game.reorderPlayers(rankArray);
+socket.on("all roll complete", function (orderArray) {
+  console.log(`orderArray: ${orderArray}`);
+  // game.reorderPlayers(rankArray);
+  game.order = orderArray;
   setTimeout(dialogue.showRollOrder, 1000);
   setTimeout(game.startRound, 2000);
 });

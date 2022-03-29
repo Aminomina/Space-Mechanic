@@ -1,5 +1,4 @@
 // Properties, methods, and event listeners for board section
-
 const board = {
   // PROPERTIES
   sectionElement: document.getElementById("board"),
@@ -178,25 +177,29 @@ const board = {
       const icon = shipElements[i].children[0];
       icon.src = `/images/ship-${user.color}.png`;
       user.coordinates = [0, 0];
-      this.moveShip(i, positions[userList.length - 1][i]);
+      board.moveShip(i, positions[userList.length - 1][i]);
       // Make ship icon visible
       shipElements[i].style.display = "block";
     }
   },
   // Move ship to specified coordinates
   moveShip: function (userIndex, coordinates) {
+    console.log(`user index: ${userIndex}`);
     const boardCoordinates = [
       (coordinates[0] + 90) * 3.2,
       (-coordinates[1] + 60) * 3.2,
     ];
     const shipElement = document.querySelectorAll("#ship-icons li")[userIndex];
+    console.log(shipElement);
     const shipIcon = shipElement.children[0];
     shipElement.style.top = boardCoordinates[1] + "px";
     shipElement.style.left = boardCoordinates[0] + "px";
-    shipIcon.style.transform = `rotate(${coordinates[2]}deg)`;
+    if (coordinates.length === 3) {
+      shipIcon.style.transform = `rotate(${coordinates[2]}deg)`;
+    }
   },
   // Move ship to a specified job
-  moveShipToJob: function (userIndex, job) {
+  movePlayerToJob: function (userIndex, job) {
     //                                                                          LEFT OFF HERE
     // Find an open slot, send ship to associated coordinates
     const slotOffsets = [
@@ -241,6 +244,69 @@ const board = {
         ],
       ],
     ];
+    const planetOffsets = [
+      [
+        [-2.1, -2.1],
+        [2.1, 2.1],
+      ],
+      [
+        [0, -3.5],
+        [-3, 1.7],
+        [3, 1.7],
+      ],
+    ];
+    console.log(userList);
+    console.log(userIndex);
+    userList[userIndex].coordinates = job.coordinates;
+    let offsets;
+    let currentPlanetOffset = [0, 0];
+    // Planet is in a cluster
+    if ("pos-in-cluster" in job) {
+      console.log("planet in cluster!");
+      const planetIndex = job["pos-in-cluster"][0];
+      const numPlanets = job["pos-in-cluster"][1];
+      offsets = slotOffsets[numPlanets - 1][planetIndex];
+      console.log(offsets);
+      currentPlanetOffset = planetOffsets[numPlanets - 2][planetIndex];
+    }
+    // Planet not in a cluster
+    else {
+      offsets = slotOffsets[0];
+    }
+    for (const offset of offsets) {
+      console.log(offset);
+      const position = [
+        job.coordinates[0] + offset[0] + currentPlanetOffset[0],
+        job.coordinates[1] + offset[1] + currentPlanetOffset[1],
+      ];
+      let isSlotAvailable = true;
+      for (user of userList) {
+        const userPosition = user.boardCoordinates;
+        const distance = Math.sqrt(
+          (position[0] - userPosition[0]) ** 2 +
+            (position[1] - userPosition[1]) ** 2
+        );
+        if (distance < 5) {
+          console.log(distance);
+          isSlotAvailable = false;
+        }
+      }
+      if (isSlotAvailable) {
+        // Calculate ship rotation
+        let rotation = Math.atan(offset[0] / offset[1]) * 57.3;
+        if (offset[1] < 0) {
+          rotation += 180;
+        }
+        console.log(rotation);
+        position.push(rotation);
+        // Set as new board coordinates
+        userList[userIndex].boardCoordinates = position;
+        // Place ship icon in position
+        console.log(position);
+        board.moveShip(userIndex, position);
+        return;
+      }
+    }
   },
 };
 
@@ -272,4 +338,8 @@ socket.on("display jobs", function (data) {
       board.drawJobCluster(data.jobsArray, systemIndex);
     }
   }
+});
+// Server sends an updated player location
+socket.on("update player location", function (data) {
+  board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);
 });

@@ -26,12 +26,12 @@ const info = {
         "purple",
         "green"
       );
-      info.playerEntryElements[i].classList.add(userList[i].color);
-      info.playerNameElements[i].textContent = userList[i].name;
-      info.playerMoneyElements[i].textContent = userList[i].money;
-      info.playerExpElements[i].textContent = userList[i].exp;
+      info.playerEntryElements[i].classList.add(userList[game.order[i]].color);
+      info.playerNameElements[i].textContent = userList[game.order[i]].name;
+      info.playerMoneyElements[i].textContent = userList[game.order[i]].money;
+      info.playerExpElements[i].textContent = userList[game.order[i]].exp;
       info.playerNameIcons[i].src =
-        "/images/wrench-" + userList[i].color + "-small.png";
+        "/images/wrench-" + userList[game.order[i]].color + "-small.png";
       info.playerMoneyIcons[i].src = "/images/money.png";
       info.playerExpIcons[i].src = "/images/exp.png";
     }
