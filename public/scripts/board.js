@@ -2,19 +2,22 @@
 const board = {
   // PROPERTIES
   sectionElement: document.getElementById("board"),
-  canvas: document.getElementById("board-grid"),
   jobsListElement: document.getElementById("jobs"),
+  canvas: document.getElementById("board-grid"),
+  detailCanvas: document.getElementById("board-detail"),
   // METHODS
   // Draws the board grid
   drawGrid: function () {
+    const ctx = board.canvas.getContext("2d");
     const cellsHorizontal = 18;
     const cellsVertical = 12;
     const canvasWidth = 1800;
     const canvasHeight = 1200;
     const cellWidth = canvasWidth / cellsHorizontal;
     const cellHeight = canvasHeight / cellsVertical;
-    ctx = board.canvas.getContext("2d");
 
+    // Set line color
+    ctx.strokeStyle = "rgb(222, 210, 195)";
     // Thick Lines
     ctx.lineWidth = 3;
     for (let i = 0; i <= cellsHorizontal + 1; i += 3) {
@@ -37,6 +40,82 @@ const board = {
       ctx.lineTo(canvasWidth, cellHeight * i);
     }
     ctx.stroke();
+  },
+
+  // Draw Job Line
+  drawJobLine: function (startCoordinates, endCoordinates) {
+    // ADD CODE TO DISPLAY LINE FROM CURRENT LOCATION TO JOB
+    const detCtx = board.detailCanvas.getContext("2d");
+    const daysToLocElement = document.getElementById("days-to-loc");
+    const daysToLocTextElement = daysToLocElement.children[0];
+
+    // Convert coordinates to canvas coordinates
+    const startCanvCoordinates = [
+      (startCoordinates[0] + 90) * 10,
+      (-startCoordinates[1] + 60) * 10,
+    ];
+    const endCanvCoordinates = [
+      (endCoordinates[0] + 90) * 10,
+      (-endCoordinates[1] + 60) * 10,
+    ];
+    console.log(`start coord: ${startCoordinates}`);
+    console.log(`end coord: ${endCoordinates}`);
+    console.log(`start canvas coord: ${startCanvCoordinates}`);
+    console.log(`end canvas coord: ${endCanvCoordinates}`);
+
+    // Set line style
+    detCtx.lineWidth = 4;
+    detCtx.strokeStyle = "rgb(71, 200, 204)";
+
+    // Clear any previous lines
+    detCtx.clearRect(0, 0, board.detailCanvas.width, board.detailCanvas.height);
+
+    // Draw line
+    detCtx.beginPath();
+    detCtx.moveTo(startCanvCoordinates[0], startCanvCoordinates[1]);
+    detCtx.lineTo(endCanvCoordinates[0], endCanvCoordinates[1]);
+    detCtx.stroke();
+
+    // Determine number of days to location
+    const distance = Math.sqrt(
+      (endCoordinates[0] - startCoordinates[0]) ** 2 +
+        (endCoordinates[1] - startCoordinates[1]) ** 2
+    );
+    console.log(`distance: ${distance}`);
+    if (distance === 0) {
+      daysToLocTextElement.textContent = "0 Days";
+    } else if (distance <= 30) {
+      daysToLocTextElement.textContent = "1 Day";
+    } else {
+      const numDays = Math.floor(distance / 30 + 1);
+      daysToLocTextElement.textContent = `${numDays} Days`;
+    }
+
+    // Find location of days-to-location icon
+    const midCoordX = (startCoordinates[0] + endCoordinates[0]) / 2;
+    const midCoordY = (startCoordinates[1] + endCoordinates[1]) / 2;
+    let daysToLocCoordinates = [
+      (midCoordX + 90) * 3.2,
+      (-midCoordY + 60) * 3.2,
+    ];
+
+    // Add days-to-location icon
+    daysToLocElement.style.left = `${daysToLocCoordinates[0]}px`;
+    daysToLocElement.style.top = `${daysToLocCoordinates[1]}px`;
+    // Offset if not leaving system
+    if (distance === 0) {
+      daysToLocElement.style.top = `${daysToLocCoordinates[1] - 28}px`;
+    }
+    daysToLocElement.style.display = "block";
+  },
+
+  // Clear job lines
+  clearJobLines: function () {
+    const detCtx = board.detailCanvas.getContext("2d");
+    const daysToLocElement = document.getElementById("days-to-loc");
+
+    detCtx.clearRect(0, 0, board.detailCanvas.width, board.detailCanvas.height);
+    daysToLocElement.style.display = "none";
   },
 
   // Clear jobs
@@ -308,6 +387,22 @@ const board = {
       }
     }
   },
+
+  // Return the distance between two coordinate sets
+  distanceBetween: function (aCoordinates, bCoordinates) {
+    return Math.sqrt(
+      (bCoordinates[0] - aCoordinates[0]) ** 2 +
+        (bCoordinates[1] - aCoordinates[1]) ** 2
+    );
+  },
+
+  // Generate an offset in local coordinates
+  localToGlobalOffset: function (offset, angle) {
+    return [
+      offset[0] * Math.cos(angle) - offset[1] * Math.sin(angle),
+      offset[0] * Math.sin(angle) + offset[1] * Math.cos(angle),
+    ];
+  },
 };
 
 // SOCKET.IO
@@ -338,8 +433,4 @@ socket.on("display jobs", function (data) {
       board.drawJobCluster(data.jobsArray, systemIndex);
     }
   }
-});
-// Server sends an updated player location
-socket.on("update player location", function (data) {
-  board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);
 });

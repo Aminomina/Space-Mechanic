@@ -15,6 +15,8 @@ const setup = {
       isReady: false,
       coordinates: [0, 0],
       boardCoordinates: [0, 0],
+      actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space
+      site: "home base",
     };
     io.to(socket.id).emit("assign name", user.name, user.id);
     user.color = setup.generatePlayerColor(room.users);

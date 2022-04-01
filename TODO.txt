@@ -1,11 +1,12 @@
 HIGH PRIORITY
-- Introduce turn logic
-  - transit vs. job rounds
-  - roll-to-fix
-  - end turn button
+- Fix glitches with ship icons
+  - Ships on same course overlapping
+  - Day counter line break at edge of board
+  - Day counter covers icons for short distances
+- Introduce Roll-to-fix logic
 
 LOW PRIORITY
-- Add flying animation for ships
+- Add flying animation for ships (With flames!)
 - Add vanishing message bubble at top
   - Could display turns, player actions, etc.
 - Enlarge player icon on turn, highlight in players tab

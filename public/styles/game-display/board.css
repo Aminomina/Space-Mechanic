@@ -6,8 +6,12 @@
 }
 
 canvas {
-  border: 2px solid black;
+  border: 2px solid rgb(222, 210, 195);
   height: 384px;
+}
+
+#board-detail {
+  position: absolute;
 }
 
 #jobs,
@@ -90,10 +94,30 @@ canvas {
 #ship-icons li {
   position: absolute;
 }
+
 #ship-icons img {
   position: relative;
   left: -10px;
   top: -10px;
   height: 20px;
   width: 20px;
+}
+
+#days-to-loc {
+  position: absolute;
+  display: none;
+  z-index: 1;
+}
+
+#days-to-loc span {
+  position: relative;
+  font-size: 14px;
+  padding: 2px;
+  border-radius: 10px;
+  height: 20px;
+  width: 20px;
+  top: -10px;
+  left: -50%;
+  color: rgb(14, 14, 69);
+  background-color: rgb(71, 200, 204);
 }

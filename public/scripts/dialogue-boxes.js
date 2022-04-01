@@ -300,10 +300,13 @@ const dialogue = {
     );
     const jobId = dialogue.activeJobs[jobElementIndex].id;
 
-    // Exit dialogue window, send job choice to server
+    // Exit dialogue window, send job choice to turnInfo object
     dialogue.closeDialogueBox();
-    game.isTurn = false;
-    socket.emit("job chosen", { roomId, userIndex, jobId });
+    dashboard.turnInfo.newJobChoice = { roomId, userIndex, jobId };
+    board.drawJobLine(
+      userList[userIndex].coordinates,
+      game.jobsArray[jobId].coordinates
+    );
   },
 };
 
