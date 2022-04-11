@@ -1,8 +1,4 @@
 HIGH PRIORITY
-- Fix glitches with ship icons
-  - Ships on same course overlapping
-  - Day counter line break at edge of board
-  - Day counter covers icons for short distances
 - Introduce Roll-to-fix logic
 
 LOW PRIORITY

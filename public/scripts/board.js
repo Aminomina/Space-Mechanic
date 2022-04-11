@@ -44,10 +44,7 @@ const board = {
 
   // Draw Job Line
   drawJobLine: function (startCoordinates, endCoordinates) {
-    // ADD CODE TO DISPLAY LINE FROM CURRENT LOCATION TO JOB
     const detCtx = board.detailCanvas.getContext("2d");
-    const daysToLocElement = document.getElementById("days-to-loc");
-    const daysToLocTextElement = daysToLocElement.children[0];
 
     // Convert coordinates to canvas coordinates
     const startCanvCoordinates = [
@@ -76,6 +73,13 @@ const board = {
     detCtx.lineTo(endCanvCoordinates[0], endCanvCoordinates[1]);
     detCtx.stroke();
 
+    board.drawDaysToLocElement(startCoordinates, endCoordinates);
+  },
+
+  drawDaysToLocElement: function (startCoordinates, endCoordinates) {
+    const daysToLocElement = document.getElementById("days-to-loc");
+    const daysToLocTextElement = daysToLocElement.children[0];
+
     // Determine number of days to location
     const distance = Math.sqrt(
       (endCoordinates[0] - startCoordinates[0]) ** 2 +
@@ -99,13 +103,52 @@ const board = {
       (-midCoordY + 60) * 3.2,
     ];
 
+    // Offset if not leaving system
+    if (distance === 0) {
+      daysToLocCoordinates[1] = daysToLocCoordinates[1] - 28;
+    }
+    // Offset if destination is close
+    else if (board.distanceBetween(startCoordinates, endCoordinates) < 15) {
+      console.log("offsetting days-to-loc element");
+      console.log(board.distanceBetween(startCoordinates, endCoordinates));
+      if (
+        Math.abs(endCoordinates[1] - startCoordinates[1]) >
+        Math.abs(endCoordinates[0] - startCoordinates[0])
+      ) {
+        if (endCoordinates[0] > startCoordinates[0]) {
+          console.log("approaching from top/bottom left");
+          daysToLocCoordinates[0] = daysToLocCoordinates[0] + 30;
+        } else {
+          console.log("approaching from top/bottom right");
+          daysToLocCoordinates[0] = daysToLocCoordinates[0] - 30;
+        }
+      } else {
+        if (endCoordinates[1] < startCoordinates[1]) {
+          console.log("approaching from top left/right");
+          daysToLocCoordinates[1] = daysToLocCoordinates[1] + 30;
+        } else {
+          console.log("approaching from bottom left/right");
+          daysToLocCoordinates[1] = daysToLocCoordinates[1] - 30;
+        }
+      }
+    }
+    // Offset if too close to sides
+    if (daysToLocCoordinates[0] > 528) {
+      daysToLocCoordinates[0] = 528;
+    } else if (daysToLocCoordinates[0] < 48) {
+      daysToLocCoordinates[0] = 48;
+    }
+    if (daysToLocCoordinates[1] > 374) {
+      daysToLocCoordinates[1] = 374;
+    } else if (daysToLocCoordinates[1] < 10) {
+      daysToLocCoordinates[1] = 10;
+    }
+
     // Add days-to-location icon
     daysToLocElement.style.left = `${daysToLocCoordinates[0]}px`;
     daysToLocElement.style.top = `${daysToLocCoordinates[1]}px`;
-    // Offset if not leaving system
-    if (distance === 0) {
-      daysToLocElement.style.top = `${daysToLocCoordinates[1] - 28}px`;
-    }
+
+    // Display element
     daysToLocElement.style.display = "block";
   },
 
@@ -256,7 +299,8 @@ const board = {
       const icon = shipElements[i].children[0];
       icon.src = `/images/ship-${user.color}.png`;
       user.coordinates = [0, 0];
-      board.moveShip(i, positions[userList.length - 1][i]);
+      user.boardCoordinates = positions[userList.length - 1][i];
+      board.moveShip(i, user.boardCoordinates);
       // Make ship icon visible
       shipElements[i].style.display = "block";
     }
@@ -279,7 +323,6 @@ const board = {
   },
   // Move ship to a specified job
   movePlayerToJob: function (userIndex, job) {
-    //                                                                          LEFT OFF HERE
     // Find an open slot, send ship to associated coordinates
     const slotOffsets = [
       [
@@ -336,7 +379,8 @@ const board = {
     ];
     console.log(userList);
     console.log(userIndex);
-    userList[userIndex].coordinates = job.coordinates;
+    userList[userIndex].coordinates = [...job.coordinates];
+    userList[userIndex].boardCoordinates = [...job.coordinates];
     let offsets;
     let currentPlanetOffset = [0, 0];
     // Planet is in a cluster
@@ -353,7 +397,6 @@ const board = {
       offsets = slotOffsets[0];
     }
     for (const offset of offsets) {
-      console.log(offset);
       const position = [
         job.coordinates[0] + offset[0] + currentPlanetOffset[0],
         job.coordinates[1] + offset[1] + currentPlanetOffset[1],
@@ -402,6 +445,40 @@ const board = {
       offset[0] * Math.cos(angle) - offset[1] * Math.sin(angle),
       offset[0] * Math.sin(angle) + offset[1] * Math.cos(angle),
     ];
+  },
+
+  // Offset ship icon when it is occluded or occludes other icons
+  manageShipIconOffsets: function (jobCoordinates, userCoordinates, angle) {
+    let offset = [0, 0];
+    let playerOffset = [0, 0];
+    // Too close to destination planet
+    if (board.distanceBetween(userCoordinates, jobCoordinates) < 5) {
+      console.log("Too close to destination planet!");
+      let destinationOffset = board.localToGlobalOffset(
+        [-6, 0],
+        (270 - angle) / 57.3
+      );
+      offset[0] += destinationOffset[0];
+      offset[1] += destinationOffset[1];
+      console.log(`Destination offset: ${destinationOffset}`);
+    }
+    // Too close to another player
+    for (user of userList) {
+      let userBoardCoordinates = [
+        userCoordinates[0] + offset[0],
+        userCoordinates[1] + offset[1],
+      ];
+      if (
+        board.distanceBetween(userBoardCoordinates, user.boardCoordinates) < 5
+      ) {
+        console.log(`Too close to ${user.name}`);
+        playerOffset = board.localToGlobalOffset([-6, 0], (270 - angle) / 57.3);
+        offset[0] += playerOffset[0];
+        offset[1] += playerOffset[1];
+        console.log(`Player offset: ${playerOffset}`);
+      }
+    }
+    return offset;
   },
 };
 

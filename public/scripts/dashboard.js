@@ -36,7 +36,7 @@ const dashboard = {
     dialogue.closeDialogueBox();
     dashboard.turnInfo.newJobChoice = { roomId, userIndex, jobId };
     board.drawJobLine(
-      userList[userIndex].coordinates,
+      userList[userIndex].boardCoordinates,
       game.jobsArray[jobId].coordinates
     );
   },

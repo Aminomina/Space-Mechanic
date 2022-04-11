@@ -136,33 +136,21 @@ socket.on("update player location", function (data) {
   } else if (data.actionStatus === 1) {
     // In transit
     userList[data.userIndex].coordinates = data.coordinates;
-    if (
-      board.distanceBetween(
-        data.coordinates,
-        game.jobsArray[data.jobId].coordinates
-      ) < 5
-    ) {
-      console.log("Too close together!");
-      let boardOffset = board.localToGlobalOffset(
-        [-6, 0],
-        (270 - data.angle) / 57.3
-      );
-      userList[userIndex].boardCoordinates = [
-        data.coordinates[0] + boardOffset[0],
-        data.coordinates[1] + boardOffset[1],
-      ];
-      board.moveShip(data.userIndex, [
-        userList[userIndex].boardCoordinates[0],
-        userList[userIndex].boardCoordinates[1],
-        data.angle,
-      ]);
-    } else {
-      board.moveShip(data.userIndex, [
-        data.coordinates[0],
-        data.coordinates[1],
-        data.angle,
-      ]);
-    }
+    let boardOffset = board.manageShipIconOffsets(
+      game.jobsArray[data.jobId].coordinates,
+      data.coordinates,
+      data.angle
+    );
+    userList[data.userIndex].boardCoordinates = [
+      data.coordinates[0] + boardOffset[0],
+      data.coordinates[1] + boardOffset[1],
+    ];
+    board.moveShip(data.userIndex, [
+      userList[data.userIndex].boardCoordinates[0],
+      userList[data.userIndex].boardCoordinates[1],
+      data.angle,
+    ]);
+
     if (data.userIndex === userIndex) {
       // Player being updated is client
       dashboard.registerJob(data.jobId);
