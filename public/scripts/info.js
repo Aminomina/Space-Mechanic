@@ -19,6 +19,8 @@ const info = {
   // METHODS
   showPlayerList: function () {
     for (let i = 0; i < userList.length; i++) {
+      const money = userList[game.order[i]].money.toFixed(2);
+      const exp = userList[game.order[i]].exp.toFixed(0);
       info.playerEntryElements[i].style.display = "block";
       info.playerEntryElements[i].classList.remove(
         "red",
@@ -28,8 +30,8 @@ const info = {
       );
       info.playerEntryElements[i].classList.add(userList[game.order[i]].color);
       info.playerNameElements[i].textContent = userList[game.order[i]].name;
-      info.playerMoneyElements[i].textContent = userList[game.order[i]].money;
-      info.playerExpElements[i].textContent = userList[game.order[i]].exp;
+      info.playerMoneyElements[i].textContent = money;
+      info.playerExpElements[i].textContent = exp;
       info.playerNameIcons[i].src =
         "/images/wrench-" + userList[game.order[i]].color + "-small.png";
       info.playerMoneyIcons[i].src = "/images/money.png";

@@ -43,10 +43,9 @@
   border-radius: 10px;
   /* Font Styling */
   color: var(--green-text);
-  /* text-transform: uppercase; */
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 600;
-  font-size: 16px;
+  font-family: "Roboto Serif", serif;
+  font-size: 14px;
+  line-height: 18px;
   letter-spacing: 1px;
 }
 
@@ -90,9 +89,9 @@
   /* Font Styling */
   color: var(--green-text);
   /* text-transform: uppercase; */
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 600;
-  font-size: 16px;
+  font-family: "Roboto Serif", serif;
+  font-size: 14px;
+  line-height: 18px;
   letter-spacing: 1px;
 }
 
@@ -112,9 +111,9 @@
   /* Font Styling */
   color: var(--green-placeholder);
   /* text-transform: uppercase; */
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 600;
-  font-size: 16px;
+  font-family: "Roboto Serif", serif;
+  font-size: 14px;
+  line-height: 18px;
   letter-spacing: 1px;
 }
 

@@ -1,5 +1,9 @@
+BUGS
+
 HIGH PRIORITY
-- Introduce Roll-to-fix logic
+- Work week/new round logic
+- End of work week ranking
+- End of game logic
 
 LOW PRIORITY
 - Add flying animation for ships (With flames!)

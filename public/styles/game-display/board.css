@@ -43,11 +43,17 @@ canvas {
 }
 
 #jobs li .icon .image-number {
+  font-family: "Roboto Serif", serif;
   position: absolute;
+  top: 1px;
   height: 85%;
   width: 100%;
   text-align: center;
   color: rgb(213, 205, 101);
+}
+
+#jobs li .disabled .image-number {
+  color: rgb(207, 74, 74);
 }
 
 #jobs li .bubble {
@@ -75,6 +81,21 @@ canvas {
   display: block;
   z-index: 2;
   opacity: 1;
+}
+
+#jobs li .disabled:hover {
+  left: -8px;
+  top: -8px;
+  height: 16px;
+  width: 16px;
+  cursor: default;
+  font-size: 14px;
+}
+
+#jobs li .disabled:hover + .bubble {
+  display: block;
+  z-index: 0;
+  opacity: 0;
 }
 
 #jobs li .name {
@@ -111,12 +132,13 @@ canvas {
 
 #days-to-loc span {
   position: relative;
-  font-size: 14px;
+  font-family: "Roboto Serif", serif;
+  font-size: 12px;
   padding: 2px;
   border-radius: 10px;
   height: 20px;
   width: 20px;
-  top: -10px;
+  top: -8px;
   left: -50%;
   color: rgb(14, 14, 69);
   background-color: rgb(71, 200, 204);

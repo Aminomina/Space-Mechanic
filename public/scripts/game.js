@@ -40,6 +40,7 @@ const game = {
       // user.order = i;
       if (user.id === userId) {
         userIndex = i;
+        dashboard.turnInfo.userIndex = i;
       }
       i++;
     }
@@ -69,9 +70,7 @@ const game = {
       event.key === "Escape" &&
       dialogue.dialogueBox.style.display === "block"
     ) {
-      const isjobDetailVisible =
-        document.getElementById("job-detail").style.display === "block";
-      if (isjobDetailVisible) {
+      if (dialogue.dialogueBox.children[0].style.display === "block") {
         dialogue.closeDialogueBox();
       }
     }
@@ -82,6 +81,18 @@ const game = {
     console.log("It's my turn now!");
     game.isTurn = true;
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
+    dashboard.rollToFixButton.addEventListener(
+      "click",
+      dashboard.openRollToFix
+    );
+    dashboard.endTurnButton.classList.remove("disabled");
+    // Check if user can roll-to-fix
+    if (
+      userList[userIndex].actionStatus === 2 &&
+      game.jobsArray[userList[userIndex].currentJobIndex].status === 1
+    ) {
+      dashboard.rollToFixButton.classList.remove("disabled");
+    }
   },
 };
 
@@ -107,6 +118,15 @@ socket.on("start turn", function () {
   game.startTurn();
 });
 
+// Server sends updated player stats
+socket.on("update player stats", function (data) {
+  const user = userList[data.userIndex];
+  for (const property in data.newUserStats) {
+    user[property] = data.newUserStats[property];
+  }
+  info.showPlayerList();
+});
+
 // Server sends an updated player location
 socket.on("update player location", function (data) {
   // Update action status
@@ -122,16 +142,22 @@ socket.on("update player location", function (data) {
   } else if (data.actionStatus === 2) {
     // At job
     board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);
+    userList[data.userIndex].currentJobIndex = data.jobId;
+    // Client's registered job claimed by someone else
     if (
       dashboard.turnInfo.newJobChoice.jobId === data.jobId &&
       data.userIndex !== userIndex &&
       game.jobsArray[data.jobId].status !== 0
     ) {
-      // Client's registered job claimed by someone else
       console.log(game.jobsArray[data.jobId].status);
       dashboard.deregisterJob();
       board.clearJobLines();
       dashboard.updateLocationString();
+    }
+    // Player being updated is client
+    if (data.userIndex === userIndex) {
+      dashboard.turnInfo.jobOutcome = { jobId: data.jobId, status: 1 };
+      dashboard.turnInfo.newJobChoice = -1;
     }
   } else if (data.actionStatus === 1) {
     // In transit
@@ -145,6 +171,7 @@ socket.on("update player location", function (data) {
       data.coordinates[0] + boardOffset[0],
       data.coordinates[1] + boardOffset[1],
     ];
+    userList[data.userIndex].currentJobIndex = -1;
     board.moveShip(data.userIndex, [
       userList[data.userIndex].boardCoordinates[0],
       userList[data.userIndex].boardCoordinates[1],
@@ -157,6 +184,7 @@ socket.on("update player location", function (data) {
     }
   } else if (data.actionStatus === 0) {
     // At home
+    userList[data.userIndex].currentJobIndex = -1;
   }
   // Update location string
   dashboard.updateLocationString();

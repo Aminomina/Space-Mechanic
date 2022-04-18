@@ -3,16 +3,11 @@ const rooms = roomData.rooms;
 
 // User makes it to job
 function userToPlanet(io, room, jobId, userIndex) {
-  // Update jobsArray
   room.jobsArray[jobId].status = 1;
-  //                                         CONSIDER MODIFYING FOR COMPUTATIONAL EFFICIENCY
-  io.to(room.id).emit("display jobs", {
-    jobsArray: room.jobsArray,
-    jobIndices: room.jobIndices,
-  });
   // Update user coordinates
   // Using spread operator to avoid modifying planet coords
   room.users[userIndex].coordinates = [...room.jobsArray[jobId].coordinates];
+  room.users[userIndex].currentJobIndex = jobId;
   io.to(room.id).emit("update player location", {
     userIndex: userIndex,
     jobId: jobId,
@@ -57,6 +52,7 @@ function userTransit(
   // Update user coordinates
   room.users[userIndex].coordinates[0] += travelCoordinates[0];
   room.users[userIndex].coordinates[1] += travelCoordinates[1];
+  room.users[userIndex].currentJobIndex = -1;
   io.to(room.id).emit("update player location", {
     userIndex: userIndex,
     jobId: jobId,
@@ -78,32 +74,55 @@ module.exports = (socket, io) => {
     io.to(room.id).emit("chat message", data.message);
   });
 
-  // Player chooses a job
-  socket.on("job chosen", (data) => {
+  // Player ends turn
+  socket.on("turn end", (data) => {
     const room = rooms[data.roomId - 1];
     let distancePerTurn = 30;
 
-    // Calculate distance to job
-    const jobCoordinates = room.jobsArray[data.jobId].coordinates;
-    const userCoordinates = room.users[data.userIndex].coordinates;
-    const distance = Math.sqrt(
-      (jobCoordinates[0] - userCoordinates[0]) ** 2 +
-        (jobCoordinates[1] - userCoordinates[1]) ** 2
-    );
-
-    if (distance <= distancePerTurn) {
-      userToPlanet(io, room, data.jobId, data.userIndex);
-    } else {
-      userTransit(
-        io,
-        room,
-        data.jobId,
-        data.userIndex,
-        jobCoordinates,
-        userCoordinates,
-        distancePerTurn
-      );
+    // Check job outcome
+    if ("jobId" in data.jobOutcome) {
+      console.log(data.jobOutcome.status);
+      room.jobsArray[data.jobOutcome.jobId].status = data.jobOutcome.status;
     }
+
+    // Player is traveling to a job
+    if (data.newJobChoice !== -1) {
+      // Calculate distance to job
+      const jobCoordinates = room.jobsArray[data.newJobChoice].coordinates;
+      console.log(data.userIndex);
+      const userCoordinates = room.users[data.userIndex].coordinates;
+      const distance = Math.sqrt(
+        (jobCoordinates[0] - userCoordinates[0]) ** 2 +
+          (jobCoordinates[1] - userCoordinates[1]) ** 2
+      );
+
+      // Single-Turn Transit
+      if (distance <= distancePerTurn) {
+        userToPlanet(io, room, data.newJobChoice, data.userIndex);
+      }
+      // Multiple-Turn Transit
+      else {
+        userTransit(
+          io,
+          room,
+          data.newJobChoice,
+          data.userIndex,
+          jobCoordinates,
+          userCoordinates,
+          distancePerTurn
+        );
+      }
+    }
+    // Player at job site
+    else {
+    }
+
+    // Update jobsArray
+    //                                         CONSIDER MODIFYING FOR COMPUTATIONAL EFFICIENCY
+    io.to(room.id).emit("display jobs", {
+      jobsArray: room.jobsArray,
+      jobIndices: room.jobIndices,
+    });
 
     // Update active player
     room.activeUserIndex++;
@@ -135,6 +154,44 @@ module.exports = (socket, io) => {
     io.to(room.id).emit("update player location", {
       userIndex: data.userIndex,
       actionStatus: data.actionStatus,
+    });
+  });
+
+  // New player stats
+  socket.on("update player stats", (data) => {
+    const room = rooms[data.roomId - 1];
+    const user = room.users[data.userIndex];
+    for (const property in data.newUserStats) {
+      user[property] = data.newUserStats[property];
+    }
+    io.to(room.id).emit("update player stats", {
+      userIndex: data.userIndex,
+      newUserStats: data.newUserStats,
+    });
+  });
+
+  // Player jumps to another job in system
+  socket.on("update player job", (data) => {
+    const room = rooms[data.roomId - 1];
+    userToPlanet(io, room, data.jobId, data.userIndex);
+    // Make old job available again if not fixed
+    if (room.jobsArray[data.oldJobId].status !== 2) {
+      room.jobsArray[data.oldJobId].status = 0;
+    }
+    // Update jobsArray
+    io.to(room.id).emit("display jobs", {
+      jobsArray: room.jobsArray,
+      jobIndices: room.jobIndices,
+    });
+  });
+
+  // Update job status
+  socket.on("update job status", (data) => {
+    const room = rooms[data.roomId - 1];
+    room.jobsArray[data.jobId].status = data.status;
+    io.to(room.id).emit("display jobs", {
+      jobsArray: room.jobsArray,
+      jobIndices: room.jobIndices,
     });
   });
 };

@@ -43,7 +43,7 @@ const board = {
   },
 
   // Draw Job Line
-  drawJobLine: function (startCoordinates, endCoordinates) {
+  drawJobLine: function (startCoordinates, endCoordinates, distance) {
     const detCtx = board.detailCanvas.getContext("2d");
 
     // Convert coordinates to canvas coordinates
@@ -68,24 +68,21 @@ const board = {
     detCtx.clearRect(0, 0, board.detailCanvas.width, board.detailCanvas.height);
 
     // Draw line
-    detCtx.beginPath();
-    detCtx.moveTo(startCanvCoordinates[0], startCanvCoordinates[1]);
-    detCtx.lineTo(endCanvCoordinates[0], endCanvCoordinates[1]);
-    detCtx.stroke();
+    if (distance !== 0) {
+      detCtx.beginPath();
+      detCtx.moveTo(startCanvCoordinates[0], startCanvCoordinates[1]);
+      detCtx.lineTo(endCanvCoordinates[0], endCanvCoordinates[1]);
+      detCtx.stroke();
+    }
 
-    board.drawDaysToLocElement(startCoordinates, endCoordinates);
+    board.drawDaysToLocElement(startCoordinates, endCoordinates, distance);
   },
 
-  drawDaysToLocElement: function (startCoordinates, endCoordinates) {
+  drawDaysToLocElement: function (startCoordinates, endCoordinates, distance) {
     const daysToLocElement = document.getElementById("days-to-loc");
     const daysToLocTextElement = daysToLocElement.children[0];
 
     // Determine number of days to location
-    const distance = Math.sqrt(
-      (endCoordinates[0] - startCoordinates[0]) ** 2 +
-        (endCoordinates[1] - startCoordinates[1]) ** 2
-    );
-    console.log(`distance: ${distance}`);
     if (distance === 0) {
       daysToLocTextElement.textContent = "0 Days";
     } else if (distance <= 30) {
@@ -187,11 +184,21 @@ const board = {
       (-job.coordinates[1] - yOffset + 60) * 3.2,
     ];
 
-    // Add an event listener to the icon
-    jobIconElement.addEventListener("click", dialogue.openJobDetail);
+    if (numJobs !== 0) {
+      // Add an event listener to the icon if jobs remain
+      jobIconElement.addEventListener("click", dialogue.openJobDetail);
+    } else {
+      jobIconElement.classList.add("disabled");
+    }
 
     // Filling in values
     jobBubbleElement.children[0].textContent = job.name;
+    // Planet image
+    if (!jobIconElement.classList.contains("disabled")) {
+      jobIconElement.children[0].src = "/images/planets/000.png";
+    } else {
+      jobIconElement.children[0].src = "/images/planets/000-dis.png";
+    }
     if (numJobs === 1) {
       jobIconElement.children[1].textContent = "";
       jobBubbleElement.children[1].textContent = "1 job";
@@ -250,19 +257,31 @@ const board = {
         let job = jobsArray[jobIndex];
         let xOffset = job["board-offset"][0];
         let yOffset = job["board-offset"][1];
-        board.drawJob(job, jobIndex, xOffset, yOffset);
+        let numActiveJobs = 1;
+        // Determine if job has been fixed
+        if (jobsArray[jobIndex].status === 2) {
+          numActiveJobs = 0;
+        }
+        board.drawJob(job, jobIndex, xOffset, yOffset, numActiveJobs);
       } else {
         // Multiple jobs on planet
         let jobIndex = jobClusterIndices[i][0];
         let job = jobsArray[jobIndex];
         let xOffset = job["board-offset"][0];
         let yOffset = job["board-offset"][1];
+        let numActiveJobs = jobClusterIndices[i].length;
+        // Determine how many jobs haven't been fixed yet
+        for (const index of jobClusterIndices[i]) {
+          if (jobsArray[index].status === 2) {
+            numActiveJobs--;
+          }
+        }
         board.drawJob(
           job,
           jobClusterIndices[i],
           xOffset,
           yOffset,
-          jobClusterIndices[i].length
+          numActiveJobs
         );
       }
     }
@@ -495,15 +514,32 @@ socket.on("display jobs", function (data) {
   for (const systemIndex of data.jobIndices) {
     if (typeof systemIndex !== "object") {
       // Only one job in system
-      board.drawJob(data.jobsArray[systemIndex], systemIndex);
+      let numActiveJobs = 1;
+      if (data.jobsArray[systemIndex].status === 2) {
+        numActiveJobs = 0;
+      }
+      board.drawJob(
+        data.jobsArray[systemIndex],
+        systemIndex,
+        0,
+        0,
+        numActiveJobs
+      );
     } else if (systemIndex.length === 1) {
       // One planet in system, multiple jobs
+      let numActiveJobs = systemIndex[0].length;
+      // Determine how many jobs haven't been fixed yet
+      for (const index of systemIndex[0]) {
+        if (data.jobsArray[index].status === 2) {
+          numActiveJobs--;
+        }
+      }
       board.drawJob(
         data.jobsArray[systemIndex[0][0]],
         systemIndex[0],
         0,
         0,
-        systemIndex[0].length
+        numActiveJobs
       );
     } else {
       // Multiple jobs in system

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,700;1,400&family=Roboto+Serif:ital,wght@0,400;0,700;1,400&display=swap");
+
 html {
   --green-text: rgb(87, 164, 78);
   --green-placeholder: rgb(49, 111, 44);
@@ -9,6 +11,13 @@ html {
 
 body {
   color: rgb(54, 50, 46);
+  font-family: "Josefin Sans", sans-serif;
+}
+
+p {
+  font-family: "Roboto Serif", serif;
+  font-size: 0.85rem;
+  line-height: 1.1rem;
 }
 
 #background {
@@ -44,6 +53,7 @@ button.disabled {
 button.disabled:hover {
   background-color: var(--button-disabled);
   border: 1px solid var(--button-disabled);
+  cursor: default;
 }
 
 input {

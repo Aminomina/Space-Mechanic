@@ -32,6 +32,11 @@
   border-radius: 10px;
 }
 
+#dialogue-box-close span {
+  position: relative;
+  top: 2px;
+}
+
 #dialogue-box-close:hover {
   top: 9px;
   right: 11px;
@@ -59,20 +64,31 @@
 }
 
 /* ROLL DICE */
-#roll-dice,
-#roll-result {
+#roll-dice {
   display: none;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* GROUP ROLL DICE */
+#roll-result {
+  font-size: 1.75rem;
+}
+
+#roll-x {
+  width: 10rem;
+  margin: 0 auto;
+}
+
 #all-roll-dice,
 .all-roll-x,
 .player-order {
   display: none;
 }
 
-#all-roll-dice img {
+#all-roll-dice img,
+#roll-dice img {
   height: 5rem;
+  object-fit: contain;
 }
 
 #roll-players-list {

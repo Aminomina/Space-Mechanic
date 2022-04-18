@@ -12,6 +12,7 @@ const dialogue = {
   numDie: 0,
   isDieRolled: false,
   activeJobs: [],
+  rollResult: undefined,
 
   // METHODS
   randomInt: function (intVal) {
@@ -23,11 +24,19 @@ const dialogue = {
     // Define Variables
     const rollDiceElement = document.getElementById("roll-dice");
     const dieSidesElement = document.getElementById("die-sides");
+    const rollResultElement = document.getElementById("roll-result");
+    const rollMessageElement = document.getElementById("roll-message");
+    // Reset any modified values
+    dialogue.rollXButton.classList.remove("disabled");
+    rollResultElement.textContent = "?";
+    rollMessageElement.textContent = "";
+    rollMessageElement.style.display = "none";
     // Display appropriate elements
     dialogue.dialogueBox.style.display = "block";
-    rollDiceElement.style.display = "block";
+    rollDiceElement.style.display = "flex";
     dialogue.numDie = numSides;
     dieSidesElement.textContent = dialogue.numDie;
+    dialogue.backdropElement.style.display = "block";
   },
 
   openAllRollDice: function (numSides = 12) {
@@ -171,7 +180,7 @@ const dialogue = {
     }
 
     // Display appropriate elements
-    dialogue.dialogueBox.children[0].style.display = "block"; //Dialogue box controls
+    dialogue.showDialogueControls();
     dialogue.dialogueBox.style.display = "block";
     jobDetailElement.style.display = "block";
     dialogue.backdropElement.style.display = "block";
@@ -207,12 +216,33 @@ const dialogue = {
       "click",
       dialogue.closeDialogueBox
     );
-    dialogue.closeWindowElement.removeEventListener(
+    dialogue.backdropElement.removeEventListener(
       "click",
       dialogue.closeDialogueBox
     );
     dialogue.upArrowElement.removeEventListener("click", dialogue.scrollUp);
     dialogue.downArrowElement.removeEventListener("click", dialogue.scrollDown);
+  },
+
+  showDialogueControls: function (close = true, upDown = true) {
+    const controlsElement = dialogue.dialogueBox.children[0];
+    controlsElement.style.display = "block";
+    if (close === true) {
+      controlsElement.children[0].style.display = "block";
+    } else {
+      controlsElement.children[0].style.display = "none";
+    }
+    if (upDown === true) {
+      controlsElement.children[1].style.display = "block";
+      controlsElement.children[2].style.display = "block";
+    } else {
+      controlsElement.children[1].style.display = "none";
+      controlsElement.children[2].style.display = "none";
+    }
+  },
+
+  closeDialogueControls: function () {
+    dialogue.dialogueBox.children[0].style.display = "none";
   },
 
   scrollUp: function () {
@@ -279,7 +309,12 @@ const dialogue = {
         "Total Reward: $" + totalReward.toFixed(2);
 
       // Accept Job Button
-      if (game.isTurn && job.status !== 1) {
+      if (
+        (game.isTurn && job.status === 0) ||
+        (game.isTurn &&
+          job.status === 1 &&
+          userList[userIndex].currentJobIndex === job.id)
+      ) {
         entryButtonElement.style.display = "block";
         entryButtonElement.addEventListener("click", dialogue.chooseJob);
       } else {
@@ -302,25 +337,39 @@ const dialogue = {
 
     // Exit dialogue window, send job choice to turnInfo object
     dialogue.closeDialogueBox();
-    dashboard.turnInfo.newJobChoice = { roomId, userIndex, jobId };
-    board.drawJobLine(
-      userList[userIndex].boardCoordinates,
-      game.jobsArray[jobId].coordinates
-    );
+    if (jobId !== userList[userIndex].currentJobIndex) {
+      dashboard.turnInfo.newJobChoice = jobId;
+      const distance = board.distanceBetween(
+        userList[userIndex].coordinates,
+        game.jobsArray[jobId].coordinates
+      );
+      if (distance === 0) {
+        // Hopping to another job in system
+        console.log("hopping to another job");
+        socket.emit("update player job", {
+          roomId,
+          userIndex,
+          jobId,
+          oldJobId: userList[userIndex].currentJobIndex,
+        });
+        if (!(dashboard.turnInfo.jobOutcome.status === 2)) {
+          dashboard.rollToFixButton.classList.remove("disabled");
+        }
+      } else {
+        // Job is out of system
+        board.drawJobLine(
+          userList[userIndex].boardCoordinates,
+          game.jobsArray[jobId].coordinates,
+          distance
+        );
+      }
+    } else {
+      board.clearJobLines();
+    }
   },
 };
 
 // EVENT LISTENERS
-dialogue.rollXButton.addEventListener("click", function () {
-  if (!dialogue.isDieRolled) {
-    const rollResultElement = document.getElementById("roll-result");
-    const rollResultNumberElement = document.querySelector("#roll-result span");
-    rollResultNumberElement.textContent = dialogue.randomInt(dialogue.numDie);
-    dialogue.isDieRolled = true;
-    dialogue.rollXButton.classList.add("disabled");
-    rollResultElement.style.display = "block";
-  }
-});
 
 // userIndex not yet defined so add event listener to all buttons
 dialogue.allRollXButtons.forEach((button) => {
