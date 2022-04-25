@@ -4,7 +4,8 @@
   "description": "A test file demonstrating the chat feature for an online board game",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "start:dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "Anna Lugthart",
