@@ -1,7 +1,7 @@
 BUGS
 
 HIGH PRIORITY
-- Tell players what they need to roll in order to win
+- Tell players what they need to roll in order to win a job
 
 LOW PRIORITY
 - Add flying animation for ships (With flames!)
@@ -18,3 +18,7 @@ LOW PRIORITY
   - Job detail
 - Format for simplicity and clarity
   - Make more use of player colors
+- Add more pages
+  - About
+  - Store?
+- Start advertising
