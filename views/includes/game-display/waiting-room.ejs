@@ -1,10 +1,50 @@
 <div id="background"></div>
 <h1>You're in Room <%= room.id %></h1>
-<button type="button" id="start-game-button">Start Game!</button>
 <ul id="joined-players"></ul>
-<h2>You're <span id="player-name-display">XX</span></h2>
-<form action="" id="name-entry">
-  <label for="set-name">Change your name</label>
-  <input type="text" id="set-name" name="setname" />
-  <button type="submit">Set Name</button>
-</form>
+<button type="button" id="start-game-button">Start Game!</button>
+<section id="player-name-options">
+  <h2>You're <span id="player-name-display">XX</span></h2>
+  <form action="" id="name-entry">
+    <label for="set-name">Change your name</label>
+    <input type="text" id="set-name" name="setname" maxlength="15" />
+    <button type="submit">Set Name</button>
+  </form>
+</section>
+<section id="end-condition-options">
+  <ul id="end-type">
+    <li>
+      <input
+        type="radio"
+        name="moneyrounds"
+        id="play-rounds"
+        value="rounds"
+        checked="checked"
+      />
+      <label for="play-rounds">Play for X rounds</label>
+    </li>
+    <li>
+      <input type="radio" name="moneyrounds" id="play-money" value="money" />
+      <label for="play-money">Play until someone earns $X</label>
+    </li>
+  </ul>
+  <ul id="end-condition">
+    <li>
+      <select name="numrounds" id="num-rounds">
+        <option value="1">1 round</option>
+        <option value="5">5 rounds</option>
+        <option value="10" selected>10 rounds</option>
+        <option value="25">25 rounds</option>
+        <option value="50">50 rounds</option>
+      </select>
+    </li>
+    <li>
+      <select name="nummoney" id="num-money" style="display: none">
+        <option value="1500">$1,500</option>
+        <option value="5000">$5,000</option>
+        <option value="10000" selected>$10,000</option>
+        <option value="25000">$25,000</option>
+        <option value="50000">$50,000</option>
+      </select>
+    </li>
+  </ul>
+</section>

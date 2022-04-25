@@ -62,6 +62,92 @@ function userTransit(
   });
 }
 
+// Reset round data and calculate player ranking
+function rankReset(room) {
+  room.day = 0;
+  room.round++;
+  console.log(`Round ${room.round}`);
+
+  // Reset player values
+  for (const user of room.users) {
+    user.roll = 0;
+    user.isReady = false;
+    user.coordinates = [0, 0];
+    user.boardCoordinates = [0, 0];
+    user.actionStatus = 0;
+    user.site = "home base";
+    user.currentJobIndex = -1;
+  }
+
+  // Determine player ranking
+  let moneyArray = new Array(room.users.length);
+  for (let i = 0; i < room.users.length; i++) {
+    moneyArray[i] = room.users[i].money;
+  }
+
+  const moneyOrder = new Array(room.users.length).fill(0);
+  const rankArray = new Array(room.users.length);
+  let rank = 0;
+  let money;
+  money = Math.max(...moneyArray);
+  for (let i = 0; i < moneyArray.length; i++) {
+    if (moneyArray[i] === money) {
+      if (money !== -1) {
+        moneyOrder[rank] = i;
+        moneyArray[i] = -1;
+        rank++;
+      }
+    }
+  }
+
+  rankArray[moneyOrder[0]] = 1;
+
+  for (let j = 1; j < moneyOrder.length; j++) {
+    // Tie
+    if (
+      room.users[moneyOrder[j - 1]].money === room.users[moneyOrder[j]].money
+    ) {
+      rankArray[moneyOrder[j]] = rankArray[moneyOrder[j - 1]];
+      // console.log(`119 rankArray${rankArray}`);
+    }
+    // No tie
+    else {
+      rankArray[moneyOrder[j]] = j + 1;
+      // console.log(`125 rankArray${rankArray}`);
+    }
+  }
+
+  return { moneyOrder, rankArray };
+}
+
+// End the round
+function endRound(io, room, rankData) {
+  io.to(room.id).emit("end round", rankData);
+}
+
+function checkEndGame(room) {
+  console.log(room.endCondition);
+  if (room.endCondition === "rounds") {
+    if (room.round >= +room.numRounds) {
+      return true;
+    } else {
+      return false;
+    }
+  } else if (room.endCondition === "money") {
+    for (const user of room.users) {
+      if (user.money >= +room.numMoney) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+function endGame(io, room, rankData) {
+  console.log("ending the game!");
+  io.to(room.id).emit("end game", rankData);
+}
+
 module.exports = (socket, io) => {
   // User emits a message
   socket.on("chat message", (data) => {
@@ -134,12 +220,16 @@ module.exports = (socket, io) => {
       room.activeUserIndex = 0;
       room.day++;
       console.log(`Day ${room.day}`);
-      if (room.day > 7) {
-        // New round
-        room.day = 0;
-        room.round++;
-        console.log("New Round!");
-        console.log(`Round ${room.round}`);
+      if (room.day > 5) {
+        // Reset round data and calculate player rankings
+        const rankData = rankReset(room);
+        // Check if game over
+        if (checkEndGame(room)) {
+          endGame(io, room, rankData);
+        } else {
+          // New round
+          return endRound(io, room, rankData);
+        }
       }
     }
 

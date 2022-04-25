@@ -1,12 +1,3 @@
-#waiting-room {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  text-align: center;
-}
-
 #joined-players {
   display: flex;
   justify-content: center;
@@ -14,7 +5,7 @@
 
 #joined-players li {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   align-items: center;
   margin: 1rem;
 }
@@ -23,4 +14,93 @@
   height: 5rem;
   width: 5rem;
   margin-bottom: 0.5rem;
+}
+
+#joined-players span.squish {
+  display: inline-block;
+  font-size: 0.67rem;
+  -webkit-transform: scale(1, 1.5) translateY(20%); /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5) translateY(20%); /* Firefox */
+  -ms-transform: scale(1, 1.5) translateY(20%); /* IE 9 */
+  -o-transform: scale(1, 1.5) translateY(20%); /* Opera */
+  transform: scale(1, 1.5) translateY(20%); /* W3C */
+}
+
+#start-game-button {
+  width: 10rem;
+}
+
+#player-name-options {
+  width: 25rem;
+  padding: 1rem;
+  margin: 2rem auto;
+  border-radius: 8px;
+}
+
+#player-name-options.red {
+  background-color: var(--background-red);
+  border: 2px solid var(--button-disabled);
+}
+
+#player-name-options.green {
+  background-color: var(--background-green);
+  border: 2px solid var(--button-disabled);
+}
+
+#player-name-options.blue {
+  background-color: var(--background-blue);
+  border: 2px solid var(--button-disabled);
+}
+
+#player-name-options.purple {
+  background-color: var(--background-purple);
+  border: 2px solid var(--button-disabled);
+}
+
+#player-name-display.squish {
+  display: inline-block;
+  font-size: 1rem;
+  -webkit-transform: scale(1, 1.5) translateY(-8%); /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5) translateY(-8%); /* Firefox */
+  -ms-transform: scale(1, 1.5) translateY(-8%); /* IE 9 */
+  -o-transform: scale(1, 1.5) translateY(-8%); /* Opera */
+  transform: scale(1, 1.5) translateY(-8%); /* W3C */
+}
+
+#player-name-options button {
+  color: var(--background-200);
+}
+
+#end-condition-options {
+  margin: 1rem auto 2rem auto;
+  height: 4rem;
+  width: 25rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#end-type {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1rem 0;
+}
+
+#end-type li {
+  text-align: left;
+}
+
+#end-type input {
+  width: 2rem;
+}
+
+#end-condition {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1rem 0;
 }

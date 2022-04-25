@@ -10,10 +10,6 @@
     <link rel="stylesheet" href="/styles/waiting-room.css" />
   </head>
   <body>
-    <!-- WAITING ROOM -->
-    <aside id="waiting-room">
-      <%- include('includes/game-display/waiting-room', {room: room}) %>
-    </aside>
     <!-- DIALOGUE BOX -->
     <aside id="dialogue-box">
       <div id="dialogue-box-controls">
@@ -28,22 +24,35 @@
       <section id="job-detail">
         <%- include('includes/game-display/job-detail') %>
       </section>
+      <section id="end-of-round">
+        <%- include('includes/game-display/end-of-round') %>
+      </section>
+      <section id="end-game">
+        <%- include('includes/game-display/end-game') %>
+      </section>
     </aside>
     <div id="backdrop"></div>
     <!-- GAME CONTENT -->
     <div id="game-content">
-      <div id="info-board-cards">
-        <div id="info-board">
-          <section id="info">
-            <%- include('includes/game-display/info') %>
-          </section>
-          <section id="board">
-            <%- include('includes/game-display/board') %>
+      <div id="waiting-room-session-content">
+        <!-- WAITING ROOM -->
+        <aside id="waiting-room">
+          <%- include('includes/game-display/waiting-room', {room: room}) %>
+        </aside>
+        <!-- SESSION CONTENT -->
+        <div id="info-board-cards">
+          <div id="info-board">
+            <section id="info">
+              <%- include('includes/game-display/info') %>
+            </section>
+            <section id="board">
+              <%- include('includes/game-display/board') %>
+            </section>
+          </div>
+          <section id="cards">
+            <%- include('includes/game-display/dashboard') %>
           </section>
         </div>
-        <section id="cards">
-          <%- include('includes/game-display/dashboard') %>
-        </section>
       </div>
       <section id="radio-phone">
         <%- include('includes/game-display/radio-phone') %>

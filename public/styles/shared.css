@@ -7,11 +7,30 @@ html {
   --button: rgb(86, 81, 79);
   --button-hover: rgb(54, 50, 46);
   --button-disabled: rgb(115, 109, 107);
+
+  --input: rgb(238, 234, 230);
+  --input-border: rgb(144, 138, 136);
+
+  --background-200: rgb(216, 208, 199);
+  --background-400: rgb(187, 178, 166);
+  --background-600: rgb(147, 138, 126);
+  --background-800: rgb(122, 116, 111);
+
+  --background-red: rgb(212, 164, 164);
+  --background-green: rgb(156, 199, 160);
+  --background-blue: rgb(160, 173, 202);
+  --background-purple: rgb(191, 154, 196);
+
+  --text-900: rgb(54, 50, 46);
 }
 
 body {
-  color: rgb(54, 50, 46);
+  color: var(--text-900);
   font-family: "Josefin Sans", sans-serif;
+}
+
+h3 {
+  font: 1.17rem;
 }
 
 p {
@@ -27,7 +46,7 @@ p {
   top: 0;
   left: 0;
   z-index: -1;
-  background: linear-gradient(rgb(187, 178, 166), rgb(147, 138, 126));
+  background: linear-gradient(var(--background-400), var(--background-600));
 }
 
 button {
@@ -35,7 +54,7 @@ button {
   padding: 0.4rem 1.3rem;
   background-color: var(--button);
   border: 1px solid var(--button);
-  color: rgb(187, 178, 166);
+  color: var(--background-400);
   border-radius: 4px;
 }
 
@@ -58,14 +77,49 @@ button.disabled:hover {
 
 input {
   font: inherit;
-  color: rgb(54, 50, 46);
-  border: 1px solid rgb(204, 204, 204);
+  color: var(--text-900);
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  background-color: var(--input);
   width: 8rem;
   padding: 0.4 rem;
   margin: 0.5rem;
 }
 
+input[type="radio"] {
+  background-color: var(--input);
+  border-color: var(--input-border);
+}
+
+select {
+  height: 1.3rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-900);
+  background-color: var(--input);
+  border-radius: 3px;
+}
+
 ul {
   list-style: none;
   padding: 0;
+}
+
+/* Squished Text */
+h2.squish {
+  font-size: 1rem;
+  -webkit-transform: scale(1, 1.5); /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5); /* Firefox */
+  -ms-transform: scale(1, 1.5); /* IE 9 */
+  -o-transform: scale(1, 1.5); /* Opera */
+  transform: scale(1, 1.5); /* W3C */
+}
+
+h3.squish {
+  font-size: 0.8rem;
+  -webkit-transform: scale(1, 1.5); /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5); /* Firefox */
+  -ms-transform: scale(1, 1.5); /* IE 9 */
+  -o-transform: scale(1, 1.5); /* Opera */
+  transform: scale(1, 1.5); /* W3C */
 }

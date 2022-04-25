@@ -1,9 +1,7 @@
 BUGS
 
 HIGH PRIORITY
-- Work week/new round logic
-- End of work week ranking
-- End of game logic
+- Tell players what they need to roll in order to win
 
 LOW PRIORITY
 - Add flying animation for ships (With flames!)
@@ -18,3 +16,5 @@ LOW PRIORITY
   - Planet icons
   - Planet detail
   - Job detail
+- Format for simplicity and clarity
+  - Make more use of player colors

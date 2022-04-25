@@ -5,7 +5,9 @@ for (var i = 0; i < numRooms; i++) {
   const room = {
     id: i + 1,
     users: [],
-    numRounds: 5,
+    numRounds: 10,
+    numMoney: 10000,
+    endCondition: "rounds",
     inUse: false,
     isStarted: false,
     playerCounter: 0,
@@ -14,7 +16,7 @@ for (var i = 0; i < numRooms; i++) {
     activeUserIndex: 0,
     jobsArray: [],
     jobIndices: [],
-    round: 0,
+    round: 1,
     day: 1,
   };
   rooms.push(room);

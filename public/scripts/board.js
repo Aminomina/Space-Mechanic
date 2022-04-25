@@ -18,8 +18,13 @@ const board = {
 
     // Set line color
     ctx.strokeStyle = "rgb(222, 210, 195)";
+
+    // Clear any previous lines
+    ctx.clearRect(0, 0, board.canvas.width, board.canvas.height);
+
     // Thick Lines
     ctx.lineWidth = 3;
+    ctx.beginPath();
     for (let i = 0; i <= cellsHorizontal + 1; i += 3) {
       ctx.moveTo(cellWidth * i, 0);
       ctx.lineTo(cellWidth * i, canvasHeight);
@@ -28,9 +33,11 @@ const board = {
       ctx.moveTo(0, cellHeight * i);
       ctx.lineTo(canvasWidth, cellHeight * i);
     }
-    // Fine Lines
     ctx.stroke();
+
+    // Fine Lines
     ctx.lineWidth = 1;
+    ctx.beginPath();
     for (let i = 0; i <= cellsHorizontal + 1; i++) {
       ctx.moveTo(cellWidth * i, 0);
       ctx.lineTo(cellWidth * i, canvasHeight);

@@ -45,7 +45,7 @@ canvas {
 #jobs li .icon .image-number {
   font-family: "Roboto Serif", serif;
   position: absolute;
-  top: 1px;
+  top: -1px;
   height: 85%;
   width: 100%;
   text-align: center;

@@ -13,25 +13,16 @@ const game = {
   jobsArray: [],
   waitingRoomElement: document.getElementById("waiting-room"),
   gameContentElement: document.getElementById("game-content"),
+  gameSessionElement: document.getElementById("info-board-cards"),
+  endConditionType: "rounds",
+  endConditionRounds: 10,
+  endConditionMoney: 10000,
 
   // METHODS
   // Close waiting room screen and start the game
   startGame: function () {
     socket.emit("start game", roomId);
   },
-
-  // OBSOLETE
-  // reorderPlayers: function (rollArray) {
-  //   let index;
-  //   let newUserList = [];
-  //   for (const user of userList) {
-  //     index = rollArray.indexOf(Math.max(...rollArray));
-  //     rollArray[index] = 0;
-  //     newUserList.push(userList[index]);
-  //   }
-  //   userList = newUserList.reverse();
-  //   return;
-  // },
 
   // Give each player a userIndex property      (MOVE SERVER SIDE?)
   initializePlayerInfo: function () {
@@ -51,7 +42,7 @@ const game = {
     socket.emit("generate jobs", roomId);
   },
 
-  // Start a new round
+  // Start a new round after dice roll
   startRound: function () {
     dialogue.closeDialogueBox();
     info.showPlayerList();
@@ -61,7 +52,17 @@ const game = {
       console.log("I'm the active player!");
       game.requestJobsArray();
       game.startTurn();
+    } else {
+      dashboard.endTurnButton.classList.add("disabled");
     }
+  },
+
+  // End the current round and initialize a new one
+  endRound: function (moneyOrder, rankArray) {
+    board.homeShips();
+    board.clearJobs();
+    board.clearJobLines();
+    dialogue.openEndOfRoundDisplay(moneyOrder, rankArray);
   },
 
   // Check if user has pressed ESC key
@@ -94,6 +95,21 @@ const game = {
       dashboard.rollToFixButton.classList.remove("disabled");
     }
   },
+
+  // End the game
+  endGame: function (moneyOrder, rankArray) {
+    console.log("Game ending");
+    board.homeShips();
+    board.clearJobs();
+    board.clearJobLines();
+    dialogue.openEndGameDisplay(moneyOrder, rankArray);
+  },
+
+  // Ask server to reset the game
+  requestResetGame: function () {
+    console.log("resetting the game...");
+    socket.emit("reset game", roomId);
+  },
 };
 
 // EVENT LISTENERS
@@ -105,9 +121,8 @@ document.addEventListener("keydown", game.checkEscape);
 socket.on("start game", function () {
   // Hide waiting room, show game content
   game.waitingRoomElement.style.display = "none";
-  game.gameContentElement.style.display = "flex";
+  game.gameSessionElement.style.display = "flex";
   game.initializePlayerInfo();
-  console.log(board.sectionElement);
   board.drawGrid();
   info.showPlayerList();
   dialogue.openAllRollDice();
@@ -188,4 +203,21 @@ socket.on("update player location", function (data) {
   }
   // Update location string
   dashboard.updateLocationString();
+});
+
+// Server starts a new round
+socket.on("end round", function (data) {
+  game.endRound(data.moneyOrder, data.rankArray);
+});
+
+// Server ends the round
+socket.on("end game", function (data) {
+  game.endGame(data.moneyOrder, data.rankArray);
+});
+
+// Server resets the game
+socket.on("reset game", function () {
+  dialogue.closeDialogueBox();
+  game.waitingRoomElement.style.display = "block";
+  game.gameSessionElement.style.display = "none";
 });

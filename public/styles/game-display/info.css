@@ -68,6 +68,16 @@
   width: 2rem;
 }
 
+.info-player-name span.squish {
+  display: inline-block;
+  font-size: 0.67rem;
+  -webkit-transform: scale(1, 1.5) translateY(-8%); /* Safari and Chrome */
+  -moz-transform: scale(1, 1.5) translateY(-8%); /* Firefox */
+  -ms-transform: scale(1, 1.5) translateY(-8%); /* IE 9 */
+  -o-transform: scale(1, 1.5) translateY(-8%); /* Opera */
+  transform: scale(1, 1.5) translateY(-10%); /* W3C */
+}
+
 .info-player-stats {
   display: flex;
   justify-content: space-between;

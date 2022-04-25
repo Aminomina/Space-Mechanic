@@ -104,6 +104,18 @@
   margin: 0 2rem;
 }
 
+.all-player-name-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 1.5rem;
+  margin: 1rem auto;
+}
+
+.all-player-name {
+  margin: auto;
+}
+
 #tie-message {
   display: none;
 }
@@ -111,8 +123,11 @@
 /* JOB DETAIL */
 #dialogue-box.job-detail {
   top: 10%;
-  left: 20%;
   width: 58%;
+}
+
+#dialogue-box.end-of-round {
+  top: 10%;
 }
 
 #job-detail {
@@ -187,4 +202,74 @@
 
 #job-detail-list img {
   height: 18rem;
+}
+
+/* END OF ROUND/GAME */
+#end-of-round,
+#end-game {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#end-of-round h2,
+#end-game h2 {
+  margin: 0.75rem 0;
+}
+
+#rank-players,
+#end-rank-players {
+  margin-top: 0;
+}
+
+.rank-player-entry,
+.end-player-entry {
+  padding: 0.5rem 1rem;
+  display: none;
+}
+
+.rank-player-entry ul,
+.end-player-entry ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rank-player-entry.red,
+.end-player-entry.red {
+  background-color: rgb(189, 156, 156);
+}
+
+.rank-player-entry.green,
+.end-player-entry.green {
+  background-color: rgb(164, 199, 167);
+}
+
+.rank-player-entry.blue,
+.end-player-entry.blue {
+  background-color: rgb(160, 173, 202);
+}
+
+.rank-player-entry.purple,
+.end-player-entry.purple {
+  background-color: rgb(195, 166, 199);
+}
+
+.rank-player-name img,
+.end-player-name img {
+  height: 2rem;
+  width: 2rem;
+}
+
+.rank-player-money,
+.end-player-money {
+  display: flex;
+  align-items: center;
+}
+
+.rank-player-money img,
+.end-player-money img {
+  height: 1.5rem;
+  width: 1.5rem;
 }

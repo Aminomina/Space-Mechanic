@@ -28,14 +28,16 @@ const info = {
         "purple",
         "green"
       );
+      info.playerNameElements[i].classList.remove("squish");
       info.playerEntryElements[i].classList.add(userList[game.order[i]].color);
       info.playerNameElements[i].textContent = userList[game.order[i]].name;
       info.playerMoneyElements[i].textContent = money;
       info.playerExpElements[i].textContent = exp;
       info.playerNameIcons[i].src =
         "/images/wrench-" + userList[game.order[i]].color + "-small.png";
-      info.playerMoneyIcons[i].src = "/images/money.png";
-      info.playerExpIcons[i].src = "/images/exp.png";
+      if (info.playerNameElements[i].offsetWidth > 135) {
+        info.playerNameElements[i].classList.add("squish");
+      }
     }
   },
 };

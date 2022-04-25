@@ -1,3 +1,4 @@
+const { set } = require("express/lib/application");
 const roomData = require("../data/room-data");
 const rooms = roomData.rooms;
 
@@ -19,8 +20,8 @@ const setup = {
       site: "home base",
       currentJobIndex: -1,
     };
-    io.to(socket.id).emit("assign name", user.name, user.id);
     user.color = setup.generatePlayerColor(room.users);
+    io.to(socket.id).emit("assign name", user.name, user.id, user.color);
     room.users.push(user);
   },
 
@@ -39,6 +40,25 @@ const setup = {
         return color;
       }
     }
+  },
+
+  // Reset all room values
+  resetRoomValues: function (room) {
+    room.users = [];
+    room.numRounds = 10;
+    room.numMoney = 20000;
+    room.endCondition = "rounds";
+    room.inUse = false;
+    room.isStarted = false;
+    room.playerCounter = 0;
+    room.ranks = [];
+    room.order = [];
+    room.activeUserIndex = 0;
+    room.jobsArray = [];
+    room.jobIndices = [];
+    room.round = 1;
+    room.day = 1;
+    console.log("Room " + room.id + " is now open.");
   },
 };
 
@@ -81,16 +101,41 @@ module.exports = (socket, io) => {
           room.users.splice(i, 1);
           io.to(room.id).emit("player list update", room.users);
           if (!room.users.length) {
-            room.inUse = false;
-            room.isStarted = false;
-            room.playerCounter = 0;
-            console.log("Room " + room.id + " is now open.");
+            setup.resetRoomValues(room);
           } else {
             io.to(room.id).emit("player list update", room.users);
           }
           return;
         }
       }
+    }
+  });
+
+  // Client requests a game reset
+  socket.on("reset game", (roomId) => {
+    const room = rooms[roomId - 1];
+    io.to(room.id).emit("reset game");
+    // Reset some room values
+    room.isStarted = false;
+    room.ranks = [];
+    room.order = [];
+    room.activeUserIndex = 0;
+    room.jobsArray = [];
+    room.jobIndices = [];
+    room.round = 1;
+    room.day = 1;
+    // Reset some user values for each user
+    for (const user of room.users) {
+      user.money = 500;
+      user.exp = 0;
+      user.roll = 0;
+      user.isReady = false;
+      user.coordinates = [0, 0];
+      user.boardCoordinates = [0, 0];
+      user.actionStatus = 0;
+      user.site = "home base";
+      user.currentJobIndex = -1;
+      io.to(room.id).emit("player list update", room.users);
     }
   });
 };

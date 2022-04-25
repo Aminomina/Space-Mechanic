@@ -11,7 +11,7 @@ const gameSetup = {
       0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7,
     ];
     const numPlayers = room.users.length;
-    const numJobs = [10, 10, 10]; //           PLACEHOLDER VALUES, USE NUMPLAYERS
+    const numJobs = [2 * numPlayers, 3 * numPlayers, 2 * numPlayers]; //           PLACEHOLDER VALUES, USE NUMPLAYERS
     let jobsArray = [];
     const filePath = path.join(__dirname, "..", "data", "planets.json");
     let jobIdCounter = 0;
@@ -192,5 +192,17 @@ module.exports = (socket, io) => {
   // User requests a jobs array
   socket.on("generate jobs", (roomId) => {
     gameSetup.generateJobs(io, roomId);
+  });
+  socket.on("change end condition", (data) => {
+    const room = rooms[data.roomId - 1];
+    room.endCondition = data.endConditionType;
+    room.numRounds = data.endConditionRounds;
+    room.numMoney = data.endConditionMoney;
+    console.log(room.endCondition);
+    io.to(room.id).emit("change end condition", {
+      endConditionType: data.endConditionType,
+      endConditionRounds: data.endConditionRounds,
+      endConditionMoney: data.endConditionMoney,
+    });
   });
 };

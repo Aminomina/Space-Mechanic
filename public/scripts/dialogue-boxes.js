@@ -19,7 +19,86 @@ const dialogue = {
     return Math.floor(Math.random() * intVal + 1);
   },
 
+  openEndOfRoundDisplay: function (moneyOrder, rankArray) {
+    dialogue.closeDialogueBox();
+    // Definte Variables
+    const endOfRoundDisplayElement = document.getElementById("end-of-round");
+    const playerEntryElements = document.querySelectorAll(".rank-player-entry");
+    const playerRankElements = document.querySelectorAll(".rank-player-rank");
+    const playerNameIcons = document.querySelectorAll(".rank-player-name img");
+    const playerNameElements = document.querySelectorAll(
+      ".rank-player-name span"
+    );
+    const playerMoneyElements = document.querySelectorAll(
+      ".rank-player-money span"
+    );
+    // Update Values
+    for (let i = 0; i < userList.length; i++) {
+      const money = userList[moneyOrder[i]].money.toFixed(2);
+      playerEntryElements[i].style.display = "block";
+      playerEntryElements[i].classList.remove("red", "blue", "purple", "green");
+      playerEntryElements[i].classList.add(userList[moneyOrder[i]].color);
+      playerRankElements[i].textContent = rankArray[i];
+      playerNameElements[i].textContent = userList[moneyOrder[i]].name;
+      playerMoneyElements[i].textContent = money;
+      playerNameIcons[i].src =
+        "/images/wrench-" + userList[moneyOrder[i]].color + "-small.png";
+    }
+
+    // Set dialogue window to correct size
+    dialogue.dialogueBox.className = "end-of-round";
+
+    // Display appropriate elements
+    dialogue.dialogueBox.style.display = "block";
+    endOfRoundDisplayElement.style.display = "flex";
+    dialogue.backdropElement.style.display = "block";
+
+    setTimeout(dialogue.openAllRollDice, 5000);
+  },
+
+  openEndGameDisplay: function (moneyOrder, rankArray) {
+    dialogue.closeDialogueBox();
+    // Define Variables
+    const endGameDisplayElement = document.getElementById("end-game");
+    const winnerMessageElement = document.getElementById("winner-message");
+    const playerEntryElements = document.querySelectorAll(".end-player-entry");
+    const playerRankElements = document.querySelectorAll(".end-player-rank");
+    const playerNameIcons = document.querySelectorAll(".end-player-name img");
+    const playerNameElements = document.querySelectorAll(
+      ".end-player-name span"
+    );
+    const playerMoneyElements = document.querySelectorAll(
+      ".end-player-money span"
+    );
+    // Update Values
+    for (let i = 0; i < userList.length; i++) {
+      const money = userList[moneyOrder[i]].money.toFixed(2);
+      playerEntryElements[i].style.display = "block";
+      playerEntryElements[i].classList.remove("red", "blue", "purple", "green");
+      playerEntryElements[i].classList.add(userList[moneyOrder[i]].color);
+      playerRankElements[i].textContent = rankArray[i];
+      playerNameElements[i].textContent = userList[moneyOrder[i]].name;
+      playerMoneyElements[i].textContent = money;
+      playerNameIcons[i].src =
+        "/images/wrench-" + userList[moneyOrder[i]].color + "-small.png";
+      if (rankArray[i] === 1) {
+        // Winning player
+        winnerMessageElement.textContent = `${userList[i].name} Wins!`;
+        setTimeout(game.requestResetGame, 5000);
+      }
+    }
+
+    // Set dialogue window to correct size
+    dialogue.dialogueBox.className = "end-of-round";
+
+    // Display appropriate elements
+    dialogue.dialogueBox.style.display = "block";
+    endGameDisplayElement.style.display = "flex";
+    dialogue.backdropElement.style.display = "block";
+  },
+
   openRollDice: function (numSides) {
+    dialogue.closeDialogueBox();
     dialogue.isDieRolled = false;
     // Define Variables
     const rollDiceElement = document.getElementById("roll-dice");
@@ -40,6 +119,7 @@ const dialogue = {
   },
 
   openAllRollDice: function (numSides = 12) {
+    dialogue.closeDialogueBox();
     dialogue.isDieRolled = false;
     // Define Variables
     const allRollDiceElement = document.getElementById("all-roll-dice");
@@ -48,12 +128,30 @@ const dialogue = {
     const rollPlayerEntryElements =
       document.querySelectorAll(".roll-player-entry");
     const playerNameElements = document.querySelectorAll(".all-player-name");
+    const rollPlayersListElement = document.getElementById("roll-players-list");
+    const playerOrderElements = document.querySelectorAll(".player-order");
+    const rollResultElements = document.querySelectorAll(".all-roll-result");
+
+    // Reset values
+    for (let i = 0; i < userList.length; i++) {
+      playerNameElements[i].textContent = userList[i].name;
+      rollResultElements[i].textContent = "?";
+      rollResultElements[i].style.display = "block";
+      playerOrderElements[i].style.display = "none";
+      playerNameElements[i].classList.remove("squish");
+    }
+
+    dialogue.allRollXButtons[userIndex].classList.remove("disabled");
+
     // Display appropriate elements
     dialogue.dialogueBox.style.display = "block";
     allRollDiceElement.style.display = "block";
     for (let i = 0; i < userList.length; i++) {
       playerNameElements[i].textContent = userList[i].name;
       rollPlayerEntryElements[i].style.display = "flex";
+      if (rollPlayerEntryElements[i].offsetWidth > 170) {
+        playerNameElements[i].classList.add("squish");
+      }
     }
     dialogue.numDie = numSides;
     dieSidesElement.textContent = dialogue.numDie;
@@ -98,6 +196,7 @@ const dialogue = {
   },
 
   openJobDetail: function (event) {
+    dialogue.closeDialogueBox();
     // Define Variables
     const jobDetailElement = document.getElementById("job-detail");
     const planetNameElement = document.getElementById("job-detail-planet");
@@ -204,7 +303,7 @@ const dialogue = {
     dialogue.downArrowElement.addEventListener("click", dialogue.scrollDown);
   },
 
-  closeDialogueBox: function (event) {
+  closeDialogueBox: function () {
     for (const sectionElement of dialogue.dialogueBox.children) {
       sectionElement.style.display = "none";
     }
