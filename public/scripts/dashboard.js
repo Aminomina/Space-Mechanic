@@ -9,12 +9,19 @@ const dashboard = {
     newJobChoice: -1,
     jobOutcome: {},
     newUserStats: {},
+    currentJobMultiplier: undefined,
   },
+  hasRolledToFix: false,
   // METHODS
   endTurn: function () {
     console.log("Ending turn");
     dashboard.endTurnButton.removeEventListener("click", dashboard.endTurn);
+    dashboard.rollToFixButton.removeEventListener(
+      "click",
+      dashboard.openRollToFix
+    );
     game.isTurn = false;
+    game.hasRolledToFix = false;
 
     //Player has abandoned a job
     if (
@@ -52,22 +59,76 @@ const dashboard = {
       locationStringElement.textContent = `You're on ${userList[userIndex].site}.`;
     } else if (userList[userIndex].actionStatus === 3) {
       locationStringElement.textContent = `You're in open space.`;
+    } else if (userList[userIndex].actionStatus === 4) {
+      locationStringElement.textContent = `You're in the hospital.`;
     } else {
       locationStringElement.textContent = "";
     }
   },
   registerJob: function (jobId) {
-    // Exit dialogue window, send job choice to turnInfo object
-    dialogue.closeDialogueBox();
+    console.log("registering job");
+    // Variables
+    const job = game.jobsArray[jobId];
+    const location = jobData.locations[job.locIndex];
+    const type = jobData.types[job.typeIndex];
+    const exp = userList[userIndex].exp;
+
+    // Calculate total job multiplier
+    const kExp = 2 - 0.999 ** exp;
+    const kDiff = 1 + job.difficulty + location.difficulty + type.diffexpay;
+    dashboard.currentJobMultiplier = kExp / kDiff;
+    console.log(dashboard.currentJobMultiplier);
+
     dashboard.turnInfo.newJobChoice = jobId;
-    board.drawJobLine(
-      userList[userIndex].boardCoordinates,
-      game.jobsArray[jobId].coordinates,
-      board.distanceBetween(
-        userList[userIndex].coordinates,
-        game.jobsArray[jobId].coordinates
-      )
+    const distance = board.distanceBetween(
+      userList[userIndex].coordinates,
+      game.jobsArray[jobId].coordinates
     );
+    if (distance === 0) {
+      const oldJobId = userList[userIndex].currentJobIndex;
+      // Hopping to another job in system
+      // board.clearJobLines();
+      console.log("hopping to another job");
+      socket.emit("update player job", {
+        roomId,
+        userIndex,
+        jobId,
+        oldJobId,
+      });
+      if (!game.hasRolledToFix) {
+        dashboard.rollToFixButton.classList.remove("disabled");
+      } else {
+        dashboard.rollToFix.classList.add("disabled");
+      }
+      dialogue.closeDialogueBox();
+      dashboard.turnInfo.newJobChoice = jobId;
+      // Check if old job had hazard
+      const isOldJobHazard =
+        game.jobsArray[oldJobId]["hazard-type"] !== 0 &&
+        game.jobsArray[oldJobId].locIndex !== 6;
+      const isNewJobHazard =
+        game.jobsArray[jobId]["hazard-type"] !== 0 &&
+        game.jobsArray[jobId].locIndex !== 6;
+      if (
+        (isNewJobHazard && !isOldJobHazard) ||
+        (isNewJobHazard &&
+          game.jobsArray[jobId].name !== game.jobsArray[oldJobId].name)
+      ) {
+        dashboard.openRollForHazard(
+          game.jobsArray[jobId]["hazard-type"],
+          game.jobsArray[jobId]["hazard-roll-string"]
+        );
+      }
+    } else {
+      // Job is out of system
+      board.drawJobLine(
+        userList[userIndex].boardCoordinates,
+        game.jobsArray[jobId].coordinates,
+        distance
+      );
+      dialogue.closeDialogueBox();
+      dashboard.turnInfo.newJobChoice = jobId;
+    }
   },
   deregisterJob: function (jobId) {
     console.log("Job taken!");
@@ -78,13 +139,124 @@ const dashboard = {
       actionStatus: 3,
     });
   },
+  sendToHospital: function () {
+    // Player spends rest of week in hospital
+    userList[userIndex].actionStatus = 4;
+
+    // Abandon job
+    console.log("Abandoning job");
+    dashboard.turnInfo.jobOutcome = {
+      jobId: userList[userIndex].currentJobIndex,
+      status: 0,
+    };
+    dashboard.turnInfo.newJobChoice = -2;
+
+    // Deactivate roll-to-fix
+    dashboard.rollToFixButton.classList.add("disabled");
+    dashboard.rollToFixButton.removeEventListener(
+      "click",
+      dashboard.openRollToFix
+    );
+
+    // Update player status
+    socket.emit("update player status", {
+      roomId: roomId,
+      userIndex: userIndex,
+      actionStatus: 4,
+    });
+  },
+  openRollForHazard: function (hazardType, hazardString) {
+    const rollHeadingElement = document.getElementById("roll-dice-heading");
+    const rollMessageElement = document.getElementById("roll-message");
+    if (+hazardType < 15) {
+      dialogue.openRollDice(6);
+    } else if (+hazardType < 20) {
+      dialogue.openRollDice(3);
+    } else if (+hazardType < 30) {
+      dialogue.openRollDice(9);
+    } else if (+hazardType < 40) {
+      dialogue.openRollDice(12);
+    }
+
+    rollHeadingElement.textContent = `Roll for ${hazardString}!`;
+    rollMessageElement.textContent = "Don't roll a 1!";
+    rollMessageElement.style.display = "block";
+    dialogue.rollXButton.addEventListener("click", dashboard.rollForHazard);
+  },
+  rollForHazard: function () {
+    // Variables
+    const rollResultElement = document.getElementById("roll-result");
+    const rollMessageElement = document.getElementById("roll-message");
+
+    const currentJob = game.jobsArray[userList[userIndex].currentJobIndex];
+    const hazardType = currentJob["hazard-type"];
+    const hazardString = currentJob["hazard-roll-string"];
+
+    dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
+    rollResultElement.textContent = dialogue.rollResult;
+
+    // Disable button
+    dialogue.rollXButton.classList.add("disabled");
+
+    // Remove event listeners
+    dialogue.rollXButton.removeEventListener("click", dashboard.rollForHazard);
+
+    // Manage roll success or failure
+    if (dialogue.rollResult >= 2) {
+      console.log("success!");
+
+      // Display roll text
+      rollMessageElement.textContent = `You avoided ${hazardString}!`;
+      rollMessageElement.style.display = "block";
+    } else {
+      console.log("not successful.");
+      // Display roll text
+      // Assailants
+      if (hazardType % 5 === 1) {
+        rollMessageElement.textContent = `Oh no! You got caught by ${hazardString}!`;
+      } else if (hazardType === 30) {
+        rollMessageElement.textContent = `Oh no! You got caught in the ${hazardString}!`;
+      } else {
+        rollMessageElement.textContent = `Oh no! You fell victim to ${hazardString}!`;
+      }
+      rollMessageElement.style.display = "block";
+
+      // Injury
+      if (hazardType < 20) {
+        dashboard.sendToHospital();
+      }
+      // Theft
+      else if (hazardType < 30) {
+        // Player relinquishes cards or money
+        // Update turnInfo
+        let newMoney = userList[userIndex].money - 1500;
+        if (newMoney < 0) {
+          newMoney = 0;
+        }
+
+        // Update player stats
+        socket.emit("update player stats", {
+          roomId,
+          userIndex,
+          newUserStats: { money: newMoney },
+        });
+      }
+      // Natural Disaster
+      else if (hazardType < 40) {
+        dashboard.sendToHospital();
+      }
+    }
+
+    // Close window after delay
+    setTimeout(dialogue.closeDialogueBox, 2000);
+  },
   openRollToFix: function () {
-    console.log("Attempting a fix!");
-    // dashboard.turnInfo.jobOutcome = {
-    //   jobId: userList[userIndex].currentJobIndex,
-    //   status: 2,
-    // };
+    const rollMessageElement = document.getElementById("roll-message");
+    const minRoll = Math.floor(3 / dashboard.currentJobMultiplier) + 1;
+
     dialogue.openRollDice(6);
+    rollMessageElement.textContent = `You need at least ${minRoll} to succeed.`;
+    rollMessageElement.style.display = "block";
     dialogue.rollXButton.addEventListener("click", dashboard.rollToFix);
     dialogue.showDialogueControls(true, false);
     // Add event listeners
@@ -99,20 +271,19 @@ const dashboard = {
   },
   rollToFix: function () {
     // Variables
-    const job = game.jobsArray[userList[userIndex].currentJobIndex];
-    const location = jobData.locations[job.locIndex];
-    const type = jobData.types[job.typeIndex];
-    const exp = userList[userIndex].exp;
-
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
 
+    game.hasRolledToFix = true;
+
     dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
+    const score = dialogue.rollResult * dashboard.currentJobMultiplier;
     rollResultElement.textContent = dialogue.rollResult;
     // Disable buttons
     dialogue.rollXButton.classList.add("disabled");
     dashboard.rollToFixButton.classList.add("disabled");
     // Remove event listeners
+    dialogue.rollXButton.removeEventListener("click", dashboard.rollToFix);
     dashboard.rollToFixButton.removeEventListener(
       "click",
       dashboard.openRollToFix
@@ -125,12 +296,6 @@ const dashboard = {
       "click",
       dialogue.closeDialogueBox
     );
-
-    // Calculate score
-    const kExp = 2 - 0.9996 ** exp;
-    const kDiff = 1 + job.difficulty + location.difficulty + type.diffexpay;
-    const score = (dialogue.rollResult * kExp) / kDiff;
-    console.log(score);
 
     // Manage roll success or failure
     if (score >= 3) {

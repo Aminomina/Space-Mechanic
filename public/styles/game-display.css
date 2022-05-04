@@ -3,6 +3,7 @@
 @import "game-display/board.css";
 @import "game-display/info.css";
 @import "game-display/dialogue-box.css";
+@import "game-display/cards.css";
 
 /* DEFINE SIZING OF GAME CONTENT SECTIONS */
 body {
@@ -69,6 +70,17 @@ body {
   width: 100%;
   height: 15rem;
   background-color: rgb(84, 133, 84);
+}
+
+#dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 16rem;
+  height: calc(100% - 1.5rem);
+  padding: 0.75rem;
+  background-color: var(--background-600);
 }
 
 #info-board {

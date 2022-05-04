@@ -5,6 +5,24 @@ const board = {
   jobsListElement: document.getElementById("jobs"),
   canvas: document.getElementById("board-grid"),
   detailCanvas: document.getElementById("board-detail"),
+  shipPositions: [
+    [[0, 0, 0]],
+    [
+      [-3.6, -3.6, 45],
+      [3.6, 3.6, 225],
+    ],
+    [
+      [0, -5, 0],
+      [-4.3, 2.5, 120],
+      [4.3, 2.5, 240],
+    ],
+    [
+      [-4.3, -4.3, 45],
+      [4.3, 4.3, 225],
+      [-4.3, 4.3, 135],
+      [4.3, -4.3, 315],
+    ],
+  ],
   // METHODS
   // Draws the board grid
   drawGrid: function () {
@@ -296,24 +314,24 @@ const board = {
   // Move all ship icons to home position
   homeShips: function () {
     console.log("Homing ships!");
-    const positions = [
-      [[0, 0, 0]],
-      [
-        [-3.6, -3.6, 45],
-        [3.6, 3.6, 225],
-      ],
-      [
-        [0, -5, 0],
-        [-4.3, 2.5, 120],
-        [4.3, 2.5, 240],
-      ],
-      [
-        [-4.3, -4.3, 45],
-        [4.3, 4.3, 225],
-        [-4.3, 4.3, 135],
-        [4.3, -4.3, 315],
-      ],
-    ];
+    // const positions = [
+    //   [[0, 0, 0]],
+    //   [
+    //     [-3.6, -3.6, 45],
+    //     [3.6, 3.6, 225],
+    //   ],
+    //   [
+    //     [0, -5, 0],
+    //     [-4.3, 2.5, 120],
+    //     [4.3, 2.5, 240],
+    //   ],
+    //   [
+    //     [-4.3, -4.3, 45],
+    //     [4.3, 4.3, 225],
+    //     [-4.3, 4.3, 135],
+    //     [4.3, -4.3, 315],
+    //   ],
+    // ];
     const shipElements = document.querySelectorAll("#ship-icons li");
     // Make ship icons invisible
     for (const element of shipElements) {
@@ -325,7 +343,7 @@ const board = {
       const icon = shipElements[i].children[0];
       icon.src = `/images/ship-${user.color}.png`;
       user.coordinates = [0, 0];
-      user.boardCoordinates = positions[userList.length - 1][i];
+      user.boardCoordinates = board.shipPositions[userList.length - 1][i];
       board.moveShip(i, user.boardCoordinates);
       // Make ship icon visible
       shipElements[i].style.display = "block";

@@ -42,9 +42,19 @@
   display: block;
 }
 
+.info-players-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .info-player-entry {
+  width: 80%;
   padding: 0.5rem 1rem;
   display: none;
+  margin: 0.5rem auto;
+  border: 2px solid var(--button-disabled);
+  border-radius: 6px;
 }
 
 .info-player-entry.red {

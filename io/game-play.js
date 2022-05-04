@@ -171,8 +171,17 @@ module.exports = (socket, io) => {
       room.jobsArray[data.jobOutcome.jobId].status = data.jobOutcome.status;
     }
 
+    // Player is in hospital
+    if (data.newJobChoice === -2) {
+      io.to(room.id).emit("update player location", {
+        userIndex: data.userIndex,
+        jobId: -2,
+        actionStatus: 4,
+        coordinates: 0,
+      });
+    }
     // Player is traveling to a job
-    if (data.newJobChoice !== -1) {
+    else if (data.newJobChoice !== -1) {
       // Calculate distance to job
       const jobCoordinates = room.jobsArray[data.newJobChoice].coordinates;
       console.log(data.userIndex);

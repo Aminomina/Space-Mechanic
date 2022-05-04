@@ -16,7 +16,7 @@ const setup = {
       isReady: false,
       coordinates: [0, 0],
       boardCoordinates: [0, 0],
-      actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space
+      actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space, 4: in the hospital
       site: "home base",
       currentJobIndex: -1,
     };

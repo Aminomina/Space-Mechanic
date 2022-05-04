@@ -1,7 +1,11 @@
 BUGS
+- Roll-to-fix un-disables when switching to another job, even though no roll left in turn
 
 HIGH PRIORITY
-- Tell players what they need to roll in order to win a job
+- Implement cards
+  - Start with a small number of test cards
+  - Work out basic functionality
+- Implement card theft in hazards
 
 LOW PRIORITY
 - Add flying animation for ships (With flames!)
@@ -15,7 +19,6 @@ LOW PRIORITY
   - Error pages
   - Planet icons
   - Planet detail
-  - Job detail
 - Format for simplicity and clarity
   - Make more use of player colors
 - Add more pages

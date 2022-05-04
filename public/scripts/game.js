@@ -62,6 +62,12 @@ const game = {
     board.homeShips();
     board.clearJobs();
     board.clearJobLines();
+    for (const user of userList) {
+      user.actionStatus = 0;
+      user.currentJobIndex = -1;
+      user.site = "home base";
+    }
+    dashboard.updateLocationString();
     dialogue.openEndOfRoundDisplay(moneyOrder, rankArray);
   },
 
@@ -79,14 +85,33 @@ const game = {
 
   // Start client's turn
   startTurn: function () {
+    const currentJobIndex = userList[userIndex].currentJobIndex;
+
     console.log("It's my turn now!");
     game.isTurn = true;
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
-    dashboard.rollToFixButton.addEventListener(
-      "click",
-      dashboard.openRollToFix
-    );
+    if (currentJobIndex >= 0) {
+      console.log("activating roll-to-fix");
+      dashboard.rollToFixButton.addEventListener(
+        "click",
+        dashboard.openRollToFix
+      );
+    }
     dashboard.endTurnButton.classList.remove("disabled");
+    // Check if user must roll for hazards
+    const currentJob = game.jobsArray[currentJobIndex];
+    if (
+      currentJob != undefined &&
+      "hazard-type" in currentJob &&
+      currentJob["hazard-type"] != 0 &&
+      currentJob.locIndex != 6
+    ) {
+      console.log("Roll for hazard!");
+      dashboard.openRollForHazard(
+        currentJob["hazard-type"],
+        currentJob["hazard-roll-string"]
+      );
+    }
     // Check if user can roll-to-fix
     if (
       userList[userIndex].actionStatus === 2 &&
@@ -147,12 +172,19 @@ socket.on("update player location", function (data) {
   // Update action status
   userList[data.userIndex].actionStatus = data.actionStatus;
   // Update job
-  if ("jobId" in data) {
+  if ("jobId" in data && data.jobId !== -2) {
     userList[data.userIndex].site = game.jobsArray[data.jobId].name;
   } else {
     userList[data.userIndex].site = {};
   }
-  if (data.actionStatus === 3) {
+  if (data.actionStatus === 4) {
+    // In the hospital
+    userList[data.userIndex].coordinates = [0, 0];
+    userList[data.userIndex].boardCoordinates =
+      board.shipPositions[userList.length - 1][data.userIndex];
+    userList[data.userIndex].currentJobIndex = -2;
+    board.moveShip(data.userIndex, userList[data.userIndex].boardCoordinates);
+  } else if (data.actionStatus === 3) {
     // In open space
   } else if (data.actionStatus === 2) {
     // At job

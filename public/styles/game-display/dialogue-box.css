@@ -123,7 +123,7 @@
 /* JOB DETAIL */
 #dialogue-box.job-detail {
   top: 10%;
-  width: 58%;
+  width: 62%;
 }
 
 #dialogue-box.end-of-round {
@@ -201,7 +201,7 @@
 }
 
 #job-detail-list img {
-  height: 18rem;
+  height: 20rem;
 }
 
 /* END OF ROUND/GAME */

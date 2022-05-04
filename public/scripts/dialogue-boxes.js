@@ -102,10 +102,12 @@ const dialogue = {
     dialogue.isDieRolled = false;
     // Define Variables
     const rollDiceElement = document.getElementById("roll-dice");
+    const rollHeadingElement = document.getElementById("roll-dice-heading");
     const dieSidesElement = document.getElementById("die-sides");
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
     // Reset any modified values
+    rollHeadingElement.textContent = "Roll the Dice!";
     dialogue.rollXButton.classList.remove("disabled");
     rollResultElement.textContent = "?";
     rollMessageElement.textContent = "";
@@ -393,6 +395,7 @@ const dialogue = {
       entryContentElement.children[2].textContent = location.description;
       entryContentElement.children[3].textContent =
         location["difficulty-description"];
+      entryImageElement.src = `/images/job-detail/${job.locIndex}.png`;
 
       // Job Stats
       if (location.name === "Satellite") {
@@ -408,9 +411,11 @@ const dialogue = {
         "Total Reward: $" + totalReward.toFixed(2);
 
       // Accept Job Button
+      const isUserActive =
+        game.isTurn && userList[userIndex].actionStatus !== 4;
       if (
-        (game.isTurn && job.status === 0) ||
-        (game.isTurn &&
+        (isUserActive && job.status === 0) ||
+        (isUserActive &&
           job.status === 1 &&
           userList[userIndex].currentJobIndex === job.id)
       ) {
@@ -436,32 +441,9 @@ const dialogue = {
 
     // Exit dialogue window, send job choice to turnInfo object
     dialogue.closeDialogueBox();
+
     if (jobId !== userList[userIndex].currentJobIndex) {
-      dashboard.turnInfo.newJobChoice = jobId;
-      const distance = board.distanceBetween(
-        userList[userIndex].coordinates,
-        game.jobsArray[jobId].coordinates
-      );
-      if (distance === 0) {
-        // Hopping to another job in system
-        console.log("hopping to another job");
-        socket.emit("update player job", {
-          roomId,
-          userIndex,
-          jobId,
-          oldJobId: userList[userIndex].currentJobIndex,
-        });
-        if (!(dashboard.turnInfo.jobOutcome.status === 2)) {
-          dashboard.rollToFixButton.classList.remove("disabled");
-        }
-      } else {
-        // Job is out of system
-        board.drawJobLine(
-          userList[userIndex].boardCoordinates,
-          game.jobsArray[jobId].coordinates,
-          distance
-        );
-      }
+      dashboard.registerJob(jobId);
     } else {
       board.clearJobLines();
     }
