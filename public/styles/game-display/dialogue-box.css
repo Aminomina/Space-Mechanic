@@ -163,7 +163,7 @@
 }
 
 #job-detail-list li {
-  background-color: rgb(140, 124, 103);
+  background-color: var(--card-400);
   border-radius: 8px;
   display: flex;
   flex-direction: row-reverse;

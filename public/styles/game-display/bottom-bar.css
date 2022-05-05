@@ -1,0 +1,110 @@
+#bottom-actions h3 {
+  margin: 0.75rem auto;
+}
+
+#bottom-actions > button {
+  width: 100%;
+}
+
+#dashboard-items {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#job-preview {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 2px solid var(--button);
+  border-radius: 6px;
+  background-color: var(--card-400);
+  height: 9.5rem;
+  margin: auto 0.25rem;
+}
+
+#job-preview-image img {
+  height: 100%;
+}
+
+#job-preview-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.25rem 1rem;
+  min-width: 13rem;
+}
+
+#job-preview-content h3,
+#dash-player h3 {
+  margin: 0.5rem auto;
+}
+
+#job-preview-content h4 {
+  margin: 0.35rem auto;
+  text-align: center;
+}
+
+#job-preview-stats span {
+  margin: 0 0.25rem;
+  text-align: center;
+}
+
+#dash-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  overflow: hidden;
+  border: 2px solid var(--button);
+  border-radius: 6px;
+  background-color: var(--card-400);
+  height: 9rem;
+  margin: auto 0.5rem;
+  padding: 0.25rem 1rem;
+  min-width: 11rem;
+}
+
+#dash-player-name {
+  display: flex;
+  align-items: center;
+}
+
+#dash-player-name img {
+  height: 2rem;
+  width: 2rem;
+}
+
+#dash-player-stats {
+  display: flex;
+  justify-content: space-around;
+}
+
+#dash-player-money,
+#dash-player-exp {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+#dash-player-stats img {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+#dash-player-stats span {
+  margin: 0 0.5rem;
+}
+
+#dash-player-items {
+  display: flex;
+  justify-content: center;
+}
+
+#dash-player-items img {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: 0 0.35rem;
+}

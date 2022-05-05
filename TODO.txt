@@ -1,7 +1,10 @@
 BUGS
-- Roll-to-fix un-disables when switching to another job, even though no roll left in turn
+- Sometimes fixes a job with a roll smaller than displayed
 
 HIGH PRIORITY
+- Create demo video, Facebook page for updates
+- Add a round counter
+- Implement hazard pay
 - Implement cards
   - Start with a small number of test cards
   - Work out basic functionality
@@ -21,6 +24,7 @@ LOW PRIORITY
   - Planet detail
 - Format for simplicity and clarity
   - Make more use of player colors
+    - Chat message colors
 - Add more pages
   - About
   - Store?

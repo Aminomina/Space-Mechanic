@@ -3,7 +3,7 @@
 }
 
 #info nav {
-  background-color: rgb(140, 124, 103);
+  background-color: var(--card-400);
 }
 
 #info nav:hover {
@@ -58,19 +58,24 @@
 }
 
 .info-player-entry.red {
-  background-color: rgb(189, 156, 156);
+  background-color: var(--background-red);
 }
 
 .info-player-entry.green {
-  background-color: rgb(164, 199, 167);
+  background-color: var(--background-green);
 }
 
 .info-player-entry.blue {
-  background-color: rgb(160, 173, 202);
+  background-color: var(--background-blue);
 }
 
 .info-player-entry.purple {
-  background-color: rgb(195, 166, 199);
+  background-color: var(--background-purple);
+}
+
+.info-player-name {
+  display: flex;
+  align-items: center;
 }
 
 .info-player-name img {

@@ -13,7 +13,7 @@ const game = {
   jobsArray: [],
   waitingRoomElement: document.getElementById("waiting-room"),
   gameContentElement: document.getElementById("game-content"),
-  gameSessionElement: document.getElementById("info-board-cards"),
+  gameSessionElement: document.getElementById("info-board-bottom"),
   endConditionType: "rounds",
   endConditionRounds: 10,
   endConditionMoney: 10000,
@@ -59,9 +59,26 @@ const game = {
 
   // End the current round and initialize a new one
   endRound: function (moneyOrder, rankArray) {
+    dashboard.deregisterJob();
     board.homeShips();
     board.clearJobs();
     board.clearJobLines();
+
+    dashboard.turnInfo = {
+      roomId,
+      userIndex,
+      newJobChoice: -1,
+      jobOutcome: {},
+      newUserStats: {},
+      currentJobMultiplier: undefined,
+    };
+
+    dashboard.currentJobInfo = {
+      totalDiff: undefined,
+      totalExp: undefined,
+      totalReward: undefined,
+    };
+
     for (const user of userList) {
       user.actionStatus = 0;
       user.currentJobIndex = -1;
@@ -192,12 +209,17 @@ socket.on("update player location", function (data) {
     userList[data.userIndex].currentJobIndex = data.jobId;
     // Client's registered job claimed by someone else
     if (
-      dashboard.turnInfo.newJobChoice.jobId === data.jobId &&
-      data.userIndex !== userIndex &&
-      game.jobsArray[data.jobId].status !== 0
+      dashboard.turnInfo.newJobChoice === data.jobId &&
+      data.userIndex !== userIndex
+      // && game.jobsArray[data.jobId].status !== 0
     ) {
       console.log(game.jobsArray[data.jobId].status);
       dashboard.deregisterJob();
+      socket.emit("update player status", {
+        roomId: roomId,
+        userIndex: userIndex,
+        actionStatus: 3,
+      });
       board.clearJobLines();
       dashboard.updateLocationString();
     }

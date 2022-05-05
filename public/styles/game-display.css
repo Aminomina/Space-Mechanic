@@ -3,13 +3,14 @@
 @import "game-display/board.css";
 @import "game-display/info.css";
 @import "game-display/dialogue-box.css";
-@import "game-display/cards.css";
+@import "game-display/bottom-bar.css";
 
 /* DEFINE SIZING OF GAME CONTENT SECTIONS */
 body {
+  height: 100%;
   display: flex;
   justify-content: right;
-  margin: auto;
+  margin: 0;
 }
 
 #dialogue-box {
@@ -36,7 +37,7 @@ body {
   display: flex;
   height: 100vh;
   width: 100vw;
-  margin-bottom: -20px;
+  margin-bottom: -30px;
 }
 
 #waiting-room-session-content {
@@ -48,39 +49,52 @@ body {
 
 #waiting-room {
   display: block;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   text-align: center;
 }
 
-#info-board-cards {
+#info-board-bottom {
   display: none;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  margin-bottom: -35px;
   width: 100%;
 }
 
 #radio-phone {
-  height: 100%;
+  height: 100vh;
   width: 18rem;
+  margin-bottom: -35px;
   /* background-color: rgb(135, 96, 135); */
 }
 
-#cards {
+#bottom-bar {
+  display: flex;
   width: 100%;
-  height: 15rem;
+  height: 11rem;
   background-color: rgb(84, 133, 84);
 }
 
-#dashboard {
+#bottom-actions {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 16rem;
+  width: 20rem;
   height: calc(100% - 1.5rem);
   padding: 0.75rem;
   background-color: var(--background-600);
+}
+
+#dashboard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 20rem);
+  height: calc(100% - 1rem);
+  padding: 0.5rem;
+  background-color: var(--background-400);
 }
 
 #info-board {

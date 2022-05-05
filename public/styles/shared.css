@@ -21,6 +21,8 @@ html {
   --background-blue: rgb(160, 173, 202);
   --background-purple: rgb(191, 154, 196);
 
+  --card-400: rgb(140, 124, 103);
+
   --text-900: rgb(54, 50, 46);
 }
 
@@ -30,7 +32,7 @@ body {
 }
 
 h3 {
-  font: 1.17rem;
+  font-size: 1.17rem;
 }
 
 p {

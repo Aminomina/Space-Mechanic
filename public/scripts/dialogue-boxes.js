@@ -442,11 +442,10 @@ const dialogue = {
     // Exit dialogue window, send job choice to turnInfo object
     dialogue.closeDialogueBox();
 
-    if (jobId !== userList[userIndex].currentJobIndex) {
-      dashboard.registerJob(jobId);
-    } else {
-      board.clearJobLines();
-    }
+    board.clearJobLines();
+    dashboard.registerJob(jobId);
+
+    // if (jobId === userList[userIndex].currentJobIndex) {}
   },
 };
 

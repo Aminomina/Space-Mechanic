@@ -40,7 +40,7 @@
           <%- include('includes/game-display/waiting-room', {room: room}) %>
         </aside>
         <!-- SESSION CONTENT -->
-        <div id="info-board-cards">
+        <div id="info-board-bottom">
           <div id="info-board">
             <section id="info">
               <%- include('includes/game-display/info') %>
@@ -49,8 +49,13 @@
               <%- include('includes/game-display/board') %>
             </section>
           </div>
-          <section id="cards">
-            <%- include('includes/game-display/dashboard') %>
+          <section id="bottom-bar">
+            <section id="bottom-actions">
+              <%- include('includes/game-display/bottom-actions') %>
+            </section>
+            <section id="dashboard">
+              <%- include('includes/game-display/dashboard') %>
+            </section>
           </section>
         </div>
       </div>

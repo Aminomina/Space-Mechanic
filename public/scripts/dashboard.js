@@ -11,6 +11,11 @@ const dashboard = {
     newUserStats: {},
     currentJobMultiplier: undefined,
   },
+  currentJobInfo: {
+    totalDiff: undefined,
+    totalExp: undefined,
+    totalReward: undefined,
+  },
   hasRolledToFix: false,
   // METHODS
   endTurn: function () {
@@ -41,8 +46,10 @@ const dashboard = {
     dashboard.updateLocationString();
     board.clearJobLines();
 
-    // Reset turn info
-    dashboard.turnInfo.jobOutcome = {};
+    // Reset turn info, but keep job outcome if user still at site
+    if (userList[userIndex].actionStatus !== 1) {
+      dashboard.turnInfo.jobOutcome = {};
+    }
     dashboard.turnInfo.newUserStats = {};
 
     // Disable buttons
@@ -51,18 +58,82 @@ const dashboard = {
   },
   updateLocationString: function () {
     const locationStringElement = document.getElementById("location-string");
-    if (userList[userIndex].actionStatus === 0) {
+    console.log(userList[userIndex].actionStatus);
+    if (
+      dashboard.turnInfo.newJobChoice >= 0 &&
+      dashboard.turnInfo.newJobChoice !== userList[userIndex].currentJobIndex
+    ) {
+      locationStringElement.textContent = `You're bound for ${
+        game.jobsArray[dashboard.turnInfo.newJobChoice].name
+      }.`;
+    } else if (userList[userIndex].actionStatus === 0) {
       locationStringElement.textContent = "You're at home base.";
     } else if (userList[userIndex].actionStatus === 1) {
       locationStringElement.textContent = `You're in transit to ${userList[userIndex].site}.`;
     } else if (userList[userIndex].actionStatus === 2) {
-      locationStringElement.textContent = `You're on ${userList[userIndex].site}.`;
+      if (game.jobsArray[userList[userIndex].currentJobIndex].locIndex === 6) {
+        locationStringElement.textContent = `You're orbiting ${userList[userIndex].site}.`;
+      } else {
+        locationStringElement.textContent = `You're on ${userList[userIndex].site}.`;
+      }
     } else if (userList[userIndex].actionStatus === 3) {
       locationStringElement.textContent = `You're in open space.`;
     } else if (userList[userIndex].actionStatus === 4) {
       locationStringElement.textContent = `You're in the hospital.`;
     } else {
       locationStringElement.textContent = "";
+    }
+  },
+  updateJobPreview: function () {
+    const previewImageElement =
+      document.getElementById("job-preview-image").children[0];
+    const previewContentElement = document.getElementById(
+      "job-preview-content"
+    );
+    const jobLocationElement = previewContentElement.children[0];
+    const jobTypeElement = previewContentElement.children[1];
+    const previewStatsElement = previewContentElement.children[2];
+    const previewDiffElement = previewStatsElement.children[0];
+    const previewExpElement = previewStatsElement.children[1];
+    const previewPayElement = previewStatsElement.children[2];
+    // A job is selected
+    if (
+      dashboard.turnInfo.newJobChoice !== -1 ||
+      dashboard.turnInfo.jobOutcome.status === 1
+    ) {
+      let job;
+      if (dashboard.turnInfo.newJobChoice !== -1) {
+        job = game.jobsArray[dashboard.turnInfo.newJobChoice];
+      } else if (dashboard.turnInfo.jobOutcome.status === 1) {
+        job = game.jobsArray[dashboard.turnInfo.jobOutcome.jobId];
+      }
+      // Update elements
+      previewImageElement.src = `/images/job-detail/${job.locIndex}.png`;
+      jobLocationElement.textContent = jobData.locations[job.locIndex].name;
+      jobTypeElement.textContent = jobData.types[job.typeIndex].name;
+      previewDiffElement.innerHTML = `Difficulty:<br>${dashboard.currentJobInfo.totalDiff.toFixed(
+        2
+      )}x`;
+      previewExpElement.innerHTML = `Exp:<br>${dashboard.currentJobInfo.totalExp.toFixed(
+        2
+      )}x`;
+      previewPayElement.innerHTML = `Reward:<br>$${dashboard.currentJobInfo.totalReward.toFixed(
+        2
+      )}`;
+      // Make appropriate elements visible
+      previewStatsElement.style.display = "flex";
+    }
+    // A job is not selected
+    else {
+      // Update elements
+      previewImageElement.src = `/images/job-detail/placeholder.jpg`;
+      jobLocationElement.textContent = "No Job Selected";
+      jobTypeElement.innerHTML = "Select a job<br>from the board";
+      previewDiffElement.innerHTML = "X";
+      previewExpElement.innerHTML = "X";
+      previewPayElement.innerHTML = "X";
+      // Hide appropriate elements
+      previewStatsElement.style.display = "none";
     }
   },
   registerJob: function (jobId) {
@@ -73,11 +144,18 @@ const dashboard = {
     const type = jobData.types[job.typeIndex];
     const exp = userList[userIndex].exp;
 
+    // Store job stats
+    dashboard.currentJobInfo.totalDiff =
+      1 + job.difficulty + location.difficulty + type.diffexpay;
+    dashboard.currentJobInfo.totalExp =
+      1 + job.exp + location.exp + type.diffexpay;
+    dashboard.currentJobInfo.totalReward =
+      job["base-reward"] * (1 + location.pay + type.diffexpay);
+
     // Calculate total job multiplier
     const kExp = 2 - 0.999 ** exp;
-    const kDiff = 1 + job.difficulty + location.difficulty + type.diffexpay;
+    const kDiff = dashboard.currentJobInfo.totalDiff;
     dashboard.currentJobMultiplier = kExp / kDiff;
-    console.log(dashboard.currentJobMultiplier);
 
     dashboard.turnInfo.newJobChoice = jobId;
     const distance = board.distanceBetween(
@@ -95,13 +173,8 @@ const dashboard = {
         jobId,
         oldJobId,
       });
-      if (!game.hasRolledToFix) {
-        dashboard.rollToFixButton.classList.remove("disabled");
-      } else {
-        dashboard.rollToFix.classList.add("disabled");
-      }
       dialogue.closeDialogueBox();
-      dashboard.turnInfo.newJobChoice = jobId;
+      // dashboard.turnInfo.newJobChoice = jobId;
       // Check if old job had hazard
       const isOldJobHazard =
         game.jobsArray[oldJobId]["hazard-type"] !== 0 &&
@@ -119,6 +192,21 @@ const dashboard = {
           game.jobsArray[jobId]["hazard-roll-string"]
         );
       }
+
+      // Enable roll-to-fix if not already used that turn
+      if (!game.hasRolledToFix) {
+        dashboard.rollToFixButton.classList.remove("disabled");
+        dashboard.rollToFixButton.addEventListener(
+          "click",
+          dashboard.openRollToFix
+        );
+      } else {
+        dashboard.rollToFixButton.classList.add("disabled");
+        dashboard.rollToFixButton.removeEventListener(
+          "click",
+          dashboard.openRollToFix
+        );
+      }
     } else {
       // Job is out of system
       board.drawJobLine(
@@ -127,17 +215,25 @@ const dashboard = {
         distance
       );
       dialogue.closeDialogueBox();
-      dashboard.turnInfo.newJobChoice = jobId;
+      // dashboard.turnInfo.newJobChoice = jobId;
+
+      // Disable roll-to-fix
+      dashboard.rollToFixButton.classList.add("disabled");
+      dashboard.rollToFixButton.removeEventListener(
+        "click",
+        dashboard.openRollToFix
+      );
     }
+
+    // Update job preview and location string to registered job
+    dashboard.updateLocationString();
+    dashboard.updateJobPreview();
   },
-  deregisterJob: function (jobId) {
-    console.log("Job taken!");
-    dashboard.turnInfo.newJobChoice = {};
-    socket.emit("update player status", {
-      roomId: roomId,
-      userIndex: userIndex,
-      actionStatus: 3,
-    });
+  deregisterJob: function () {
+    console.log("deregistering job!");
+    dashboard.turnInfo.newJobChoice = -1;
+    dashboard.updateJobPreview();
+    dashboard.updateLocationString();
   },
   sendToHospital: function () {
     // Player spends rest of week in hospital
@@ -253,6 +349,7 @@ const dashboard = {
   openRollToFix: function () {
     const rollMessageElement = document.getElementById("roll-message");
     const minRoll = Math.floor(3 / dashboard.currentJobMultiplier) + 1;
+    console.log(`Min Roll: ${minRoll}`);
 
     dialogue.openRollDice(6);
     rollMessageElement.textContent = `You need at least ${minRoll} to succeed.`;
@@ -279,6 +376,9 @@ const dashboard = {
     dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
     const score = dialogue.rollResult * dashboard.currentJobMultiplier;
     rollResultElement.textContent = dialogue.rollResult;
+    console.log(`Roll Result: ${dialogue.rollResult}`);
+    console.log(`Score: ${score}`);
+
     // Disable buttons
     dialogue.rollXButton.classList.add("disabled");
     dashboard.rollToFixButton.classList.add("disabled");
@@ -342,6 +442,9 @@ const dashboard = {
         status: 1,
       };
     }
+
+    // Update job preview
+    dashboard.updateJobPreview();
 
     // Close window after delay
     setTimeout(dialogue.closeDialogueBox, 2000);

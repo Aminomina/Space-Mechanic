@@ -1,9 +1,44 @@
-<section id="dashboard">
-  <h3 id="location-string">You're at home base</h3>
-  <button id="roll-to-fix" class="disabled">ROLL-TO-FIX</button>
-  <div id="other-actions">
-    <button id="trade">TRADE</button>
-    <button id="play-card">PLAY CARD</button>
-  </div>
-  <button id="end-turn">END TURN</button>
-</section>
+<ul id="dashboard-items">
+  <li id="job-preview">
+    <div id="job-preview-image">
+      <img src="/images/job-detail/placeholder.jpg" alt="" />
+    </div>
+    <ul id="job-preview-content">
+      <h3>No Job Selected</h3>
+      <h4>
+        Select a job <br />
+        from the board
+      </h4>
+      <div id="job-preview-stats" style="display: none">
+        <span>X</span>
+        <span>X</span>
+        <span>X</span>
+      </div>
+      <button id="roll-to-fix" class="disabled">ROLL-TO-FIX</button>
+    </ul>
+  </li>
+  <li id="dash-player">
+    <h3>Your Stats</h3>
+    <div id="dash-player-name">
+      <img src="/images/wrench-red-small.png" alt="A wrench icon" />
+      <span>Player Name</span>
+    </div>
+    <div id="dash-player-stats">
+      <div id="dash-player-money">
+        <img src="/images/money.png" alt="A money icon" />
+        <span>0</span>
+      </div>
+      <div id="dash-player-exp">
+        <img src="/images/exp.png" alt="An experience icon" />
+        <span>0</span>
+      </div>
+    </div>
+    <ul id="dash-player-items">
+      <li><img src="/images/planets/000.png" alt="A small circle icon" /></li>
+      <li><img src="/images/planets/000.png" alt="A small circle icon" /></li>
+      <li><img src="/images/planets/000.png" alt="A small circle icon" /></li>
+      <li><img src="/images/planets/000.png" alt="A small circle icon" /></li>
+      <li><img src="/images/planets/000.png" alt="A small circle icon" /></li>
+    </ul>
+  </li>
+</ul>
