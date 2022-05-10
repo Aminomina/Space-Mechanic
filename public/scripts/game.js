@@ -17,6 +17,7 @@ const game = {
   endConditionType: "rounds",
   endConditionRounds: 10,
   endConditionMoney: 10000,
+  currentRound: 1,
 
   // METHODS
   // Close waiting room screen and start the game
@@ -84,6 +85,10 @@ const game = {
       user.currentJobIndex = -1;
       user.site = "home base";
     }
+
+    game.currentRound++;
+
+    info.updateRoundInfo();
     dashboard.updateLocationString();
     dialogue.openEndOfRoundDisplay(moneyOrder, rankArray);
   },
@@ -144,6 +149,8 @@ const game = {
     board.homeShips();
     board.clearJobs();
     board.clearJobLines();
+    dashboard.updateJobPreview();
+    dashboard.updateLocationString();
     dialogue.openEndGameDisplay(moneyOrder, rankArray);
   },
 
@@ -166,6 +173,7 @@ socket.on("start game", function () {
   game.gameSessionElement.style.display = "flex";
   game.initializePlayerInfo();
   board.drawGrid();
+  info.updateRoundInfo();
   info.showPlayerList();
   dialogue.openAllRollDice();
 });
@@ -271,7 +279,14 @@ socket.on("end game", function (data) {
 
 // Server resets the game
 socket.on("reset game", function () {
+  game.order = [0, 1, 2, 3];
+  game.isTurn = false;
+  game.jobsArray = [];
+  game.currentRound = 1;
   dialogue.closeDialogueBox();
+  info.resetPlayersList();
+  dialogue.resetAllRollDice();
+  dialogue.resetEndGameDisplay();
   game.waitingRoomElement.style.display = "block";
   game.gameSessionElement.style.display = "none";
 });

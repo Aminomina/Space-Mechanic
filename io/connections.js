@@ -83,6 +83,12 @@ module.exports = (socket, io) => {
       room.inUse = true;
       // Subscribe socket to the room
       socket.join(room.id);
+      // Share game end condition
+      io.to(socket.id).emit("change end condition", {
+        endConditionType: room.endCondition,
+        endConditionRounds: room.numRounds,
+        endConditionMoney: room.numMoney,
+      });
       // Assign default name, color, and other properties
       setup.assignDefaultProperties(io, socket, room);
       io.to(room.id).emit("player list update", room.users);

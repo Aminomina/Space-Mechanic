@@ -135,6 +135,7 @@ socket.on("player list update", function (users) {
 
 // Server updates the game's end condition
 socket.on("change end condition", function (data) {
+  console.log(data.endConditionType);
   game.endConditionType = data.endConditionType;
   game.endConditionRounds = data.endConditionRounds;
   game.endConditionMoney = data.endConditionMoney;

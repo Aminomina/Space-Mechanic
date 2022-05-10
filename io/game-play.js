@@ -126,9 +126,8 @@ function endRound(io, room, rankData) {
 }
 
 function checkEndGame(room) {
-  console.log(room.endCondition);
   if (room.endCondition === "rounds") {
-    if (room.round >= +room.numRounds) {
+    if (room.round > +room.numRounds) {
       return true;
     } else {
       return false;

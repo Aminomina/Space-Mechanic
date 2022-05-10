@@ -42,6 +42,12 @@
   display: block;
 }
 
+#round-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem;
+}
+
 .info-players-list {
   display: flex;
   flex-direction: column;

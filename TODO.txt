@@ -1,5 +1,7 @@
 BUGS
+- Sometimes only displaying one player in ranking
 - Sometimes fixes a job with a roll smaller than displayed
+- End game display doesn't always come up
 
 HIGH PRIORITY
 - Create demo video, Facebook page for updates

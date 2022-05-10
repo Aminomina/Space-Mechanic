@@ -17,6 +17,17 @@ const info = {
   playerExpElements: document.querySelectorAll(".info-player-exp span"),
 
   // METHODS
+  updateRoundInfo: function () {
+    const currentRoundElement = document.getElementById("info-current-round");
+    const endConditionElement = document.getElementById("info-end-condition");
+
+    currentRoundElement.textContent = `Round ${game.currentRound}`;
+    if (game.endConditionType === "rounds") {
+      endConditionElement.textContent = `Playing ${game.endConditionRounds} rounds`;
+    } else if (game.endConditionType === "money") {
+      endConditionElement.textContent = `Goal: $${game.endConditionMoney}`;
+    }
+  },
   showPlayerList: function () {
     for (let i = 0; i < userList.length; i++) {
       const money = userList[game.order[i]].money.toFixed(2);
@@ -38,6 +49,22 @@ const info = {
       if (info.playerNameElements[i].offsetWidth > 135) {
         info.playerNameElements[i].classList.add("squish");
       }
+    }
+  },
+  resetPlayersList: function () {
+    for (let i = 0; i < 4; i++) {
+      info.playerEntryElements[i].style.display = "none";
+      info.playerEntryElements[i].classList.remove(
+        "red",
+        "blue",
+        "purple",
+        "green"
+      );
+      info.playerNameElements[i].classList.remove("squish");
+      info.playerNameElements[i].textContent = "Player X";
+      info.playerMoneyElements[i].textContent = "0";
+      info.playerExpElements[i].textContent = "0";
+      info.playerNameIcons[i].src = "/images/wrench-red.png";
     }
   },
 };

@@ -70,6 +70,9 @@ const dialogue = {
     const playerMoneyElements = document.querySelectorAll(
       ".end-player-money span"
     );
+    let isAlreadyWinner = false;
+    let winners = [];
+
     // Update Values
     for (let i = 0; i < userList.length; i++) {
       const money = userList[moneyOrder[i]].money.toFixed(2);
@@ -81,11 +84,24 @@ const dialogue = {
       playerMoneyElements[i].textContent = money;
       playerNameIcons[i].src =
         "/images/wrench-" + userList[moneyOrder[i]].color + "-small.png";
+      // Check if winner
       if (rankArray[i] === 1) {
-        // Winning player
-        winnerMessageElement.textContent = `${userList[i].name} Wins!`;
-        setTimeout(game.requestResetGame, 5000);
+        winners.push(userList[i].name);
       }
+    }
+
+    winnerMessageElement.textContent = "";
+    if (winners.length === 1) {
+      winnerMessageElement.textContent = `${winners[0]} wins!`;
+    } else if (winners.length === 2) {
+      winnerMessageElement = `${winners[0]} and ${winners[1]} win!`;
+    } else {
+      for (let i = 0; i < winners.length - 1; i++) {
+        winnerMessageElement.textContent += `${winners[0]}, `;
+      }
+      winnerMessageElement.textContent += `and ${
+        winners[winners.length - 1]
+      } win!`;
     }
 
     // Set dialogue window to correct size
@@ -95,6 +111,34 @@ const dialogue = {
     dialogue.dialogueBox.style.display = "block";
     endGameDisplayElement.style.display = "flex";
     dialogue.backdropElement.style.display = "block";
+
+    // Request reset
+    setTimeout(game.requestResetGame, 5000);
+  },
+
+  resetEndGameDisplay: function () {
+    // Define Variables
+    const winnerMessageElement = document.getElementById("winner-message");
+    const playerEntryElements = document.querySelectorAll(".end-player-entry");
+    const playerRankElements = document.querySelectorAll(".end-player-rank");
+    const playerNameIcons = document.querySelectorAll(".end-player-name img");
+    const playerNameElements = document.querySelectorAll(
+      ".end-player-name span"
+    );
+    const playerMoneyElements = document.querySelectorAll(
+      ".end-player-money span"
+    );
+
+    // Update Values
+    for (let i = 0; i < 4; i++) {
+      playerEntryElements[i].style.display = "none";
+      playerEntryElements[i].classList.remove("red", "blue", "purple", "green");
+      playerRankElements[i].textContent = "X";
+      playerNameElements[i].textContent = "Player X";
+      playerMoneyElements[i].textContent = "0";
+      playerNameIcons[i].src = "/images/wrench-red.png";
+      winnerMessageElement.textContent = "X Wins!";
+    }
   },
 
   openRollDice: function (numSides) {
@@ -159,6 +203,25 @@ const dialogue = {
     dieSidesElement.textContent = dialogue.numDie;
     dialogue.allRollXButtons[userIndex].style.display = "block";
     dialogue.backdropElement.style.display = "block";
+  },
+
+  resetAllRollDice: function () {
+    // Define Variables
+    const rollPlayerEntryElements =
+      document.querySelectorAll(".roll-player-entry");
+    const playerNameElements = document.querySelectorAll(".all-player-name");
+    const playerOrderElements = document.querySelectorAll(".player-order");
+    const rollResultElements = document.querySelectorAll(".all-roll-result");
+
+    // Reset values
+    for (let i = 0; i < 4; i++) {
+      rollPlayerEntryElements[i].style.display = "none";
+      playerNameElements[i].textContent = "Player X";
+      rollResultElements[i].textContent = "?";
+      rollResultElements[i].style.display = "block";
+      playerOrderElements[i].style.display = "none";
+      playerNameElements[i].classList.remove("squish");
+    }
   },
 
   reroll: function (tieString, playerIndices) {
