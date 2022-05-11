@@ -4,9 +4,9 @@ BUGS
 - End game display doesn't always come up
 
 HIGH PRIORITY
+- Change chat colors to player color
+- Add rules section
 - Create demo video, Facebook page for updates
-- Add a round counter
-- Implement hazard pay
 - Implement cards
   - Start with a small number of test cards
   - Work out basic functionality
@@ -14,6 +14,7 @@ HIGH PRIORITY
 
 LOW PRIORITY
 - Add flying animation for ships (With flames!)
+- Add money, exp change animations
 - Add vanishing message bubble at top
   - Could display turns, player actions, etc.
 - Enlarge player icon on turn, highlight in players tab
@@ -27,7 +28,19 @@ LOW PRIORITY
 - Format for simplicity and clarity
   - Make more use of player colors
     - Chat message colors
+    - Turn jobs to player's color when claimed/fixed
 - Add more pages
   - About
   - Store?
 - Start advertising
+
+BETA FEATURES
+- Hide pigeons throughout
+- Add custom mechanic-related emoticons in chat
+  - Expressions, but on a person with a mechanic hat
+  - Various mechanic actions
+  - Tools
+  - Pigeon
+  - Ship icons
+  - Planets
+  - References to other illustrations, actions in game

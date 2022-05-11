@@ -15,6 +15,11 @@
   display: none;
 }
 
+#dialogue-box-controls ::selection {
+  color: inherit;
+  background-color: inherit;
+}
+
 #dialogue-box-close {
   position: absolute;
   top: 10px;
@@ -200,8 +205,59 @@
   margin: 1rem auto;
 }
 
-#job-detail-list img {
+.job-detail-image {
   height: 20rem;
+  width: 20rem;
+  position: relative;
+}
+
+.job-detail-image img {
+  height: 100%;
+}
+
+.image-overlay-screen {
+  display: none;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.image-overlay-screen.claimed,
+.image-overlay-screen.fixed {
+  display: block;
+}
+
+.image-overlay {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -webkit-transform: translateY(-50%) rotate(-45deg); /* Safari and Chrome */
+  -moz-transform: translateY(-50%) rotate(-45deg); /* Firefox */
+  -ms-transform: translateY(-50%) rotate(-45deg); /* IE 9 */
+  -o-transform: translateY(-50%) rotate(-45deg); /* Opera */
+  transform: translateY(-50%) rotate(-45deg); /* W3C */
+  border-radius: 1.2rem;
+  padding: 0.7rem 0 0 1rem;
+  font-weight: bold;
+}
+
+.image-overlay.claimed {
+  display: inline-block;
+  font-size: 3.5rem;
+  letter-spacing: 0.2rem;
+  color: #d7bf54;
+  border: solid #d7bf54 0.5rem;
+}
+
+.image-overlay.fixed {
+  display: inline-block;
+  font-size: 4rem;
+  letter-spacing: 1.2rem;
+  color: #3e963e;
+  border: solid #3e963e 0.5rem;
 }
 
 /* END OF ROUND/GAME */

@@ -442,7 +442,10 @@ const dialogue = {
       const entryContentElement = detailEntryElement.children[0];
       const entryStatsElement = entryContentElement.children[4];
       const entryButtonElement = entryContentElement.children[5];
-      const entryImageElement = detailEntryElement.children[1];
+      const entryImageSection = detailEntryElement.children[1];
+      const entryImageElement = entryImageSection.children[0];
+      const entryImageScreen = entryImageSection.children[1];
+      const entryImageOverlay = entryImageSection.children[2];
       const location = jobData.locations[job.locIndex];
       const type = jobData.types[job.typeIndex];
       let totalDifficulty =
@@ -453,12 +456,32 @@ const dialogue = {
 
       detailEntryElement.style.display = "flex";
 
+      // Job Info
       entryContentElement.children[0].textContent = location.name;
       entryContentElement.children[1].textContent = type.name;
       entryContentElement.children[2].textContent = location.description;
       entryContentElement.children[3].textContent =
         location["difficulty-description"];
+
+      // Job Image
       entryImageElement.src = `/images/job-detail/${job.locIndex}.png`;
+
+      entryImageOverlay.textContent = "";
+      entryImageScreen.classList.remove("claimed", "fixed");
+      entryImageOverlay.classList.remove("claimed", "fixed");
+
+      // Job is claimed
+      if (job.status === 1) {
+        entryImageOverlay.textContent = "CLAIMED";
+        entryImageScreen.classList.add("claimed");
+        entryImageOverlay.classList.add("claimed");
+      }
+      // Job is fixed
+      else if (job.status === 2) {
+        entryImageOverlay.textContent = "FIXED";
+        entryImageScreen.classList.add("fixed");
+        entryImageOverlay.classList.add("fixed");
+      }
 
       // Job Stats
       if (location.name === "Satellite") {
@@ -480,7 +503,9 @@ const dialogue = {
         (isUserActive && job.status === 0) ||
         (isUserActive &&
           job.status === 1 &&
-          userList[userIndex].currentJobIndex === job.id)
+          userList[userIndex].currentJobIndex === job.id &&
+          dashboard.turnInfo.newJobChoice >= 0 &&
+          dashboard.turnInfo.newJobChoice !== job.id)
       ) {
         entryButtonElement.style.display = "block";
         entryButtonElement.addEventListener("click", dialogue.chooseJob);

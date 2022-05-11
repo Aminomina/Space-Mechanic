@@ -5,6 +5,13 @@ const chat = {
   inputElement: document.getElementById("radio-entry-input"),
   entryElement: document.getElementById("radio-entry-box"),
   // METHODS
+  sendMessage: function (message) {
+    socket.emit("chat message", { message, roomId });
+    chat.inputElement.value = "";
+  },
+  updateChatColor: function (color) {
+    const entryBoxElement = document.getElementById("radio-entry-box");
+  },
 };
 
 // EVENT LISTENERS
@@ -13,8 +20,7 @@ chat.entryElement.addEventListener("submit", function (event) {
   event.preventDefault();
   const message = chat.inputElement.value;
   if (chat.inputElement.value) {
-    socket.emit("chat message", { message, roomId });
-    chat.inputElement.value = "";
+    chat.sendMessage(message);
   }
 });
 
@@ -27,18 +33,18 @@ chat.entryElement.addEventListener("keypress", function (event) {
   ) {
     event.preventDefault();
     const message = chat.inputElement.value;
-    socket.emit("chat message", { message, roomId });
-    chat.inputElement.value = "";
+    chat.sendMessage(message);
   }
 });
 
 // SOCKET.IO
 // User receives a message
-socket.on("chat message", function (msg) {
+socket.on("chat message", function (data) {
   sineContainterElement = document.getElementById("radio-sine-container");
   messagesElement = document.getElementById("radio-messages");
   const item = document.createElement("li");
-  item.textContent = msg;
+  item.textContent = data.message;
+  item.classList.add(`${data.color}-text`);
   messagesElement.appendChild(item);
   messagesElement.scrollTo(0, document.body.scrollHeight);
   sineContainterElement.classList.remove("incoming"); // reset animation

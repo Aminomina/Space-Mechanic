@@ -1,8 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,700;1,400&family=Roboto+Serif:ital,wght@0,400;0,700;1,400&display=swap");
 
 html {
+  --white-text: rgb(180, 172, 172);
+  --white-placeholder: rgb(144, 133, 133);
+  --red-text: rgb(164, 78, 78);
+  --red-placeholder: rgb(111, 44, 44);
   --green-text: rgb(87, 164, 78);
   --green-placeholder: rgb(49, 111, 44);
+  --blue-text: rgb(78, 115, 164);
+  --blue-placeholder: rgb(44, 77, 111);
+  --purple-text: rgb(163, 78, 164);
+  --purple-placeholder: rgb(100, 44, 111);
 
   --button: rgb(86, 81, 79);
   --button-hover: rgb(54, 50, 46);

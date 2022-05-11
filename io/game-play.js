@@ -151,12 +151,16 @@ module.exports = (socket, io) => {
   // User emits a message
   socket.on("chat message", (data) => {
     const room = rooms[data.roomId - 1];
-    for (const user of room.users) {
+    let message;
+    let color;
+    for (let i = 0; i < room.users.length; i++) {
+      const user = room.users[i];
       if (user.id === socket.id) {
-        data.message = user.name + ": " + data.message;
+        message = user.name + ": " + data.message;
+        color = user.color;
       }
     }
-    io.to(room.id).emit("chat message", data.message);
+    io.to(room.id).emit("chat message", { message, color });
   });
 
   // Player ends turn
@@ -273,7 +277,10 @@ module.exports = (socket, io) => {
     const room = rooms[data.roomId - 1];
     userToPlanet(io, room, data.jobId, data.userIndex);
     // Make old job available again if not fixed
-    if (room.jobsArray[data.oldJobId].status !== 2) {
+    if (
+      room.jobsArray[data.oldJobId].status !== 2 &&
+      data.oldJobId !== data.jobId
+    ) {
       room.jobsArray[data.oldJobId].status = 0;
     }
     // Update jobsArray

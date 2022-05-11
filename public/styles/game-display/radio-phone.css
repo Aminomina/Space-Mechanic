@@ -3,7 +3,7 @@
     background-color: black;
   }
   20% {
-    background-color: var(--green-placeholder);
+    background-color: rgb(184, 184, 184);
   }
   0% {
     background-color: black;
@@ -42,7 +42,7 @@
   margin: 4%;
   border-radius: 10px;
   /* Font Styling */
-  color: var(--green-text);
+  color: var(--white-text);
   font-family: "Roboto Serif", serif;
   font-size: 14px;
   line-height: 18px;
@@ -70,6 +70,38 @@
   margin: 0.5rem 0;
 }
 
+.red-text {
+  color: var(--red-text);
+}
+
+.red-dark-text {
+  color: var(--red-placeholder);
+}
+
+.green-text {
+  color: var(--green-text);
+}
+
+.green-dark-text {
+  color: var(--green-placeholder);
+}
+
+.blue-text {
+  color: var(--blue-text);
+}
+
+.blue-dark-text {
+  color: var(--blue-placeholder);
+}
+
+.purple-text {
+  color: var(--purple-text);
+}
+
+.purple-dark-text {
+  color: var(--purple-placeholder);
+}
+
 #radio-entry-box {
   display: flex;
   flex-direction: column;
@@ -87,7 +119,7 @@
   border-color: black;
   margin: 6px;
   /* Font Styling */
-  color: var(--green-text);
+  color: var(--white-text);
   /* text-transform: uppercase; */
   font-family: "Roboto Serif", serif;
   font-size: 14px;
@@ -95,13 +127,17 @@
   letter-spacing: 1px;
 }
 
-#radio-entry-box ::placeholder {
-  color: var(--green-placeholder);
+#radio-entry-box.red textarea {
+  color: var(--red-text);
+}
+
+#radio-entry-box.red ::placeholder {
+  color: var(--red-placeholder);
 }
 
 #radio-phone ::selection {
   color: black;
-  background-color: var(--green-text);
+  background-color: var(--white-placeholder);
 }
 
 #radio-entry-box button {
@@ -109,7 +145,7 @@
   border: transparent;
   margin-bottom: 10px;
   /* Font Styling */
-  color: var(--green-placeholder);
+  color: var(--white-placeholder);
   /* text-transform: uppercase; */
   font-family: "Roboto Serif", serif;
   font-size: 14px;
@@ -119,5 +155,5 @@
 
 #radio-entry-box button:hover {
   cursor: pointer;
-  color: var(--green-text);
+  color: var(--white-text);
 }

@@ -167,6 +167,7 @@ const dashboard = {
       // Hopping to another job in system
       // board.clearJobLines();
       console.log("hopping to another job");
+      console.log(game.jobsArray[jobId]);
       socket.emit("update player job", {
         roomId,
         userIndex,
@@ -287,6 +288,7 @@ const dashboard = {
     const currentJob = game.jobsArray[userList[userIndex].currentJobIndex];
     const hazardType = currentJob["hazard-type"];
     const hazardString = currentJob["hazard-roll-string"];
+    const hazardPay = currentJob["hazard-pay"];
 
     dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
     rollResultElement.textContent = dialogue.rollResult;
@@ -304,6 +306,15 @@ const dashboard = {
       // Display roll text
       rollMessageElement.textContent = `You avoided ${hazardString}!`;
       rollMessageElement.style.display = "block";
+
+      // Get hazard pay
+      const newMoney = userList[userIndex].money + hazardPay;
+      // Update player stats
+      socket.emit("update player stats", {
+        roomId,
+        userIndex,
+        newUserStats: { money: newMoney },
+      });
     } else {
       console.log("not successful.");
       // Display roll text
