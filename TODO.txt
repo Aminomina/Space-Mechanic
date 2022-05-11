@@ -43,4 +43,4 @@ BETA FEATURES
   - Pigeon
   - Ship icons
   - Planets
-  - References to other illustrations, actions in game
+  - References to other illustrations, actions in gam
