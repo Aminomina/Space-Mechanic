@@ -131,10 +131,6 @@
   width: 62%;
 }
 
-#dialogue-box.end-of-round {
-  top: 10%;
-}
-
 #job-detail {
   height: 25rem;
   overflow-x: hidden;
@@ -168,8 +164,10 @@
 }
 
 #job-detail-list li {
+  height: 20rem;
   background-color: var(--card-400);
   border-radius: 8px;
+  border: 3px solid var(--button-disabled);
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
@@ -261,16 +259,47 @@
 }
 
 /* END OF ROUND/GAME */
-#end-of-round,
+#dialogue-box.end-of-round {
+  top: 10%;
+  width: 55rem;
+}
+
+#end-of-round {
+  display: none;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 #end-game {
   display: none;
   flex-direction: column;
   justify-content: center;
 }
 
+#end-of-round-description {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  width: 26rem;
+  padding: 1rem;
+}
+
+#end-of-round-rankings {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  width: 25rem;
+  padding: 1rem;
+}
+
 #end-of-round h2,
 #end-game h2 {
   margin: 0.75rem 0;
+}
+
+#end-of-round-img {
+  height: 12rem;
+  margin: 0 auto;
 }
 
 #rank-players,

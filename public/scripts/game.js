@@ -11,6 +11,7 @@ const game = {
   order: [0, 1, 2, 3],
   isTurn: false,
   jobsArray: [],
+  activeUserIndex: undefined,
   waitingRoomElement: document.getElementById("waiting-room"),
   gameContentElement: document.getElementById("game-content"),
   gameSessionElement: document.getElementById("info-board-bottom"),
@@ -46,10 +47,12 @@ const game = {
   // Start a new round after dice roll
   startRound: function () {
     dialogue.closeDialogueBox();
+    game.activeUserIndex = game.order[0];
+    dashboard.updatePlayerPreview();
     info.showPlayerList();
     board.homeShips();
     console.log(userList);
-    if (userId === userList[game.order[0]].id) {
+    if (userIndex === game.activeUserIndex) {
       console.log("I'm the active player!");
       game.requestJobsArray();
       game.startTurn();
@@ -123,9 +126,13 @@ const game = {
     // Check if user must roll for hazards
     const currentJob = game.jobsArray[currentJobIndex];
     if (
+      // Player is on a planet with a hazard
       currentJob != undefined &&
       "hazard-type" in currentJob &&
       currentJob["hazard-type"] != 0 &&
+      // The current job is not fixed
+      currentJob.status !== 2 &&
+      // Player is on planet (not in orbit)
       currentJob.locIndex != 6
     ) {
       console.log("Roll for hazard!");
@@ -174,6 +181,9 @@ socket.on("start game", function () {
   game.initializePlayerInfo();
   board.drawGrid();
   info.updateRoundInfo();
+  info.openRulesTab(0);
+  info.openTab(0);
+  dashboard.updatePlayerPreview();
   info.showPlayerList();
   dialogue.openAllRollDice();
 });
@@ -189,6 +199,7 @@ socket.on("update player stats", function (data) {
   for (const property in data.newUserStats) {
     user[property] = data.newUserStats[property];
   }
+  dashboard.updatePlayerPreview();
   info.showPlayerList();
 });
 
@@ -267,6 +278,14 @@ socket.on("update player location", function (data) {
   dashboard.updateLocationString();
 });
 
+// Server updates active player
+socket.on("update active player", function (activeUserIndex) {
+  console.log("updating active player!");
+  console.log(activeUserIndex);
+  game.activeUserIndex = activeUserIndex;
+  info.showPlayerList();
+});
+
 // Server starts a new round
 socket.on("end round", function (data) {
   game.endRound(data.moneyOrder, data.rankArray);
@@ -282,6 +301,7 @@ socket.on("reset game", function () {
   game.order = [0, 1, 2, 3];
   game.isTurn = false;
   game.jobsArray = [];
+  game.activeUserIndex = undefined;
   game.currentRound = 1;
   dialogue.closeDialogueBox();
   info.resetPlayersList();

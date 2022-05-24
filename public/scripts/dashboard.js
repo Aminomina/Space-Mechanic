@@ -136,6 +136,22 @@ const dashboard = {
       previewStatsElement.style.display = "none";
     }
   },
+  updatePlayerPreview: function () {
+    // Variables
+    const nameIconElement =
+      document.getElementById("dash-player-name").children[0];
+    const nameElement = document.getElementById("dash-player-name").children[1];
+    const moneyElement =
+      document.getElementById("dash-player-money").children[1];
+    const expElement = document.getElementById("dash-player-exp").children[1];
+
+    // Update Values
+    nameIconElement.src =
+      "/images/icons/wrench-" + userList[userIndex].color + "-small.png";
+    nameElement.textContent = userList[userIndex].name;
+    moneyElement.textContent = userList[userIndex].money.toFixed(2);
+    expElement.textContent = userList[userIndex].exp.toFixed(0);
+  },
   registerJob: function (jobId) {
     console.log("registering job");
     // Variables
@@ -381,6 +397,12 @@ const dashboard = {
     // Variables
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
+    const jobIndex = userList[userIndex].currentJobIndex;
+    const job = game.jobsArray[jobIndex];
+    const location = jobData.locations[job.locIndex];
+    const type = jobData.types[job.typeIndex];
+    let totalExp = 1 + job.exp + location.exp + type.diffexpay;
+    let totalReward = job["base-reward"] * (1 + location.pay + type.diffexpay);
 
     game.hasRolledToFix = true;
 
@@ -411,28 +433,17 @@ const dashboard = {
     // Manage roll success or failure
     if (score >= 3) {
       console.log("success!");
-      // Define Variables
-      const jobIndex = userList[userIndex].currentJobIndex;
-      const job = game.jobsArray[jobIndex];
-      const location = jobData.locations[job.locIndex];
-      const type = jobData.types[job.typeIndex];
-      let totalExp = 1 + job.exp + location.exp + type.diffexpay;
-      let totalReward =
-        job["base-reward"] * (1 + location.pay + type.diffexpay);
-
       // Display roll text
       rollMessageElement.textContent = "The job was fixed successfully!";
       rollMessageElement.style.display = "block";
-
       // Update turnInfo
-      const newMoney = userList[userIndex].money + totalReward;
-      const newExp = userList[userIndex].exp + totalExp * 50;
       dashboard.turnInfo.jobOutcome = {
         jobId: jobIndex,
         status: 2,
       };
-
       // Update player stats
+      const newMoney = userList[userIndex].money + totalReward;
+      const newExp = userList[userIndex].exp + totalExp * 50;
       socket.emit("update player stats", {
         roomId,
         userIndex,
@@ -446,12 +457,20 @@ const dashboard = {
       });
     } else {
       console.log("not successful.");
+      // Display roll text
       rollMessageElement.textContent = "Couldn't fix the job today...";
       rollMessageElement.style.display = "block";
       dashboard.turnInfo.jobOutcome = {
         jobId: userList[userIndex].currentJobIndex,
         status: 1,
       };
+      // Update player stats
+      const newExp = userList[userIndex].exp + totalExp * 25;
+      socket.emit("update player stats", {
+        roomId,
+        userIndex,
+        newUserStats: { exp: newExp },
+      });
     }
 
     // Update job preview

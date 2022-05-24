@@ -1,32 +1,32 @@
 <nav id="info-tabs">
   <ul>
-    <li id="info-players-tab" class="active">Players</li>
-    <li id="info-rules-tab">Rules</li>
-    <li id="info-settings-tab">Settings</li>
+    <li id="info-players-tab" class="info-tab active">Players</li>
+    <li id="info-rules-tab" class="info-tab">Rules</li>
+    <li id="info-settings-tab" class="info-tab">Settings</li>
   </ul>
 </nav>
 <section id="info-content">
   <ul>
     <li>
-      <article id="info-players" class="active">
+      <article id="info-players" class="info-content-article active">
         <section id="round-info">
-          <span id="info-current-round">Round X</span>
+          <span id="info-current-round">Week X</span>
           <span id="info-end-condition">Goal: $X</span>
         </section>
         <ul id="info-players-list">
           <li id="info-player-1" class="info-player-entry">
             <ul>
               <li class="info-player-name">
-                <img src="/images/wrench-red.png" alt="A wrench icon" />
+                <img src="/images/icons/wrench-red.png" alt="A wrench icon" />
                 <span>Player X</span>
               </li>
               <li class="info-player-stats">
                 <div class="info-player-money">
-                  <img src="/images/money.png" alt="A money icon" />
+                  <img src="/images/icons/money.png" alt="A money icon" />
                   <span>0</span>
                 </div>
                 <div class="info-player-exp">
-                  <img src="/images/exp.png" alt="An experience icon" />
+                  <img src="/images/icons/exp.png" alt="An experience icon" />
                   <span>0</span>
                 </div>
               </li>
@@ -35,16 +35,16 @@
           <li id="info-player-2" class="info-player-entry">
             <ul>
               <li class="info-player-name">
-                <img src="/images/wrench-red.png" alt="A wrench icon" />
+                <img src="/images/icons/wrench-red.png" alt="A wrench icon" />
                 <span>Player X</span>
               </li>
               <li class="info-player-stats">
                 <div class="info-player-money">
-                  <img src="/images/money.png" alt="A money icon" />
+                  <img src="/images/icons/money.png" alt="A money icon" />
                   <span>0</span>
                 </div>
                 <div class="info-player-exp">
-                  <img src="/images/exp.png" alt="An experience icon" />
+                  <img src="/images/icons/exp.png" alt="An experience icon" />
                   <span>0</span>
                 </div>
               </li>
@@ -53,16 +53,16 @@
           <li id="info-player-3" class="info-player-entry">
             <ul>
               <li class="info-player-name">
-                <img src="/images/wrench-red.png" alt="A wrench icon" />
+                <img src="/images/icons/wrench-red.png" alt="A wrench icon" />
                 <span>Player X</span>
               </li>
               <li class="info-player-stats">
                 <div class="info-player-money">
-                  <img src="/images/money.png" alt="A money icon" />
+                  <img src="/images/icons/money.png" alt="A money icon" />
                   <span>0</span>
                 </div>
                 <div class="info-player-exp">
-                  <img src="/images/exp.png" alt="An experience icon" />
+                  <img src="/images/icons/exp.png" alt="An experience icon" />
                   <span>0</span>
                 </div>
               </li>
@@ -71,16 +71,16 @@
           <li id="info-player-4" class="info-player-entry">
             <ul>
               <li class="info-player-name">
-                <img src="/images/wrench-red.png" alt="A wrench icon" />
+                <img src="/images/icons/wrench-red.png" alt="A wrench icon" />
                 <span>Player X</span>
               </li>
               <li class="info-player-stats">
                 <div class="info-player-money">
-                  <img src="/images/money.png" alt="A money icon" />
+                  <img src="/images/icons/money.png" alt="A money icon" />
                   <span>0</span>
                 </div>
                 <div class="info-player-exp">
-                  <img src="/images/exp.png" alt="An experience icon" />
+                  <img src="/images/icons/exp.png" alt="An experience icon" />
                   <span>0</span>
                 </div>
               </li>
@@ -90,24 +90,12 @@
       </article>
     </li>
     <li>
-      <article id="info-rules">
-        <p>
-          Rules: Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore
-          animi ipsam impedit id doloribus, minus, enim, voluptatem officiis
-          quasi facere est placeat ea sapiente. Error natus pariatur a corrupti
-          tempora!
-        </p>
+      <article id="info-rules" class="info-content-article">
+        <%- include('rules') %>
       </article>
     </li>
     <li>
-      <article id="info-settings">
-        <p>
-          Settings: Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Beatae magni alias aspernatur possimus impedit cupiditate veritatis
-          reiciendis commodi veniam ab inventore eum exercitationem quidem
-          voluptatem sint dolores qui, neque eveniet.
-        </p>
-      </article>
+      <article id="info-settings" class="info-content-article"></article>
     </li>
   </ul>
 </section>

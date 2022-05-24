@@ -341,7 +341,7 @@ const board = {
     for (i = 0; i < userList.length; i++) {
       const user = userList[i];
       const icon = shipElements[i].children[0];
-      icon.src = `/images/ship-${user.color}.png`;
+      icon.src = `/images/icons/ship-${user.color}.png`;
       user.coordinates = [0, 0];
       user.boardCoordinates = board.shipPositions[userList.length - 1][i];
       board.moveShip(i, user.boardCoordinates);

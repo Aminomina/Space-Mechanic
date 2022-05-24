@@ -123,7 +123,7 @@ socket.on("player list update", function (users) {
     const playerImage = document.createElement("img");
     playerElementText.textContent = user.name;
     playerImage.alt = "A wrench icon";
-    playerImage.src = "/images/wrench-" + user.color + ".png";
+    playerImage.src = "/images/icons/wrench-" + user.color + ".png";
     playerElement.appendChild(playerImage);
     playerElement.appendChild(playerElementText);
     joinedPlayersElement.appendChild(playerElement);

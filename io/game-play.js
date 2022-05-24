@@ -64,7 +64,7 @@ function userTransit(
 
 // Reset round data and calculate player ranking
 function rankReset(room) {
-  room.day = 0;
+  room.day = 1;
   room.round++;
   console.log(`Round ${room.round}`);
 
@@ -245,9 +245,13 @@ module.exports = (socket, io) => {
       }
     }
 
-    // Send new turn request to active player
+    // Send new turn request to active user, prompt clients to update active user
     console.log(data.userIndex);
     io.to(room.users[room.order[room.activeUserIndex]].id).emit("start turn");
+    io.to(room.id).emit(
+      "update active player",
+      room.order[room.activeUserIndex]
+    );
   });
 
   // Player updates status

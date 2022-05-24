@@ -42,6 +42,8 @@
   display: block;
 }
 
+/* Players Tab */
+
 #round-info {
   display: flex;
   justify-content: space-between;
@@ -77,6 +79,10 @@
 
 .info-player-entry.purple {
   background-color: var(--background-purple);
+}
+
+.info-player-entry.active {
+  border-color: var(--highlight);
 }
 
 .info-player-name {
@@ -118,4 +124,72 @@
 
 .info-player-stats span {
   margin: 0 0.5rem;
+}
+
+/* Rules Tab */
+
+#info-controls svg:hover {
+  cursor: pointer;
+}
+
+.rule-page {
+  display: none;
+  flex-direction: column;
+  max-height: 19rem;
+  width: 80%;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem auto;
+  background-color: var(--card-400);
+  border: 2px solid var(--button-disabled);
+  border-radius: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.rule-page.active {
+  display: flex;
+}
+
+#info-rules-pages p {
+  margin: 0.5rem 0;
+}
+
+#info-rules-pages li::-webkit-scrollbar {
+  width: 10px;
+}
+
+#info-rules-pages li::-webkit-scrollbar-track {
+  background: var(--button-disabled);
+}
+
+#info-rules-pages li::-webkit-scrollbar-thumb {
+  background: var(--button);
+  border-radius: 5px;
+}
+
+#info-rules-pages li::-webkit-scrollbar-thumb:hover {
+  background: var(--button-hover);
+}
+
+#info-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(80% + 2rem);
+  margin: 0.5rem auto;
+}
+
+#info-controls h3 {
+  margin: 0;
+}
+
+#info-controls .flipped {
+  -webkit-transform: scale(-1, 1) translateX(-100%); /* Safari and Chrome */
+  -moz-transform: scale(-1, 1) translateX(-100%); /* Firefox */
+  -ms-transform: scale(-1, 1) translateX(-100%); /* IE 9 */
+  -o-transform: scale(-1, 1) translateX(-100%); /* Opera */
+  transform: scale(-1, 1) translateX(-100%); /* W3C */
 }

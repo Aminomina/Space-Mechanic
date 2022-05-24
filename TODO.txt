@@ -1,23 +1,35 @@
 BUGS
 - Sometimes only displaying one player in ranking
 - Sometimes fixes a job with a roll smaller than displayed
-- End game display doesn't always come up
+- End game display doesn't always come up (could be from escaping roll-to-fix?)
+- Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
 
 HIGH PRIORITY
-- Change chat colors to player color
-- Add rules section
 - Create demo video, Facebook page for updates
 - Implement cards
   - Start with a small number of test cards
   - Work out basic functionality
+  - STEPS:
+    - New js file with array of all cards listed as objects (start with smaller sample size)
+    - Make cards display on bottom bar with test cards
+    - Create separate arrays (decks) which reference these objects
+    - Add card array as a new property for each user
+    - Individually code outcome for playing each card
 - Implement card theft in hazards
+- Messages saying "It's your turn," "You've arrived on ____," etc.
 
 LOW PRIORITY
+- Add sounds, music
+  - Record foley
+    - Money clinking
+    - Whisperlite for rocket sound
+    - Various tool sounds
+    - Dice roll
 - Add flying animation for ships (With flames!)
 - Add money, exp change animations
 - Add vanishing message bubble at top
   - Could display turns, player actions, etc.
-- Enlarge player icon on turn, highlight in players tab
+- Enlarge player icon on turn?
 - Create some distinction for player's piece, tab
   (marker, flipped color pattern?)
 - Hover effect on ships (name, stats)
@@ -25,9 +37,11 @@ LOW PRIORITY
   - Error pages
   - Planet icons
   - Planet detail
+  - Work week over
+  - Game over
 - Format for simplicity and clarity
   - Make more use of player colors
-    - Chat message colors
+    - Job lines and days-to-loc icon
     - Turn jobs to player's color when claimed/fixed
 - Add more pages
   - About
@@ -35,6 +49,11 @@ LOW PRIORITY
 - Start advertising
 
 BETA FEATURES
+- Tutorial mode
+  - Bubbles display over different options to walk a player through the game.
+  - Can be used with an example round or in an actual game
+- Difficulty setting with more hazards, debt, etc.
+- Tool sets, vehicles, and loans
 - Hide pigeons throughout
 - Add custom mechanic-related emoticons in chat
   - Expressions, but on a person with a mechanic hat
@@ -43,4 +62,8 @@ BETA FEATURES
   - Pigeon
   - Ship icons
   - Planets
-  - References to other illustrations, actions in gam
+  - References to other illustrations, actions in game
+- Additional color choices
+- Additional player icons
+- Accounts
+  - Allow you to rejoin a game if you get disconnected

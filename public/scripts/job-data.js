@@ -28,7 +28,7 @@ const jobData = {
     {
       name: "Waterpark",
       description:
-        "Wet, uncomfortably warm, and louder than a construction site",
+        "Wet, uncomfortably warm, and louder than a construction site.",
       difficulty: 0.15,
       "difficulty-description":
         "Add 0.15x difficulty for wet working conditions and screaming children.",

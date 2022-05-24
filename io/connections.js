@@ -46,7 +46,7 @@ const setup = {
   resetRoomValues: function (room) {
     room.users = [];
     room.numRounds = 10;
-    room.numMoney = 20000;
+    room.numMoney = 10000;
     room.endCondition = "rounds";
     room.inUse = false;
     room.isStarted = false;

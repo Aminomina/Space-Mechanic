@@ -5,9 +5,9 @@ const info = {
   playersTabElement: document.getElementById("info-players-tab"),
   rulesTabElement: document.getElementById("info-rules-tab"),
   settingsTabElement: document.getElementById("info-settings-tab"),
-  playersElement: document.getElementById("info-players"),
-  rulesElement: document.getElementById("info-rules"),
-  settingsElement: document.getElementById("info-settings"),
+  // playersElement: document.getElementById("info-players"),
+  // rulesElement: document.getElementById("info-rules"),
+  // settingsElement: document.getElementById("info-settings"),
   playerEntryElements: document.querySelectorAll(".info-player-entry"),
   playerNameIcons: document.querySelectorAll(".info-player-name img"),
   playerNameElements: document.querySelectorAll(".info-player-name span"),
@@ -15,15 +15,52 @@ const info = {
   playerMoneyElements: document.querySelectorAll(".info-player-money span"),
   playerExpIcons: document.querySelectorAll(".info-player-exp img"),
   playerExpElements: document.querySelectorAll(".info-player-exp span"),
+  rulesLeftElement: document.getElementById("rules-left"),
+  rulesRightElement: document.getElementById("rules-right"),
+  rulesTabIndex: 0,
+  numRulesTabs: document.querySelectorAll(".rule-page").length,
+  rulesTabNames: [
+    "Overview",
+    "Jobs",
+    "Days & Weeks",
+    "Travel",
+    "Hazards",
+    "Cards",
+  ],
 
   // METHODS
+  openTab: function (tabIndex) {
+    const tabElements = document.querySelectorAll(".info-tab");
+    const contentElements = document.querySelectorAll(".info-content-article");
+
+    for (const tab of tabElements) {
+      tab.classList.remove("active");
+    }
+    for (const content of contentElements) {
+      content.classList.remove("active");
+    }
+
+    tabElements[tabIndex].classList.add("active");
+    contentElements[tabIndex].classList.add("active");
+  },
+  openRulesTab: function (pageIndex) {
+    const pageElements = document.querySelectorAll(".rule-page");
+    const pageTitleElement = document.getElementById("rules-page-title");
+
+    for (const page of pageElements) {
+      page.classList.remove("active");
+    }
+
+    pageTitleElement.textContent = info.rulesTabNames[pageIndex];
+    pageElements[pageIndex].classList.add("active");
+  },
   updateRoundInfo: function () {
     const currentRoundElement = document.getElementById("info-current-round");
     const endConditionElement = document.getElementById("info-end-condition");
 
-    currentRoundElement.textContent = `Round ${game.currentRound}`;
+    currentRoundElement.textContent = `Week ${game.currentRound}`;
     if (game.endConditionType === "rounds") {
-      endConditionElement.textContent = `Playing ${game.endConditionRounds} rounds`;
+      endConditionElement.textContent = `Playing ${game.endConditionRounds} weeks`;
     } else if (game.endConditionType === "money") {
       endConditionElement.textContent = `Goal: $${game.endConditionMoney}`;
     }
@@ -37,7 +74,8 @@ const info = {
         "red",
         "blue",
         "purple",
-        "green"
+        "green",
+        "active"
       );
       info.playerNameElements[i].classList.remove("squish");
       info.playerEntryElements[i].classList.add(userList[game.order[i]].color);
@@ -45,9 +83,15 @@ const info = {
       info.playerMoneyElements[i].textContent = money;
       info.playerExpElements[i].textContent = exp;
       info.playerNameIcons[i].src =
-        "/images/wrench-" + userList[game.order[i]].color + "-small.png";
+        "/images/icons/wrench-" + userList[game.order[i]].color + "-small.png";
       if (info.playerNameElements[i].offsetWidth > 135) {
         info.playerNameElements[i].classList.add("squish");
+      }
+      // Highlight active player (if applicable)
+      if (game.order[i] === game.activeUserIndex) {
+        console.log(game.activeUserIndex);
+        console.log(game.order);
+        info.playerEntryElements[i].classList.add("active");
       }
     }
   },
@@ -64,50 +108,47 @@ const info = {
       info.playerNameElements[i].textContent = "Player X";
       info.playerMoneyElements[i].textContent = "0";
       info.playerExpElements[i].textContent = "0";
-      info.playerNameIcons[i].src = "/images/wrench-red.png";
+      info.playerNameIcons[i].src = "/images/icons/wrench-red.png";
     }
   },
 };
 
 // EVENT LISTENERS
 //   Click on Players Tab
-console.log("players");
 info.playersTabElement.addEventListener("click", function () {
-  const activeTabElement = document.querySelector("#info-tabs .active");
-  const activeContentElement = document.querySelector(
-    "#info-content article.active"
-  );
-
-  activeTabElement.classList.remove("active");
-  activeContentElement.classList.remove("active");
-  info.playersTabElement.classList.add("active");
-  info.playersElement.classList.add("active");
+  console.log("players");
+  info.openTab(0);
 });
 
 //   Click on Rules Tab
 info.rulesTabElement.addEventListener("click", function () {
   console.log("rules");
-  const activeTabElement = document.querySelector("#info-tabs .active");
-  const activeContentElement = document.querySelector(
-    "#info-content article.active"
-  );
-
-  activeTabElement.classList.remove("active");
-  activeContentElement.classList.remove("active");
-  info.rulesTabElement.classList.add("active");
-  info.rulesElement.classList.add("active");
+  info.openTab(1);
 });
 
 //   Click on Settings Tab
 info.settingsTabElement.addEventListener("click", function () {
   console.log("settings");
-  const activeTabElement = document.querySelector("#info-tabs .active");
-  const activeContentElement = document.querySelector(
-    "#info-content article.active"
-  );
+  info.openTab(2);
+});
 
-  activeTabElement.classList.remove("active");
-  activeContentElement.classList.remove("active");
-  info.settingsTabElement.classList.add("active");
-  info.settingsElement.classList.add("active");
+//   Click on Rules Left
+info.rulesLeftElement.addEventListener("click", function () {
+  if (info.rulesTabIndex !== 0) {
+    info.rulesTabIndex--;
+  } else {
+    console.log(info.numRulesTabs);
+    info.rulesTabIndex = info.numRulesTabs - 1;
+  }
+  info.openRulesTab(info.rulesTabIndex);
+});
+
+//   Click on Rules Right
+info.rulesRightElement.addEventListener("click", function () {
+  if (info.rulesTabIndex !== info.numRulesTabs - 1) {
+    info.rulesTabIndex++;
+  } else {
+    info.rulesTabIndex = 0;
+  }
+  info.openRulesTab(info.rulesTabIndex);
 });

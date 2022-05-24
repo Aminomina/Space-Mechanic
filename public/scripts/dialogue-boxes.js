@@ -42,7 +42,7 @@ const dialogue = {
       playerNameElements[i].textContent = userList[moneyOrder[i]].name;
       playerMoneyElements[i].textContent = money;
       playerNameIcons[i].src =
-        "/images/wrench-" + userList[moneyOrder[i]].color + "-small.png";
+        "/images/icons/wrench-" + userList[moneyOrder[i]].color + "-small.png";
     }
 
     // Set dialogue window to correct size
@@ -83,7 +83,7 @@ const dialogue = {
       playerNameElements[i].textContent = userList[moneyOrder[i]].name;
       playerMoneyElements[i].textContent = money;
       playerNameIcons[i].src =
-        "/images/wrench-" + userList[moneyOrder[i]].color + "-small.png";
+        "/images/icons/wrench-" + userList[moneyOrder[i]].color + "-small.png";
       // Check if winner
       if (rankArray[i] === 1) {
         winners.push(userList[i].name);
@@ -136,7 +136,7 @@ const dialogue = {
       playerRankElements[i].textContent = "X";
       playerNameElements[i].textContent = "Player X";
       playerMoneyElements[i].textContent = "0";
-      playerNameIcons[i].src = "/images/wrench-red.png";
+      playerNameIcons[i].src = "/images/icons/wrench-red.png";
       winnerMessageElement.textContent = "X Wins!";
     }
   },
