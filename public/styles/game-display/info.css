@@ -135,7 +135,7 @@
 .rule-page {
   display: none;
   flex-direction: column;
-  max-height: 19rem;
+  max-height: 18rem;
   width: 80%;
   padding: 0.5rem 1rem;
   margin: 0.5rem auto;

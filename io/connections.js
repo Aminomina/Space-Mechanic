@@ -19,6 +19,7 @@ const setup = {
       actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space, 4: in the hospital
       site: "home base",
       currentJobIndex: -1,
+      cards: [],
     };
     user.color = setup.generatePlayerColor(room.users);
     io.to(socket.id).emit("assign name", user.name, user.id, user.color);

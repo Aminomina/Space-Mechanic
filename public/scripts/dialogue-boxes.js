@@ -535,6 +535,51 @@ const dialogue = {
 
     // if (jobId === userList[userIndex].currentJobIndex) {}
   },
+
+  openCardDetail: function (cardIndex) {
+    dialogue.closeDialogueBox();
+    // Define Variables
+    const cardDetailElement = document.getElementById("card-detail");
+    const imageElement = document.getElementById("card-detail-image");
+    const titleElement = document.getElementById("card-detail-title");
+    const captionElement = document.getElementById("card-detail-caption");
+    const descriptionElement = document.getElementById(
+      "card-detail-description"
+    );
+    const typeSymbolElement = document.getElementById(
+      "card-detail-type-symbol"
+    );
+    const playCardButtonElement = document.getElementById("play-card-button");
+
+    // Change appropriate values
+    titleElement.textContent = cardsData[cardIndex].name;
+    captionElement.innerHTML = cardsData[cardIndex].caption;
+    descriptionElement.innerHTML = cardsData[cardIndex].description;
+    if (cardsData[cardIndex].type === "singleUse") {
+      playCardButtonElement.style.display = "block";
+    } else {
+      playCardButtonElement.style.display = "none";
+    }
+
+    // Display appropriate elements
+    dialogue.showDialogueControls(true, false);
+    dialogue.dialogueBox.style.display = "block";
+    cardDetailElement.style.display = "block";
+    dialogue.backdropElement.style.display = "block";
+
+    // Set dialogue window to correct size
+    dialogue.dialogueBox.className = "card-detail";
+
+    // Add Event Listeners
+    dialogue.closeWindowElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
+    dialogue.backdropElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
+  },
 };
 
 // EVENT LISTENERS

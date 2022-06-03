@@ -51,11 +51,12 @@ io.on("connection", (socket) => {
   io.to(socket.id).emit("room query");
 
   // Check for other events
-  require("./io/game-play")(socket, io); // MANAGE "PLAYER CHOOSES A JOB"
+  require("./io/game-play")(socket, io);
   require("./io/connections")(socket, io);
   require("./io/user-setup")(socket, io);
   require("./io/game-setup")(socket, io);
   require("./io/dice-roll")(socket, io);
+  require("./io/game-cards")(socket, io);
 });
 
 // START SERVER

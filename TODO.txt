@@ -5,18 +5,17 @@ BUGS
 - Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
 
 HIGH PRIORITY
+- Add canceled status to jobs (thieves, invasion, etc.)
 - Create demo video, Facebook page for updates
 - Implement cards
   - Start with a small number of test cards
   - Work out basic functionality
   - STEPS:
-    - New js file with array of all cards listed as objects (start with smaller sample size)
-    - Make cards display on bottom bar with test cards
-    - Create separate arrays (decks) which reference these objects
-    - Add card array as a new property for each user
+    - Create small test decks
     - Individually code outcome for playing each card
 - Implement card theft in hazards
 - Messages saying "It's your turn," "You've arrived on ____," etc.
+- Attempt moving dialogue ejs files into separate folder
 
 LOW PRIORITY
 - Add sounds, music

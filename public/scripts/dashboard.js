@@ -1,6 +1,8 @@
 // Properties, methods, and event listeners for dashboard section
 const dashboard = {
   // PROPERTIES
+  dashboardButton: document.getElementById("dashboard-button"),
+  cardsButton: document.getElementById("cards-button"),
   endTurnButton: document.getElementById("end-turn"),
   rollToFixButton: document.getElementById("roll-to-fix"),
   turnInfo: {
@@ -484,3 +486,26 @@ const dashboard = {
     dialogue.backdropElement.style.display = "none";
   },
 };
+
+// EVENT LISTENERS
+// Dashboard Button Pressed
+dashboard.dashboardButton.addEventListener("click", function () {
+  console.log("dashboard");
+  const dashboardElement = document.getElementById("dashboard");
+  const cardsElement = document.getElementById("cards");
+
+  cardsElement.style.display = "none";
+  dashboardElement.style.display = "flex";
+});
+
+// Cards Button Pressed
+dashboard.cardsButton.addEventListener("click", function () {
+  console.log("cards");
+  const dashboardElement = document.getElementById("dashboard");
+  const cardsElement = document.getElementById("cards");
+
+  dashboardElement.style.display = "none";
+  cardsElement.style.display = "flex";
+
+  gameCards.updateCardsDisplay();
+});

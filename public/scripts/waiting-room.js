@@ -1,7 +1,7 @@
 // Properties, methods, and event listenters for the waiting room
 
 // VARIABLES
-const roomId = window.location.pathname.split("/").pop();
+const roomId = window.location.pathname.split("/").pop(); //                         Seems like there should be a better way to do this
 
 const waitingRoom = {
   // Properties

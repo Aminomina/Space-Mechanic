@@ -358,3 +358,25 @@
   height: 1.5rem;
   width: 1.5rem;
 }
+
+/* CARD DETAIL */
+#dialogue-box.card-detail {
+  top: 10%;
+  width: 50%;
+  min-width: 30rem;
+  padding: 1rem;
+}
+
+#card-detail-image {
+  height: 12rem;
+  border-radius: 7px;
+}
+
+#card-detail-type-symbol {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+#play-card-button {
+  margin: 1rem auto;
+}
