@@ -14,6 +14,7 @@ const waitingRoom = {
 
   // Methods
   updateName: function (newName) {
+    console.log("client updated name");
     const playerNameElement = document.getElementById("player-name-display");
     playerNameElement.classList.remove("squish");
     playerNameElement.textContent = newName;
@@ -68,7 +69,6 @@ waitingRoom.playMoneyRadioElement.addEventListener("click", function () {
 
 // Someone changes the number of rounds for end condition
 waitingRoom.numRoundsSelectElement.addEventListener("change", function () {
-  console.log("changing number of rounds");
   game.endConditionRounds = waitingRoom.numRoundsSelectElement.value;
   socket.emit("change end condition", {
     roomId,
@@ -80,7 +80,6 @@ waitingRoom.numRoundsSelectElement.addEventListener("change", function () {
 
 // Someone changes the amount of money for end condition
 waitingRoom.numMoneySelectElement.addEventListener("change", function () {
-  console.log("changing amount of money");
   game.endConditionMoney = waitingRoom.numMoneySelectElement.value;
   socket.emit("change end condition", {
     roomId,
@@ -96,11 +95,13 @@ waitingRoom.startGameButtonElement.addEventListener("click", game.startGame);
 // SOCKET.IO
 // Server queries player for room id upon joining
 socket.on("room query", function () {
+  console.log("received room query from server");
   socket.emit("room reply", roomId);
 });
 
 // Player is assigned a default name
 socket.on("assign name", function (defaultName, assignedId, assignedColor) {
+  console.log("player assigned default name, color, and id by server");
   const nameOptionsElement = document.getElementById("player-name-options");
   userName = defaultName;
   waitingRoom.updateName(userName);
@@ -111,9 +112,9 @@ socket.on("assign name", function (defaultName, assignedId, assignedColor) {
 
 // Server updates player list
 socket.on("player list update", function (users) {
+  console.log("players list updated by server");
   const joinedPlayersElement = document.getElementById("joined-players");
   userList = users;
-  console.log(users);
   while (joinedPlayersElement.lastElementChild) {
     joinedPlayersElement.removeChild(joinedPlayersElement.lastElementChild);
   }
@@ -135,7 +136,7 @@ socket.on("player list update", function (users) {
 
 // Server updates the game's end condition
 socket.on("change end condition", function (data) {
-  console.log(data.endConditionType);
+  console.log("end condition altered");
   game.endConditionType = data.endConditionType;
   game.endConditionRounds = data.endConditionRounds;
   game.endConditionMoney = data.endConditionMoney;
@@ -159,6 +160,7 @@ socket.on("change end condition", function (data) {
 
 // Player gets kicked out of room
 socket.on("kick out", function (isGameStarted) {
+  console.log("client kicked out by server");
   if (isGameStarted) {
     window.location.href = "/game-started";
   } else {

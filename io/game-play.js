@@ -296,6 +296,7 @@ module.exports = (socket, io) => {
 
   // Update job status
   socket.on("update job status", (data) => {
+    console.log("updating job status");
     const room = rooms[data.roomId - 1];
     room.jobsArray[data.jobId].status = data.status;
     io.to(room.id).emit("display jobs", {

@@ -20,6 +20,7 @@ const dialogue = {
   },
 
   openEndOfRoundDisplay: function (moneyOrder, rankArray) {
+    console.log("opening end-of-round display");
     dialogue.closeDialogueBox();
     // Definte Variables
     const endOfRoundDisplayElement = document.getElementById("end-of-round");
@@ -57,6 +58,7 @@ const dialogue = {
   },
 
   openEndGameDisplay: function (moneyOrder, rankArray) {
+    console.log("opening end-of-game display");
     dialogue.closeDialogueBox();
     // Define Variables
     const endGameDisplayElement = document.getElementById("end-game");
@@ -117,6 +119,7 @@ const dialogue = {
   },
 
   resetEndGameDisplay: function () {
+    console.log("end-of-game-display reset");
     // Define Variables
     const winnerMessageElement = document.getElementById("winner-message");
     const playerEntryElements = document.querySelectorAll(".end-player-entry");
@@ -142,6 +145,7 @@ const dialogue = {
   },
 
   openRollDice: function (numSides) {
+    console.log("opening roll-dice display");
     dialogue.closeDialogueBox();
     dialogue.isDieRolled = false;
     // Define Variables
@@ -165,6 +169,7 @@ const dialogue = {
   },
 
   openAllRollDice: function (numSides = 12) {
+    console.log("opening all-roll-dice display");
     dialogue.closeDialogueBox();
     dialogue.isDieRolled = false;
     // Define Variables
@@ -206,6 +211,7 @@ const dialogue = {
   },
 
   resetAllRollDice: function () {
+    console.log("resetting all-roll-dice display");
     // Define Variables
     const rollPlayerEntryElements =
       document.querySelectorAll(".roll-player-entry");
@@ -225,6 +231,7 @@ const dialogue = {
   },
 
   reroll: function (tieString, playerIndices) {
+    console.log("reroll prompted by server");
     const rollResultElements = document.querySelectorAll(".all-roll-result");
     const tieMessageElement = document.getElementById("tie-message");
     tieMessageElement.textContent = tieString;
@@ -232,7 +239,7 @@ const dialogue = {
     for (const playerIndex of playerIndices) {
       rollResultElements[playerIndex].textContent = "Reroll!";
       if (playerIndex === userIndex) {
-        console.log("I need to re-roll!");
+        console.log("client must reroll");
         dialogue.allRollXButtons[userIndex].classList.remove("disabled");
         dialogue.isDieRolled = false;
       }
@@ -240,6 +247,7 @@ const dialogue = {
   },
 
   showRollOrder: function () {
+    console.log("displaying player roll order");
     // Define Variables
     const rollPlayersListElement = document.getElementById("roll-players-list");
     const playerNameElements = document.querySelectorAll(".all-player-name");
@@ -261,6 +269,7 @@ const dialogue = {
   },
 
   openJobDetail: function (event) {
+    console.log("opening job-detail display");
     dialogue.closeDialogueBox();
     // Define Variables
     const jobDetailElement = document.getElementById("job-detail");
@@ -369,6 +378,7 @@ const dialogue = {
   },
 
   closeDialogueBox: function () {
+    console.log("closing dialogue box");
     for (const sectionElement of dialogue.dialogueBox.children) {
       sectionElement.style.display = "none";
     }
@@ -389,6 +399,7 @@ const dialogue = {
   },
 
   showDialogueControls: function (close = true, upDown = true) {
+    console.log("displaying dialogue controls");
     const controlsElement = dialogue.dialogueBox.children[0];
     controlsElement.style.display = "block";
     if (close === true) {
@@ -406,10 +417,12 @@ const dialogue = {
   },
 
   closeDialogueControls: function () {
+    console.log("hiding dialogue controls");
     dialogue.dialogueBox.children[0].style.display = "none";
   },
 
   scrollUp: function () {
+    console.log("scrolling up");
     const numDialogues = dialogue.dialogueBox.childElementCount;
     for (let i = 1; i < numDialogues; i++) {
       if (dialogue.dialogueBox.children[i].style.display !== "none") {
@@ -419,6 +432,7 @@ const dialogue = {
   },
 
   scrollDown: function () {
+    console.log("scrolling down");
     const numDialogues = dialogue.dialogueBox.childElementCount;
     for (let i = 1; i < numDialogues; i++) {
       if (dialogue.dialogueBox.children[i].style.display !== "none") {
@@ -428,6 +442,7 @@ const dialogue = {
   },
 
   loadJobDetails: function (activeJobs) {
+    console.log("loading job entry");
     const detailListElement = document.getElementById("job-detail-list");
     // Remove Any Old Entries
     while (detailListElement.firstChild) {
@@ -518,6 +533,7 @@ const dialogue = {
   },
 
   chooseJob: function (event) {
+    console.log("client has chosen a job");
     // Define Variables
     const jobElement = event.target.parentElement.parentElement;
     const jobListElement = jobElement.parentElement;
@@ -537,6 +553,7 @@ const dialogue = {
   },
 
   openCardDetail: function (cardIndex) {
+    console.log("opening card-detail display");
     dialogue.closeDialogueBox();
     // Define Variables
     const cardDetailElement = document.getElementById("card-detail");
@@ -614,7 +631,6 @@ socket.on("reroll", function (data) {
 
 // Rolls are complete
 socket.on("all roll complete", function (orderArray) {
-  console.log(`orderArray: ${orderArray}`);
   // game.reorderPlayers(rankArray);
   game.order = orderArray;
   setTimeout(dialogue.showRollOrder, 1000);

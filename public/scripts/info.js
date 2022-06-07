@@ -44,6 +44,7 @@ const info = {
     contentElements[tabIndex].classList.add("active");
   },
   openRulesTab: function (pageIndex) {
+    console.log("rules page changed");
     const pageElements = document.querySelectorAll(".rule-page");
     const pageTitleElement = document.getElementById("rules-page-title");
 
@@ -55,6 +56,7 @@ const info = {
     pageElements[pageIndex].classList.add("active");
   },
   updateRoundInfo: function () {
+    console.log("updated round info display");
     const currentRoundElement = document.getElementById("info-current-round");
     const endConditionElement = document.getElementById("info-end-condition");
 
@@ -66,6 +68,7 @@ const info = {
     }
   },
   showPlayerList: function () {
+    console.log("updated players list display");
     for (let i = 0; i < userList.length; i++) {
       const money = userList[game.order[i]].money.toFixed(2);
       const exp = userList[game.order[i]].exp.toFixed(0);
@@ -89,13 +92,12 @@ const info = {
       }
       // Highlight active player (if applicable)
       if (game.order[i] === game.activeUserIndex) {
-        console.log(game.activeUserIndex);
-        console.log(game.order);
         info.playerEntryElements[i].classList.add("active");
       }
     }
   },
   resetPlayersList: function () {
+    console.log("players list reset");
     for (let i = 0; i < 4; i++) {
       info.playerEntryElements[i].style.display = "none";
       info.playerEntryElements[i].classList.remove(
@@ -116,19 +118,19 @@ const info = {
 // EVENT LISTENERS
 //   Click on Players Tab
 info.playersTabElement.addEventListener("click", function () {
-  console.log("players");
+  console.log("players tab opened");
   info.openTab(0);
 });
 
 //   Click on Rules Tab
 info.rulesTabElement.addEventListener("click", function () {
-  console.log("rules");
+  console.log("rules tab opened");
   info.openTab(1);
 });
 
 //   Click on Settings Tab
 info.settingsTabElement.addEventListener("click", function () {
-  console.log("settings");
+  console.log("settings tab opened");
   info.openTab(2);
 });
 

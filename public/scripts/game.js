@@ -23,6 +23,7 @@ const game = {
   // METHODS
   // Close waiting room screen and start the game
   startGame: function () {
+    console.log("requesting server to start game");
     socket.emit("start game", roomId);
   },
 
@@ -41,19 +42,19 @@ const game = {
 
   // Request a new jobsArray from server
   requestJobsArray: function () {
+    console.log("requesting a new set of jobs");
     socket.emit("generate jobs", roomId);
   },
 
   // Start a new round after dice roll
   startRound: function () {
+    console.log("starting new round");
     dialogue.closeDialogueBox();
     game.activeUserIndex = game.order[0];
     dashboard.updatePlayerPreview();
     info.showPlayerList();
     board.homeShips();
-    console.log(userList);
     if (userIndex === game.activeUserIndex) {
-      console.log("I'm the active player!");
       game.requestJobsArray();
       game.startTurn();
     } else {
@@ -63,6 +64,7 @@ const game = {
 
   // End the current round and initialize a new one
   endRound: function (moneyOrder, rankArray) {
+    console.log("ending round");
     dashboard.deregisterJob();
     board.homeShips();
     board.clearJobs();
@@ -110,9 +112,8 @@ const game = {
 
   // Start client's turn
   startTurn: function () {
+    console.log("client set to active player");
     const currentJobIndex = userList[userIndex].currentJobIndex;
-
-    console.log("It's my turn now!");
     game.isTurn = true;
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
     if (currentJobIndex >= 0) {
@@ -135,7 +136,6 @@ const game = {
       // Player is on planet (not in orbit)
       currentJob.locIndex != 6
     ) {
-      console.log("Roll for hazard!");
       dashboard.openRollForHazard(
         currentJob["hazard-type"],
         currentJob["hazard-roll-string"]
@@ -152,7 +152,7 @@ const game = {
 
   // End the game
   endGame: function (moneyOrder, rankArray) {
-    console.log("Game ending");
+    console.log("game ending");
     board.homeShips();
     board.clearJobs();
     board.clearJobLines();
@@ -163,8 +163,20 @@ const game = {
 
   // Ask server to reset the game
   requestResetGame: function () {
-    console.log("resetting the game...");
+    console.log("requesting server to reset game");
     socket.emit("reset game", roomId);
+  },
+
+  abandonJob: function () {
+    console.log("abandonning job");
+    dashboard.deregisterJob();
+    socket.emit("update player status", {
+      roomId: roomId,
+      userIndex: userIndex,
+      actionStatus: 3,
+    });
+    board.clearJobLines();
+    dashboard.updateLocationString();
   },
 };
 
@@ -175,6 +187,7 @@ document.addEventListener("keydown", game.checkEscape);
 // SOCKET.IO
 // Game begins
 socket.on("start game", function () {
+  console.log("game started");
   // Hide waiting room, show game content
   game.waitingRoomElement.style.display = "none";
   game.gameSessionElement.style.display = "flex";
@@ -195,6 +208,7 @@ socket.on("start turn", function () {
 
 // Server sends updated player stats
 socket.on("update player stats", function (data) {
+  console.log("updating player stats");
   const user = userList[data.userIndex];
   for (const property in data.newUserStats) {
     user[property] = data.newUserStats[property];
@@ -205,6 +219,7 @@ socket.on("update player stats", function (data) {
 
 // Server sends an updated player location
 socket.on("update player location", function (data) {
+  console.log("updating player location");
   // Update action status
   userList[data.userIndex].actionStatus = data.actionStatus;
   // Update job
@@ -213,6 +228,7 @@ socket.on("update player location", function (data) {
   } else {
     userList[data.userIndex].site = {};
   }
+
   if (data.actionStatus === 4) {
     // In the hospital
     userList[data.userIndex].coordinates = [0, 0];
@@ -224,28 +240,24 @@ socket.on("update player location", function (data) {
     // In open space
   } else if (data.actionStatus === 2) {
     // At job
-    board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);
-    userList[data.userIndex].currentJobIndex = data.jobId;
-    // Client's registered job claimed by someone else
-    if (
-      dashboard.turnInfo.newJobChoice === data.jobId &&
-      data.userIndex !== userIndex
-      // && game.jobsArray[data.jobId].status !== 0
-    ) {
-      console.log(game.jobsArray[data.jobId].status);
-      dashboard.deregisterJob();
-      socket.emit("update player status", {
-        roomId: roomId,
-        userIndex: userIndex,
-        actionStatus: 3,
-      });
-      board.clearJobLines();
-      dashboard.updateLocationString();
-    }
-    // Player being updated is client
-    if (data.userIndex === userIndex) {
-      dashboard.turnInfo.jobOutcome = { jobId: data.jobId, status: 1 };
-      dashboard.turnInfo.newJobChoice = -1;
+    if (game.jobsArray[data.jobId].status === 3) {
+      // Client's registered job claimed by someone else or disabled
+      game.abandonJob();
+    } else {
+      board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);
+      userList[data.userIndex].currentJobIndex = data.jobId;
+      // Player being updated is client
+      if (data.userIndex === userIndex) {
+        dashboard.turnInfo.jobOutcome = { jobId: data.jobId, status: 1 };
+        dashboard.turnInfo.newJobChoice = -1;
+      }
+      if (
+        dashboard.turnInfo.newJobChoice === data.jobId &&
+        data.userIndex !== userIndex
+      ) {
+        // Client's registered job claimed by someone else
+        game.abandonJob();
+      }
     }
   } else if (data.actionStatus === 1) {
     // In transit
@@ -265,8 +277,10 @@ socket.on("update player location", function (data) {
       userList[data.userIndex].boardCoordinates[1],
       data.angle,
     ]);
-
-    if (data.userIndex === userIndex) {
+    if (game.jobsArray[data.jobId].status === 3) {
+      // Client's registered job was disabled
+      game.abandonJob();
+    } else if (data.userIndex === userIndex) {
       // Player being updated is client
       dashboard.registerJob(data.jobId);
     }
@@ -280,8 +294,7 @@ socket.on("update player location", function (data) {
 
 // Server updates active player
 socket.on("update active player", function (activeUserIndex) {
-  console.log("updating active player!");
-  console.log(activeUserIndex);
+  console.log(`active player set to ${userList[activeUserIndex].name}`);
   game.activeUserIndex = activeUserIndex;
   info.showPlayerList();
 });
@@ -298,6 +311,7 @@ socket.on("end game", function (data) {
 
 // Server resets the game
 socket.on("reset game", function () {
+  console.log("resetting the game");
   game.order = [0, 1, 2, 3];
   game.isTurn = false;
   game.jobsArray = [];

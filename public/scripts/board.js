@@ -26,6 +26,7 @@ const board = {
   // METHODS
   // Draws the board grid
   drawGrid: function () {
+    console.log("drawing grid");
     const ctx = board.canvas.getContext("2d");
     const cellsHorizontal = 18;
     const cellsVertical = 12;
@@ -69,6 +70,7 @@ const board = {
 
   // Draw Job Line
   drawJobLine: function (startCoordinates, endCoordinates, distance) {
+    console.log("drawing job line");
     const detCtx = board.detailCanvas.getContext("2d");
 
     // Convert coordinates to canvas coordinates
@@ -80,10 +82,6 @@ const board = {
       (endCoordinates[0] + 90) * 10,
       (-endCoordinates[1] + 60) * 10,
     ];
-    console.log(`start coord: ${startCoordinates}`);
-    console.log(`end coord: ${endCoordinates}`);
-    console.log(`start canvas coord: ${startCanvCoordinates}`);
-    console.log(`end canvas coord: ${endCanvCoordinates}`);
 
     // Set line style
     detCtx.lineWidth = 4;
@@ -104,6 +102,7 @@ const board = {
   },
 
   drawDaysToLocElement: function (startCoordinates, endCoordinates, distance) {
+    console.log("displaying days-to-loc element");
     const daysToLocElement = document.getElementById("days-to-loc");
     const daysToLocTextElement = daysToLocElement.children[0];
 
@@ -131,25 +130,19 @@ const board = {
     }
     // Offset if destination is close
     else if (board.distanceBetween(startCoordinates, endCoordinates) < 15) {
-      console.log("offsetting days-to-loc element");
-      console.log(board.distanceBetween(startCoordinates, endCoordinates));
       if (
         Math.abs(endCoordinates[1] - startCoordinates[1]) >
         Math.abs(endCoordinates[0] - startCoordinates[0])
       ) {
         if (endCoordinates[0] > startCoordinates[0]) {
-          console.log("approaching from top/bottom left");
           daysToLocCoordinates[0] = daysToLocCoordinates[0] + 30;
         } else {
-          console.log("approaching from top/bottom right");
           daysToLocCoordinates[0] = daysToLocCoordinates[0] - 30;
         }
       } else {
         if (endCoordinates[1] < startCoordinates[1]) {
-          console.log("approaching from top left/right");
           daysToLocCoordinates[1] = daysToLocCoordinates[1] + 30;
         } else {
-          console.log("approaching from bottom left/right");
           daysToLocCoordinates[1] = daysToLocCoordinates[1] - 30;
         }
       }
@@ -176,6 +169,7 @@ const board = {
 
   // Clear job lines
   clearJobLines: function () {
+    console.log("clearing job lines");
     const detCtx = board.detailCanvas.getContext("2d");
     const daysToLocElement = document.getElementById("days-to-loc");
 
@@ -185,6 +179,7 @@ const board = {
 
   // Clear jobs
   clearJobs: function () {
+    console.log("clearing jobs");
     const numChildElements = board.jobsListElement.children.length;
     for (i = 0; i < numChildElements; i++) {
       board.jobsListElement.removeChild(board.jobsListElement.children[0]);
@@ -193,6 +188,7 @@ const board = {
 
   // Adds a job to the board
   drawJob: function (job, indices, xOffset = 0, yOffset = 0, numJobs = 1) {
+    console.log("drawing job");
     const jobTypes = ["PM", "Op Impacted", "Op Halted", "Catastrophic Failure"];
 
     // Clone job icon from template
@@ -273,6 +269,7 @@ const board = {
   },
   // Draw a cluster of jobs in a pair or cluster formation
   drawJobCluster: function (jobsArray, jobClusterIndices) {
+    console.log("drawing job cluster");
     let numPlanets = jobClusterIndices.length;
     for (let i = 0; i < numPlanets; i++) {
       // Check if multiple jobs on planet
@@ -313,25 +310,7 @@ const board = {
   },
   // Move all ship icons to home position
   homeShips: function () {
-    console.log("Homing ships!");
-    // const positions = [
-    //   [[0, 0, 0]],
-    //   [
-    //     [-3.6, -3.6, 45],
-    //     [3.6, 3.6, 225],
-    //   ],
-    //   [
-    //     [0, -5, 0],
-    //     [-4.3, 2.5, 120],
-    //     [4.3, 2.5, 240],
-    //   ],
-    //   [
-    //     [-4.3, -4.3, 45],
-    //     [4.3, 4.3, 225],
-    //     [-4.3, 4.3, 135],
-    //     [4.3, -4.3, 315],
-    //   ],
-    // ];
+    console.log("homing ships");
     const shipElements = document.querySelectorAll("#ship-icons li");
     // Make ship icons invisible
     for (const element of shipElements) {
@@ -351,13 +330,12 @@ const board = {
   },
   // Move ship to specified coordinates
   moveShip: function (userIndex, coordinates) {
-    console.log(`user index: ${userIndex}`);
+    console.log("moving ship icon");
     const boardCoordinates = [
       (coordinates[0] + 90) * 3.2,
       (-coordinates[1] + 60) * 3.2,
     ];
     const shipElement = document.querySelectorAll("#ship-icons li")[userIndex];
-    console.log(shipElement);
     const shipIcon = shipElement.children[0];
     shipElement.style.top = boardCoordinates[1] + "px";
     shipElement.style.left = boardCoordinates[0] + "px";
@@ -367,6 +345,7 @@ const board = {
   },
   // Move ship to a specified job
   movePlayerToJob: function (userIndex, job) {
+    console.log("moving player to job");
     // Find an open slot, send ship to associated coordinates
     const slotOffsets = [
       [
@@ -421,19 +400,15 @@ const board = {
         [3, 1.7],
       ],
     ];
-    console.log(userList);
-    console.log(userIndex);
     userList[userIndex].coordinates = [...job.coordinates];
     userList[userIndex].boardCoordinates = [...job.coordinates];
     let offsets;
     let currentPlanetOffset = [0, 0];
     // Planet is in a cluster
     if ("pos-in-cluster" in job) {
-      console.log("planet in cluster!");
       const planetIndex = job["pos-in-cluster"][0];
       const numPlanets = job["pos-in-cluster"][1];
       offsets = slotOffsets[numPlanets - 1][planetIndex];
-      console.log(offsets);
       currentPlanetOffset = planetOffsets[numPlanets - 2][planetIndex];
     }
     // Planet not in a cluster
@@ -453,7 +428,6 @@ const board = {
             (position[1] - userPosition[1]) ** 2
         );
         if (distance < 5) {
-          console.log(distance);
           isSlotAvailable = false;
         }
       }
@@ -463,12 +437,10 @@ const board = {
         if (offset[1] < 0) {
           rotation += 180;
         }
-        console.log(rotation);
         position.push(rotation);
         // Set as new board coordinates
         userList[userIndex].boardCoordinates = position;
         // Place ship icon in position
-        console.log(position);
         board.moveShip(userIndex, position);
         return;
       }
@@ -493,18 +465,18 @@ const board = {
 
   // Offset ship icon when it is occluded or occludes other icons
   manageShipIconOffsets: function (jobCoordinates, userCoordinates, angle) {
+    console.log("managing ship icon offsets");
     let offset = [0, 0];
     let playerOffset = [0, 0];
     // Too close to destination planet
     if (board.distanceBetween(userCoordinates, jobCoordinates) < 5) {
-      console.log("Too close to destination planet!");
+      console.log("icon too close to destination planet");
       let destinationOffset = board.localToGlobalOffset(
         [-6, 0],
         (270 - angle) / 57.3
       );
       offset[0] += destinationOffset[0];
       offset[1] += destinationOffset[1];
-      console.log(`Destination offset: ${destinationOffset}`);
     }
     // Too close to another player
     for (user of userList) {
@@ -515,11 +487,10 @@ const board = {
       if (
         board.distanceBetween(userBoardCoordinates, user.boardCoordinates) < 5
       ) {
-        console.log(`Too close to ${user.name}`);
+        console.log(`icon too close to ${user.name}`);
         playerOffset = board.localToGlobalOffset([-6, 0], (270 - angle) / 57.3);
         offset[0] += playerOffset[0];
         offset[1] += playerOffset[1];
-        console.log(`Player offset: ${playerOffset}`);
       }
     }
     return offset;
@@ -529,8 +500,7 @@ const board = {
 // SOCKET.IO
 // Server sends the planet array for a new round
 socket.on("display jobs", function (data) {
-  console.log(data.jobsArray);
-  console.log(data.jobIndices);
+  console.log("displaying jobs");
   // Clear previous jobs
   board.clearJobs();
   // Sync client's job array with new array from server

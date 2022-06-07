@@ -21,7 +21,7 @@ const dashboard = {
   hasRolledToFix: false,
   // METHODS
   endTurn: function () {
-    console.log("Ending turn");
+    console.log("ending turn");
     dashboard.endTurnButton.removeEventListener("click", dashboard.endTurn);
     dashboard.rollToFixButton.removeEventListener(
       "click",
@@ -37,12 +37,12 @@ const dashboard = {
       game.jobsArray[dashboard.turnInfo.jobOutcome.jobId].status !== 2 &&
       dashboard.turnInfo.jobOutcome.status !== 2
     ) {
-      console.log("Abandoning job");
+      console.log("abandoning job");
       dashboard.turnInfo.jobOutcome.status = 0;
     }
 
     // Send turn info to server
-    console.log(dashboard.turnInfo);
+    console.log("sending turn info to server");
     socket.emit("turn end", dashboard.turnInfo);
 
     dashboard.updateLocationString();
@@ -59,8 +59,8 @@ const dashboard = {
     dashboard.rollToFixButton.classList.add("disabled");
   },
   updateLocationString: function () {
+    console.log("updating location string");
     const locationStringElement = document.getElementById("location-string");
-    console.log(userList[userIndex].actionStatus);
     if (
       dashboard.turnInfo.newJobChoice >= 0 &&
       dashboard.turnInfo.newJobChoice !== userList[userIndex].currentJobIndex
@@ -87,6 +87,7 @@ const dashboard = {
     }
   },
   updateJobPreview: function () {
+    console.log("updating job preview");
     const previewImageElement =
       document.getElementById("job-preview-image").children[0];
     const previewContentElement = document.getElementById(
@@ -139,6 +140,7 @@ const dashboard = {
     }
   },
   updatePlayerPreview: function () {
+    console.log("updating player preview");
     // Variables
     const nameIconElement =
       document.getElementById("dash-player-name").children[0];
@@ -185,7 +187,6 @@ const dashboard = {
       // Hopping to another job in system
       // board.clearJobLines();
       console.log("hopping to another job");
-      console.log(game.jobsArray[jobId]);
       socket.emit("update player job", {
         roomId,
         userIndex,
@@ -249,7 +250,7 @@ const dashboard = {
     dashboard.updateJobPreview();
   },
   deregisterJob: function () {
-    console.log("deregistering job!");
+    console.log("deregistering job");
     dashboard.turnInfo.newJobChoice = -1;
     dashboard.updateJobPreview();
     dashboard.updateLocationString();
@@ -259,7 +260,7 @@ const dashboard = {
     userList[userIndex].actionStatus = 4;
 
     // Abandon job
-    console.log("Abandoning job");
+    console.log("abandoning job");
     dashboard.turnInfo.jobOutcome = {
       jobId: userList[userIndex].currentJobIndex,
       status: 0,
@@ -281,6 +282,7 @@ const dashboard = {
     });
   },
   openRollForHazard: function (hazardType, hazardString) {
+    console.log("opening roll for hazard");
     const rollHeadingElement = document.getElementById("roll-dice-heading");
     const rollMessageElement = document.getElementById("roll-message");
     if (+hazardType < 15) {
@@ -299,6 +301,7 @@ const dashboard = {
     dialogue.rollXButton.addEventListener("click", dashboard.rollForHazard);
   },
   rollForHazard: function () {
+    console.log("client rolling for hazard");
     // Variables
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
@@ -319,7 +322,7 @@ const dashboard = {
 
     // Manage roll success or failure
     if (dialogue.rollResult >= 2) {
-      console.log("success!");
+      console.log("player avoided hazard");
 
       // Display roll text
       rollMessageElement.textContent = `You avoided ${hazardString}!`;
@@ -334,7 +337,7 @@ const dashboard = {
         newUserStats: { money: newMoney },
       });
     } else {
-      console.log("not successful.");
+      console.log("player caught by hazard");
       // Display roll text
       // Assailants
       if (hazardType % 5 === 1) {
@@ -376,6 +379,7 @@ const dashboard = {
     setTimeout(dialogue.closeDialogueBox, 2000);
   },
   openRollToFix: function () {
+    console.log("opening roll-to-fix");
     const rollMessageElement = document.getElementById("roll-message");
     const minRoll = Math.floor(3 / dashboard.currentJobMultiplier) + 1;
     console.log(`Min Roll: ${minRoll}`);
@@ -396,6 +400,7 @@ const dashboard = {
     );
   },
   rollToFix: function () {
+    console.log("client is rolling to fix");
     // Variables
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
@@ -434,7 +439,7 @@ const dashboard = {
 
     // Manage roll success or failure
     if (score >= 3) {
-      console.log("success!");
+      console.log("player fixed job");
       // Display roll text
       rollMessageElement.textContent = "The job was fixed successfully!";
       rollMessageElement.style.display = "block";
@@ -458,7 +463,7 @@ const dashboard = {
         status: 2,
       });
     } else {
-      console.log("not successful.");
+      console.log("player did not fix job");
       // Display roll text
       rollMessageElement.textContent = "Couldn't fix the job today...";
       rollMessageElement.style.display = "block";
@@ -482,6 +487,7 @@ const dashboard = {
     setTimeout(dialogue.closeDialogueBox, 2000);
   },
   closeRollToFix: function (rollResult) {
+    console.log("closing roll-to-fix");
     dialogue.closeDialogueBox();
     dialogue.backdropElement.style.display = "none";
   },
@@ -490,7 +496,7 @@ const dashboard = {
 // EVENT LISTENERS
 // Dashboard Button Pressed
 dashboard.dashboardButton.addEventListener("click", function () {
-  console.log("dashboard");
+  console.log("dashboard opened");
   const dashboardElement = document.getElementById("dashboard");
   const cardsElement = document.getElementById("cards");
 
@@ -500,7 +506,7 @@ dashboard.dashboardButton.addEventListener("click", function () {
 
 // Cards Button Pressed
 dashboard.cardsButton.addEventListener("click", function () {
-  console.log("cards");
+  console.log("cards opened");
   const dashboardElement = document.getElementById("dashboard");
   const cardsElement = document.getElementById("cards");
 

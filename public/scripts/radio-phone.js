@@ -6,9 +6,11 @@ const chat = {
   entryElement: document.getElementById("radio-entry-box"),
   // METHODS
   sendMessage: function (message) {
+    console.log("sending a message to chat");
     socket.emit("chat message", { message, roomId });
     chat.inputElement.value = "";
   },
+  //                                                                         Not really sure if this does anything...
   updateChatColor: function (color) {
     const entryBoxElement = document.getElementById("radio-entry-box");
   },
@@ -40,6 +42,7 @@ chat.entryElement.addEventListener("keypress", function (event) {
 // SOCKET.IO
 // User receives a message
 socket.on("chat message", function (data) {
+  console.log("received message from chat");
   sineContainterElement = document.getElementById("radio-sine-container");
   messagesElement = document.getElementById("radio-messages");
   const item = document.createElement("li");
@@ -50,5 +53,4 @@ socket.on("chat message", function (data) {
   sineContainterElement.classList.remove("incoming"); // reset animation
   void sineContainterElement.offsetWidth; // trigger the reset
   sineContainterElement.classList.add("incoming"); // play animation
-  console.log("hello");
 });
