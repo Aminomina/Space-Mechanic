@@ -5,6 +5,8 @@ BUGS
 - Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
 
 HIGH PRIORITY
+- Implement single use cards
+- Implement hold cards
 - Create demo video, Facebook page for updates
 - Implement cards
   - Start with a small number of test cards
@@ -12,9 +14,7 @@ HIGH PRIORITY
   - STEPS:
     - Create small test decks
     - Individually code outcome for playing each card
-- Implement card theft in hazards
 - Messages saying "It's your turn," "You've arrived on ____," etc.
-- Attempt moving dialogue ejs files into separate folder
 
 LOW PRIORITY
 - Add sounds, music
@@ -30,13 +30,14 @@ LOW PRIORITY
 - Enlarge player icon on turn?
 - Create some distinction for player's piece, tab
   (marker, flipped color pattern?)
-- Hover effect on ships (name, stats)
 - Add graphics
   - Error pages
   - Planet icons
   - Planet detail
-  - Work week over
-  - Game over
+  - Card detail
+  - Card icons
+  - Hazard detail
+  - Game over?
 - Format for simplicity and clarity
   - Make more use of player colors
     - Job lines and days-to-loc icon
@@ -53,6 +54,8 @@ BETA FEATURES
 - Difficulty setting with more hazards, debt, etc.
 - Tool sets, vehicles, and loans
 - Hide pigeons throughout
+- click effect on ships (name, stats?)
+- Radhok
 - Add custom mechanic-related emoticons in chat
   - Expressions, but on a person with a mechanic hat
   - Various mechanic actions

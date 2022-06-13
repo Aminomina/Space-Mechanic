@@ -175,7 +175,7 @@ const cardsData = [
     caption:
       "It’s for a corporate meeting, but they probably wouldn’t mind if you snuck a plate…",
     description:
-      "Multiply your roll by 1.25x today from your improved mood and energy.",
+      "Subtract 0.25x job difficulty at all sites today from your improved mood and energy.",
     type: "jobEvent",
   },
   {
@@ -183,7 +183,8 @@ const cardsData = [
     name: "Chatty client",
     caption:
       "“Awful sorry about your divorce, but I’m just here to fix the machine…”",
-    description: "Add 0.25x difficulty to your roll this turn.",
+    description:
+      "Add 0.25x job difficulty at all sites today from distraction.",
     type: "jobEvent",
   },
   {
@@ -199,7 +200,7 @@ const cardsData = [
     name: "Safety Inspector",
     caption: "Joot! It’s the safety inspector!",
     description:
-      "Roll a D6 to see if you get caught working unsafely. If you do, pay a $300 fine.",
+      "Roll to see if you get caught working unsafely. If you do, pay a $300 fine.",
     type: "jobEvent",
   },
   {
@@ -207,7 +208,7 @@ const cardsData = [
     name: "Invasion",
     caption: "Time to high-tail it! Go home or fly to another job.",
     description:
-      "Any other players at this site must also leave and no one may visit the planet for the rest of the week.",
+      "Any other players on the same planet must also leave and no one may visit the planet for the rest of the week.",
     type: "jobEvent",
   },
   // Travel Event Cards
@@ -217,7 +218,7 @@ const cardsData = [
     caption:
       "It’s always a shame when you see folks on the side of the interstellar highway.",
     description:
-      "You may choose to roll once trying to help and extend your travel by half a day. Earn $XX if you succeed and XX experience points either way. Or you may choose to go on your way.",
+      "You may choose to roll once trying to help and extend your travel by a day. Earn $250 if you succeed and 50 experience points either way. Or you may choose to go on your way.",
     type: "travelEvent",
   },
   {
@@ -225,20 +226,21 @@ const cardsData = [
     name: "Pirates!",
     caption: "Blozee joot! Pirates are after your ship!",
     description:
-      "Multiply a D9 by your ship’s speed to see if you get away! If not, relinquish half of your cards randomly.",
+      "Roll to see if you get away! If not, relinquish $1500 or five of your cards, chosen randomly.",
     type: "travelEvent",
   },
   {
     index: 28,
     name: "Fender Bender",
     caption: "It’s just a ding.",
-    description: "Lose $500.",
+    description: "Lose $250.",
     type: "travelEvent",
   },
   {
     index: 29,
     name: "Airlock Breach",
-    caption: "If you have more than 5 commodity cards, jettison three.",
+    caption:
+      "If you have more than 5 single use or hold cards, lose 3 randomly.",
     description: "",
     type: "travelEvent",
   },
@@ -268,9 +270,8 @@ const cardsData = [
   {
     index: 33,
     name: "Training Week",
-    caption:
-      "Skip the remainder of the week training at Satellite Mechanic HQ.",
-    description: "Get paid $XX and earn XX experience points.",
+    caption: "Skip the remainder of the week training at Space Mechanic HQ.",
+    description: "Get paid $1000 and earn 150 experience points.",
     type: "travelEvent",
   },
 ];
@@ -279,5 +280,5 @@ const decks = {
   hold: [0, 1, 2, 3],
   singleUse: [],
   jobEvent: [19, 20, 21, 22, 24, 25, 33],
-  travelEvent: [26, 27, 28, 29, 31, 33],
+  travelEvent: [27, 28, 31, 33],
 };

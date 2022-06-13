@@ -70,8 +70,8 @@ const info = {
   showPlayerList: function () {
     console.log("updated players list display");
     for (let i = 0; i < userList.length; i++) {
-      const money = userList[game.order[i]].money.toFixed(2);
-      const exp = userList[game.order[i]].exp.toFixed(0);
+      const money = (+userList[game.order[i]].money).toFixed(2);
+      const exp = (+userList[game.order[i]].exp).toFixed(0);
       info.playerEntryElements[i].style.display = "block";
       info.playerEntryElements[i].classList.remove(
         "red",

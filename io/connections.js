@@ -20,6 +20,7 @@ const setup = {
       site: "home base",
       currentJobIndex: -1,
       cards: [],
+      bonusDiff: 0,
     };
     user.color = setup.generatePlayerColor(room.users);
     io.to(socket.id).emit("assign name", user.name, user.id, user.color);

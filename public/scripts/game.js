@@ -136,10 +136,11 @@ const game = {
       // Player is on planet (not in orbit)
       currentJob.locIndex != 6
     ) {
-      dashboard.openRollForHazard(
-        currentJob["hazard-type"],
-        currentJob["hazard-roll-string"]
-      );
+      dashboard.openRollForHazard({
+        type: currentJob["hazard-type"],
+        string: currentJob["hazard-roll-string"],
+        pay: currentJob["hazard-pay"],
+      });
     }
     // Check if user can roll-to-fix
     if (
@@ -223,25 +224,42 @@ socket.on("update player location", function (data) {
   // Update action status
   userList[data.userIndex].actionStatus = data.actionStatus;
   // Update job
-  if ("jobId" in data && data.jobId !== -2) {
+  if ("jobId" in data && data.jobId >= 0) {
     userList[data.userIndex].site = game.jobsArray[data.jobId].name;
   } else {
     userList[data.userIndex].site = {};
   }
 
-  if (data.actionStatus === 4) {
-    // In the hospital
+  if (data.actionStatus === 6) {
+    // Job was disabled
+    // Player being updated is client
+    if (data.userIndex === userIndex) {
+      userList[userIndex].currentJobIndex = -1;
+      dashboard.turnInfo.jobOutcome = {};
+      dashboard.updateJobPreview();
+
+      // Deactivate roll-to-fix
+      dashboard.rollToFixButton.classList.add("disabled");
+      dashboard.rollToFixButton.removeEventListener(
+        "click",
+        dashboard.openRollToFix
+      );
+    } else {
+      // Player being updated is not client
+    }
+  } else if (data.actionStatus === 4 || data.actionStatus === 5) {
+    // At HQ
     userList[data.userIndex].coordinates = [0, 0];
     userList[data.userIndex].boardCoordinates =
       board.shipPositions[userList.length - 1][data.userIndex];
-    userList[data.userIndex].currentJobIndex = -2;
+    userList[data.userIndex].currentJobIndex = -1;
     board.moveShip(data.userIndex, userList[data.userIndex].boardCoordinates);
   } else if (data.actionStatus === 3) {
     // In open space
   } else if (data.actionStatus === 2) {
     // At job
     if (game.jobsArray[data.jobId].status === 3) {
-      // Client's registered job claimed by someone else or disabled
+      // Client's registered job was disabled
       game.abandonJob();
     } else {
       board.movePlayerToJob(data.userIndex, game.jobsArray[data.jobId]);

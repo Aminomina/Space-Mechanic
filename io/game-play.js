@@ -169,22 +169,14 @@ module.exports = (socket, io) => {
     let distancePerTurn = 30;
 
     // Check job outcome
-    if ("jobId" in data.jobOutcome) {
+    if ("jobId" in data.jobOutcome && data.jobOutcome.jobId >= 0) {
+      console.log(data.jobOutcome.jobId);
       console.log(data.jobOutcome.status);
       room.jobsArray[data.jobOutcome.jobId].status = data.jobOutcome.status;
     }
 
-    // Player is in hospital
-    if (data.newJobChoice === -2) {
-      io.to(room.id).emit("update player location", {
-        userIndex: data.userIndex,
-        jobId: -2,
-        actionStatus: 4,
-        coordinates: 0,
-      });
-    }
     // Player is traveling to a job
-    else if (data.newJobChoice !== -1) {
+    if (data.newJobChoice >= 0) {
       // Calculate distance to job
       const jobCoordinates = room.jobsArray[data.newJobChoice].coordinates;
       console.log(data.userIndex);
@@ -257,10 +249,30 @@ module.exports = (socket, io) => {
   // Player updates status
   socket.on("update player status", (data) => {
     const room = rooms[data.roomId - 1];
-    io.to(room.id).emit("update player location", {
-      userIndex: data.userIndex,
-      actionStatus: data.actionStatus,
-    });
+    // Player at HQ
+    console.log(data.actionStatus);
+    if (data.actionStatus === 5) {
+      console.log("updating player location");
+      io.to(room.id).emit("update player location", {
+        userIndex: data.userIndex,
+        jobId: -1,
+        actionStatus: 5,
+        coordinates: [0, 0],
+      });
+    } else if (data.actionStatus === 4) {
+      console.log("updating player location");
+      io.to(room.id).emit("update player location", {
+        userIndex: data.userIndex,
+        jobId: -1,
+        actionStatus: 4,
+        coordinates: [0, 0],
+      });
+    } else {
+      io.to(room.id).emit("update player location", {
+        userIndex: data.userIndex,
+        actionStatus: data.actionStatus,
+      });
+    }
   });
 
   // New player stats
@@ -282,6 +294,7 @@ module.exports = (socket, io) => {
     userToPlanet(io, room, data.jobId, data.userIndex);
     // Make old job available again if not fixed
     if (
+      data.oldJobId >= 0 &&
       room.jobsArray[data.oldJobId].status !== 2 &&
       data.oldJobId !== data.jobId
     ) {
@@ -298,10 +311,45 @@ module.exports = (socket, io) => {
   socket.on("update job status", (data) => {
     console.log("updating job status");
     const room = rooms[data.roomId - 1];
-    room.jobsArray[data.jobId].status = data.status;
-    io.to(room.id).emit("display jobs", {
-      jobsArray: room.jobsArray,
-      jobIndices: room.jobIndices,
-    });
+    // Only applies to specified job
+    if (!data.affectPlanet) {
+      room.jobsArray[data.jobId].status = data.status;
+      io.to(room.id).emit("display jobs", {
+        jobsArray: room.jobsArray,
+        jobIndices: room.jobIndices,
+      });
+      // Job has been disabled
+      if (data.status === 3) {
+        io.to(room.id).emit("update player location", {
+          userIndex: data.userIndex,
+          jobId: -1,
+          actionStatus: 6,
+        });
+      }
+    }
+    // Applies to all jobs on planet
+    else {
+      for (const job of room.jobsArray) {
+        if (job.name === room.jobsArray[data.jobId].name) {
+          job.status = data.status;
+        }
+      }
+      io.to(room.id).emit("display jobs", {
+        jobsArray: room.jobsArray,
+        jobIndices: room.jobIndices,
+      });
+      for (let i = 0; i < room.users.length; i++) {
+        if (
+          room.jobsArray[room.users[i].currentJobIndex].name ===
+          room.jobsArray[data.jobId].name
+        ) {
+          io.to(room.id).emit("update player location", {
+            userIndex: i,
+            jobId: -1,
+            actionStatus: 6,
+          });
+        }
+      }
+    }
   });
 };

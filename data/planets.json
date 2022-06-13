@@ -119,7 +119,7 @@
       "hazard-type": 21,
       "description": "A desert world of cattle ranchers and outlaws.",
       "hazard-pay": 50,
-      "hazard-description": "Roll 9 for bandits on each work day. If attacked, relinquish $1500 or 5 random cards from your deck.",
+      "hazard-description": "Roll 9 for bandits on each work day. If attacked, relinquish $1500 or five of your cards, chosen randomly",
       "hazard-roll-string": "bandits",
       "difficulty": 0,
       "base-reward": 400,
@@ -268,7 +268,7 @@
       "exp": 0.25
     },
     {
-      "name": "Atherius",
+      "name": "Atherio",
       "system": "Stevensonos System",
       "coordinates": [-81, -47],
       "hazard-type": 11,

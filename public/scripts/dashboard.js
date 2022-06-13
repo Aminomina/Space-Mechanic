@@ -19,6 +19,7 @@ const dashboard = {
     totalReward: undefined,
   },
   hasRolledToFix: false,
+  hazard: {},
   // METHODS
   endTurn: function () {
     console.log("ending turn");
@@ -34,6 +35,7 @@ const dashboard = {
     if (
       dashboard.turnInfo.newJobChoice !== -1 &&
       "jobId" in dashboard.turnInfo.jobOutcome &&
+      dashboard.turnInfo.jobOutcome.jobId >= 0 &&
       game.jobsArray[dashboard.turnInfo.jobOutcome.jobId].status !== 2 &&
       dashboard.turnInfo.jobOutcome.status !== 2
     ) {
@@ -53,6 +55,9 @@ const dashboard = {
       dashboard.turnInfo.jobOutcome = {};
     }
     dashboard.turnInfo.newUserStats = {};
+
+    // Reset single turn values
+    userList[userIndex].bonusDiff = 0;
 
     // Disable buttons
     dashboard.endTurnButton.classList.add("disabled");
@@ -78,10 +83,15 @@ const dashboard = {
       } else {
         locationStringElement.textContent = `You're on ${userList[userIndex].site}.`;
       }
-    } else if (userList[userIndex].actionStatus === 3) {
+    } else if (
+      userList[userIndex].actionStatus === 3 ||
+      userList[userIndex].actionStatus === 6
+    ) {
       locationStringElement.textContent = `You're in open space.`;
     } else if (userList[userIndex].actionStatus === 4) {
       locationStringElement.textContent = `You're in the hospital.`;
+    } else if (userList[userIndex].actionStatus === 5) {
+      locationStringElement.textContent = `You're at Space Mechanic HQ.`;
     } else {
       locationStringElement.textContent = "";
     }
@@ -153,8 +163,8 @@ const dashboard = {
     nameIconElement.src =
       "/images/icons/wrench-" + userList[userIndex].color + "-small.png";
     nameElement.textContent = userList[userIndex].name;
-    moneyElement.textContent = userList[userIndex].money.toFixed(2);
-    expElement.textContent = userList[userIndex].exp.toFixed(0);
+    moneyElement.textContent = (+userList[userIndex].money).toFixed(2);
+    expElement.textContent = (+userList[userIndex].exp).toFixed(0);
   },
   registerJob: function (jobId) {
     console.log("registering job");
@@ -174,7 +184,8 @@ const dashboard = {
 
     // Calculate total job multiplier
     const kExp = 2 - 0.999 ** exp;
-    const kDiff = dashboard.currentJobInfo.totalDiff;
+    const kDiff =
+      dashboard.currentJobInfo.totalDiff + userList[userIndex].bonusDiff;
     dashboard.currentJobMultiplier = kExp / kDiff;
 
     dashboard.turnInfo.newJobChoice = jobId;
@@ -196,9 +207,15 @@ const dashboard = {
       dialogue.closeDialogueBox();
       // dashboard.turnInfo.newJobChoice = jobId;
       // Check if old job had hazard
-      const isOldJobHazard =
-        game.jobsArray[oldJobId]["hazard-type"] !== 0 &&
-        game.jobsArray[oldJobId].locIndex !== 6;
+      let isOldJobHazard;
+      if (oldJobId >= 0) {
+        isOldJobHazard =
+          game.jobsArray[oldJobId]["hazard-type"] !== 0 &&
+          game.jobsArray[oldJobId].locIndex !== 6;
+      } else {
+        isOldJobHazard = false;
+      }
+
       const isNewJobHazard =
         game.jobsArray[jobId]["hazard-type"] !== 0 &&
         game.jobsArray[jobId].locIndex !== 6;
@@ -207,10 +224,11 @@ const dashboard = {
         (isNewJobHazard &&
           game.jobsArray[jobId].name !== game.jobsArray[oldJobId].name)
       ) {
-        dashboard.openRollForHazard(
-          game.jobsArray[jobId]["hazard-type"],
-          game.jobsArray[jobId]["hazard-roll-string"]
-        );
+        dashboard.openRollForHazard({
+          type: game.jobsArray[jobId]["hazard-type"],
+          string: game.jobsArray[jobId]["hazard-roll-string"],
+          pay: game.jobsArray[jobId]["hazard-pay"],
+        });
       }
 
       // Enable roll-to-fix if not already used that turn
@@ -257,15 +275,14 @@ const dashboard = {
   },
   sendToHospital: function () {
     // Player spends rest of week in hospital
-    userList[userIndex].actionStatus = 4;
-
     // Abandon job
     console.log("abandoning job");
+    board.clearJobLines();
     dashboard.turnInfo.jobOutcome = {
       jobId: userList[userIndex].currentJobIndex,
       status: 0,
     };
-    dashboard.turnInfo.newJobChoice = -2;
+    dashboard.turnInfo.newJobChoice = -1;
 
     // Deactivate roll-to-fix
     dashboard.rollToFixButton.classList.add("disabled");
@@ -281,23 +298,28 @@ const dashboard = {
       actionStatus: 4,
     });
   },
-  openRollForHazard: function (hazardType, hazardString) {
+  openRollForHazard: function (hazard) {
     console.log("opening roll for hazard");
     const rollHeadingElement = document.getElementById("roll-dice-heading");
     const rollMessageElement = document.getElementById("roll-message");
-    if (+hazardType < 15) {
+    const options = document.getElementById("roll-options");
+    if (+hazard.type < 15) {
       dialogue.openRollDice(6);
-    } else if (+hazardType < 20) {
+    } else if (+hazard.type < 20) {
       dialogue.openRollDice(3);
-    } else if (+hazardType < 30) {
+    } else if (+hazard.type < 25) {
       dialogue.openRollDice(9);
-    } else if (+hazardType < 40) {
+    } else if (+hazard.type < 30) {
+      dialogue.openRollDice(4);
+    } else if (+hazard.type < 40) {
       dialogue.openRollDice(12);
     }
 
-    rollHeadingElement.textContent = `Roll for ${hazardString}!`;
+    rollHeadingElement.textContent = `Roll for ${hazard.string}!`;
     rollMessageElement.textContent = "Don't roll a 1!";
     rollMessageElement.style.display = "block";
+    options.style.display = "none";
+    dashboard.hazard = { ...hazard };
     dialogue.rollXButton.addEventListener("click", dashboard.rollForHazard);
   },
   rollForHazard: function () {
@@ -305,11 +327,9 @@ const dashboard = {
     // Variables
     const rollResultElement = document.getElementById("roll-result");
     const rollMessageElement = document.getElementById("roll-message");
-
-    const currentJob = game.jobsArray[userList[userIndex].currentJobIndex];
-    const hazardType = currentJob["hazard-type"];
-    const hazardString = currentJob["hazard-roll-string"];
-    const hazardPay = currentJob["hazard-pay"];
+    const options = document.getElementById("roll-options");
+    const optionButtonA = document.getElementById("roll-option-a");
+    const optionButtonB = document.getElementById("roll-option-b");
 
     dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
     rollResultElement.textContent = dialogue.rollResult;
@@ -325,11 +345,12 @@ const dashboard = {
       console.log("player avoided hazard");
 
       // Display roll text
-      rollMessageElement.textContent = `You avoided ${hazardString}!`;
+      rollMessageElement.textContent = `You avoided ${dashboard.hazard.string}!`;
       rollMessageElement.style.display = "block";
 
       // Get hazard pay
-      const newMoney = userList[userIndex].money + hazardPay;
+      const newMoney = +userList[userIndex].money + +dashboard.hazard.pay;
+      console.log(newMoney);
       // Update player stats
       socket.emit("update player stats", {
         roomId,
@@ -340,37 +361,45 @@ const dashboard = {
       console.log("player caught by hazard");
       // Display roll text
       // Assailants
-      if (hazardType % 5 === 1) {
-        rollMessageElement.textContent = `Oh no! You got caught by ${hazardString}!`;
-      } else if (hazardType === 30) {
-        rollMessageElement.textContent = `Oh no! You got caught in the ${hazardString}!`;
+      if (dashboard.hazard.type % 5 === 1) {
+        rollMessageElement.textContent = `Oh no! You got caught by ${dashboard.hazard.string}!`;
+      } else if (dashboard.hazard.type === 30) {
+        rollMessageElement.textContent = `Oh no! You got caught in the ${dashboard.hazard.string}!`;
       } else {
-        rollMessageElement.textContent = `Oh no! You fell victim to ${hazardString}!`;
+        rollMessageElement.textContent = `Oh no! You fell victim to ${dashboard.hazard.string}!`;
       }
       rollMessageElement.style.display = "block";
 
       // Injury
-      if (hazardType < 20) {
+      if (dashboard.hazard.type < 20) {
         dashboard.sendToHospital();
       }
-      // Theft
-      else if (hazardType < 30) {
+      // Loss of cards or money
+      else if (dashboard.hazard.type < 25) {
         // Player relinquishes cards or money
-        // Update turnInfo
-        let newMoney = userList[userIndex].money - 1500;
-        if (newMoney < 0) {
-          newMoney = 0;
-        }
-
-        // Update player stats
-        socket.emit("update player stats", {
-          roomId,
-          userIndex,
-          newUserStats: { money: newMoney },
-        });
+        options.children[0].textContent =
+          "You must relinquish $1500 or five of your cards at random.";
+        optionButtonA.textContent = "Relinquish Money";
+        optionButtonB.textContent = "Relinquish Cards";
+        optionButtonA.className = "";
+        optionButtonB.className = "";
+        options.style.display = "flex";
+        optionButtonA.addEventListener(
+          "click",
+          dashboard.assailantRelinquishMoney
+        );
+        optionButtonB.addEventListener(
+          "click",
+          dashboard.assailantRelinquishCards
+        );
+        return;
+      }
+      // Loss of money
+      else if (dashboard.hazard.type < 30) {
+        dashboard.addMoney(-300);
       }
       // Natural Disaster
-      else if (hazardType < 40) {
+      else if (dashboard.hazard.type < 40) {
         dashboard.sendToHospital();
       }
     }
@@ -378,15 +407,58 @@ const dashboard = {
     // Close window after delay
     setTimeout(dialogue.closeDialogueBox, 2000);
   },
+
+  assailantRelinquishMoney: function () {
+    console.log("relinquishing money");
+    const optionButtonA = document.getElementById("roll-option-a");
+    const optionButtonB = document.getElementById("roll-option-b");
+
+    optionButtonA.removeEventListener(
+      "click",
+      dashboard.assailantRelinquishMoney
+    );
+    optionButtonB.removeEventListener(
+      "click",
+      dashboard.assailantRelinquishCards
+    );
+    optionButtonA.classList.add("disabled");
+    optionButtonB.classList.add("disabled");
+
+    dialogue.closeDialogueBox();
+    dashboard.addMoney(-1500);
+  },
+
+  assailantRelinquishCards: function () {
+    console.log("relinquishing cards");
+    const optionButtonA = document.getElementById("roll-option-a");
+    const optionButtonB = document.getElementById("roll-option-b");
+
+    optionButtonA.removeEventListener(
+      "click",
+      dashboard.assailantRelinquishMoney
+    );
+    optionButtonB.removeEventListener(
+      "click",
+      dashboard.assailantRelinquishCards
+    );
+    optionButtonA.classList.add("disabled");
+    optionButtonB.classList.add("disabled");
+
+    dialogue.closeDialogueBox();
+    gameCards.removeCardsRandom(5);
+  },
+
   openRollToFix: function () {
     console.log("opening roll-to-fix");
     const rollMessageElement = document.getElementById("roll-message");
+    const options = document.getElementById("roll-options");
     const minRoll = Math.floor(3 / dashboard.currentJobMultiplier) + 1;
     console.log(`Min Roll: ${minRoll}`);
 
     dialogue.openRollDice(6);
     rollMessageElement.textContent = `You need at least ${minRoll} to succeed.`;
     rollMessageElement.style.display = "block";
+    options.style.display = "none";
     dialogue.rollXButton.addEventListener("click", dashboard.rollToFix);
     dialogue.showDialogueControls(true, false);
     // Add event listeners
@@ -490,6 +562,20 @@ const dashboard = {
     console.log("closing roll-to-fix");
     dialogue.closeDialogueBox();
     dialogue.backdropElement.style.display = "none";
+  },
+
+  addMoney: function (amount) {
+    let newMoney;
+    if (+userList[userIndex].money + amount < 0) {
+      newMoney = 0;
+    } else {
+      newMoney = +userList[userIndex].money + amount;
+    }
+    socket.emit("update player stats", {
+      roomId,
+      userIndex,
+      newUserStats: { money: newMoney },
+    });
   },
 };
 

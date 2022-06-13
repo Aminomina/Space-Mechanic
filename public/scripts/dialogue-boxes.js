@@ -278,6 +278,7 @@ const dialogue = {
     const planetStatsElements = document.querySelectorAll(
       "#job-detail-stats span"
     );
+    const planetDetailImage = document.getElementById("planet-detail-image");
     const planetDescriptionElement = document.getElementById(
       "job-detail-description"
     );
@@ -328,6 +329,9 @@ const dialogue = {
       planetStatsElements[2].textContent = "";
       planetStatsElements[2].style.display = "none";
     }
+    console.log(dialogue.activeJobs[0].name);
+    planetDetailImage.src = `/images/planet-detail/${dialogue.activeJobs[0].name.toLowerCase()}.png`;
+
     planetDescriptionElement.textContent = dialogue.activeJobs[0].description;
     if ("difficulty-description" in dialogue.activeJobs[0]) {
       difficultyDescriptionElement.textContent =
@@ -497,6 +501,12 @@ const dialogue = {
         entryImageScreen.classList.add("fixed");
         entryImageOverlay.classList.add("fixed");
       }
+      // Job is canceled
+      else if (job.status === 3) {
+        entryImageOverlay.textContent = "CANCELED";
+        entryImageScreen.classList.add("canceled");
+        entryImageOverlay.classList.add("canceled");
+      }
 
       // Job Stats
       if (location.name === "Satellite") {
@@ -513,7 +523,9 @@ const dialogue = {
 
       // Accept Job Button
       const isUserActive =
-        game.isTurn && userList[userIndex].actionStatus !== 4;
+        game.isTurn &&
+        userList[userIndex].actionStatus !== 4 &&
+        userList[userIndex].actionStatus !== 5;
       if (
         (isUserActive && job.status === 0) ||
         (isUserActive &&
@@ -552,7 +564,7 @@ const dialogue = {
     // if (jobId === userList[userIndex].currentJobIndex) {}
   },
 
-  openCardDetail: function (cardIndex) {
+  openCardDetail: function (cardIndex, isDraw = false) {
     console.log("opening card-detail display");
     dialogue.closeDialogueBox();
     // Define Variables
@@ -567,35 +579,58 @@ const dialogue = {
       "card-detail-type-symbol"
     );
     const playCardButtonElement = document.getElementById("play-card-button");
+    const playCardButton2Element =
+      document.getElementById("play-card-button-2");
 
     // Change appropriate values
     titleElement.textContent = cardsData[cardIndex].name;
     captionElement.innerHTML = cardsData[cardIndex].caption;
     descriptionElement.innerHTML = cardsData[cardIndex].description;
-    if (cardsData[cardIndex].type === "singleUse") {
-      playCardButtonElement.style.display = "block";
-    } else {
-      playCardButtonElement.style.display = "none";
-    }
 
-    // Display appropriate elements
-    dialogue.showDialogueControls(true, false);
+    // Display/Hide appropriate elements
     dialogue.dialogueBox.style.display = "block";
     cardDetailElement.style.display = "block";
     dialogue.backdropElement.style.display = "block";
+    playCardButton2Element.style.display = "none";
 
     // Set dialogue window to correct size
     dialogue.dialogueBox.className = "card-detail";
 
-    // Add Event Listeners
-    dialogue.closeWindowElement.addEventListener(
-      "click",
-      dialogue.closeDialogueBox
-    );
-    dialogue.backdropElement.addEventListener(
-      "click",
-      dialogue.closeDialogueBox
-    );
+    // Card is being viewed
+    if (!isDraw) {
+      if (cardsData[cardIndex].type === "singleUse") {
+        playCardButtonElement.style.display = "block";
+      } else {
+        playCardButtonElement.style.display = "none";
+      }
+      dialogue.showDialogueControls(true, false);
+      dialogue.closeWindowElement.addEventListener(
+        "click",
+        dialogue.closeDialogueBox
+      );
+      dialogue.backdropElement.addEventListener(
+        "click",
+        dialogue.closeDialogueBox
+      );
+    }
+    // Card is being drawn
+    else {
+      gameCards.drawnCard = cardIndex;
+      if (
+        cardsData[cardIndex].type === "singleUse" ||
+        cardsData[cardIndex].type === "hold"
+      ) {
+        playCardButtonElement.textContent = "Add to Deck";
+        playCardButtonElement.addEventListener("click", gameCards.drawnCardAdd);
+      } else {
+        playCardButtonElement.textContent = "Continue";
+        playCardButtonElement.addEventListener(
+          "click",
+          gameCards.drawnCardAction
+        );
+      }
+      playCardButtonElement.style.display = "block";
+    }
   },
 };
 
