@@ -10,6 +10,7 @@ const dialogue = {
   rollXButton: document.getElementById("roll-x"),
   allRollXButtons: document.querySelectorAll(".all-roll-x"),
   numDie: 0,
+  minRoll: undefined,
   isDieRolled: false,
   activeJobs: [],
   rollResult: undefined,
@@ -525,7 +526,8 @@ const dialogue = {
       const isUserActive =
         game.isTurn &&
         userList[userIndex].actionStatus !== 4 &&
-        userList[userIndex].actionStatus !== 5;
+        userList[userIndex].actionStatus !== 5 &&
+        userList[userIndex].actionStatus !== 7;
       if (
         (isUserActive && job.status === 0) ||
         (isUserActive &&
@@ -564,8 +566,9 @@ const dialogue = {
     // if (jobId === userList[userIndex].currentJobIndex) {}
   },
 
-  openCardDetail: function (cardIndex, isDraw = false) {
+  openCardDetail: function (cardIndex, isDraw = false, deckIndex) {
     console.log("opening card-detail display");
+    console.log(isDraw);
     dialogue.closeDialogueBox();
     // Define Variables
     const cardDetailElement = document.getElementById("card-detail");
@@ -586,6 +589,15 @@ const dialogue = {
     titleElement.textContent = cardsData[cardIndex].name;
     captionElement.innerHTML = cardsData[cardIndex].caption;
     descriptionElement.innerHTML = cardsData[cardIndex].description;
+    playCardButtonElement.classList.remove("disabled");
+
+    // Remove old event listeners
+    playCardButtonElement.removeEventListener("click", gameCards.playCard);
+    playCardButtonElement.removeEventListener("click", gameCards.drawnCardAdd);
+    playCardButtonElement.removeEventListener(
+      "click",
+      gameCards.drawnCardAction
+    );
 
     // Display/Hide appropriate elements
     dialogue.dialogueBox.style.display = "block";
@@ -599,7 +611,48 @@ const dialogue = {
     // Card is being viewed
     if (!isDraw) {
       if (cardsData[cardIndex].type === "singleUse") {
+        // Make card active
+        gameCards.activeCardIndex = deckIndex;
+        // Determine if card can be played                           ADD CODE FOR OTHER USE CONDITIONS
+        let isPlayable = false;
+        // Condition 2, player's turn, on job site
+        if (
+          cardsData[cardIndex].useCondition === 2 &&
+          game.isTurn &&
+          userList[userIndex].actionStatus === 2
+        ) {
+          isPlayable = true;
+        }
+        // Condition 2.1, player's turn, Roll-to-fix is active
+        console.log("CHECKING ISPLAYABLE");
+        console.log(dashboard.rollToFixButton.classList.contains("disabled"));
+        if (
+          cardsData[cardIndex].useCondition === 2 &&
+          game.isTurn &&
+          !dashboard.rollToFixButton.classList.contains("disabled")
+        ) {
+          isPlayable = true;
+        }
+        // Condition 3, player's turn
+        else if (
+          Math.floor(cardsData[cardIndex].useCondition === 3) &&
+          game.isTurn
+        ) {
+          isPlayable = true;
+        } else {
+          isPlayable = false;
+        }
+        console.log(isPlayable);
+        // Display play button
+        playCardButtonElement.textContent = "Play";
         playCardButtonElement.style.display = "block";
+
+        // make play button clickable if isPlayable, gray out if not
+        if (isPlayable) {
+          playCardButtonElement.addEventListener("click", gameCards.playCard);
+        } else {
+          playCardButtonElement.classList.add("disabled");
+        }
       } else {
         playCardButtonElement.style.display = "none";
       }
@@ -631,6 +684,71 @@ const dialogue = {
       }
       playCardButtonElement.style.display = "block";
     }
+  },
+
+  // Card Roll Window
+  openCardRoll: function (numSides, minRoll) {
+    console.log("opening card roll window");
+    const rollMessageElement = document.getElementById("roll-message");
+    const options = document.getElementById("roll-options");
+
+    dialogue.minRoll = minRoll;
+    dialogue.openRollDice(numSides);
+    rollMessageElement.textContent = `You need at least ${minRoll} to succeed.`;
+    rollMessageElement.style.display = "block";
+    options.style.display = "none";
+    dialogue.rollXButton.addEventListener("click", dialogue.cardRoll);
+    dialogue.showDialogueControls(true, false);
+    // // Add event listeners
+    // dialogue.closeWindowElement.addEventListener(
+    //   "click",
+    //   dialogue.closeDialogueBox
+    // );
+    // dialogue.backdropElement.addEventListener(
+    //   "click",
+    //   dialogue.closeDialogueBox
+    // );
+  },
+  cardRoll: function () {
+    console.log("client is rolling");
+    // Variables
+    const rollResultElement = document.getElementById("roll-result");
+    const rollMessageElement = document.getElementById("roll-message");
+    let isSuccess;
+
+    dialogue.rollResult = dialogue.randomInt(dialogue.numDie);
+    rollResultElement.textContent = dialogue.rollResult;
+    console.log(`Roll Result: ${dialogue.rollResult}`);
+
+    // Disable buttons
+    dialogue.rollXButton.classList.add("disabled");
+    // Remove event listeners
+    dialogue.rollXButton.removeEventListener("click", dialogue.cardRoll);
+    // dialogue.closeWindowElement.removeEventListener(
+    //   "click",
+    //   dialogue.closeDialogueBox
+    // );
+    // dialogue.backdropElement.removeEventListener(
+    //   "click",
+    //   dialogue.closeDialogueBox
+    // );
+
+    // Manage roll success or failure
+    if (dialogue.rollResult >= dialogue.minRoll) {
+      console.log("roll success!");
+      // Display roll text
+      rollMessageElement.textContent = "Success!";
+      rollMessageElement.style.display = "block";
+      isSuccess = true;
+    } else {
+      console.log("failure");
+      // Display roll text
+      rollMessageElement.textContent = "Not successful...";
+      rollMessageElement.style.display = "block";
+      isSuccess = false;
+    }
+    // Close window after delay
+    setTimeout(gameCards.cardRollAction, 2000, isSuccess);
   },
 };
 

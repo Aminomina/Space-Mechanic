@@ -2,6 +2,8 @@
 const gameCards = {
   //PROPERTIES
   drawnCard: undefined,
+  activeCardIndex: undefined,
+  rollCard: undefined,
   //METHODS
   // Add a card to client's deck
   addCards: function (cardIndices) {
@@ -38,16 +40,17 @@ const gameCards = {
       cardsList.removeChild(cardsList.children[0]);
     }
 
-    for (const cardIndex of userList[userIndex].cards) {
+    for (let i = 0; i < userList[userIndex].cards.length; i++) {
       const cardElement = cardTemplate.cloneNode(true);
       const cardTitle = cardElement.children[1].children[0];
+      const cardIndex = userList[userIndex].cards[i];
 
       cardTitle.textContent = cardsData[cardIndex].name;
       cardElement.cardIndex = cardIndex;
 
       // Add event listener
       cardElement.addEventListener("click", function (event) {
-        dialogue.openCardDetail(event.currentTarget.cardIndex);
+        dialogue.openCardDetail(event.currentTarget.cardIndex, false, i);
       });
 
       cardsList.appendChild(cardElement);
@@ -57,7 +60,7 @@ const gameCards = {
     console.log("adding drawn card to deck");
     event.target.removeEventListener("click", gameCards.drawnCardAdd);
     dialogue.closeDialogueBox();
-    gameCards.addCard([gameCards.drawnCard]);
+    gameCards.addCards([gameCards.drawnCard]);
     gameCards.drawnCard = undefined;
   },
 
@@ -82,11 +85,11 @@ const gameCards = {
     } else if (gameCards.drawnCard === 21) {
       // Breakfast
       console.log("breakfast");
-      gameCards.setBonusDiff(-0.25);
+      gameCards.addBonusDiff(-0.25, 0);
     } else if (gameCards.drawnCard === 22) {
       // Chatty Client
       console.log("chatty client");
-      gameCards.setBonusDiff(0.25);
+      gameCards.addBonusDiff(0.25, 0);
     } else if (gameCards.drawnCard === 24) {
       // Safety Inspector
       console.log("safety inspector");
@@ -108,7 +111,9 @@ const gameCards = {
     } else if (gameCards.drawnCard === 27) {
       // Pirates!
       console.log("pirates!");
-      dashboard.openRollForHazard({ type: 21, string: "pirates", pay: "0" });
+      if (!userList[userIndex].protections.nonCryptids) {
+        dashboard.openRollForHazard({ type: 21, string: "pirates", pay: "0" });
+      }
     } else if (gameCards.drawnCard === 28) {
       // Fender Bender
       console.log("fender bender");
@@ -129,6 +134,64 @@ const gameCards = {
       gameCards.sendToTraining();
     }
     gameCards.drawnCard = undefined;
+  },
+
+  playCard: function (event) {
+    console.log("playing card");
+    const activeCard = userList[userIndex].cards[gameCards.activeCardIndex];
+
+    event.target.removeEventListener("click", gameCards.playCard);
+    dialogue.closeDialogueBox();
+    gameCards.removeCards([gameCards.activeCardIndex]);
+
+    // Use Condition 2
+    if (activeCard === 4) {
+      // The Golden Wrench
+      console.log("the golden wrench");
+      gameCards.fixJob(true, false);
+    } else if (activeCard === 13) {
+      // Energy Drink
+      console.log("energy drink");
+      gameCards.addBonusExp(0.15);
+    } else if (activeCard === 18) {
+      // Power Cycle
+      console.log("power cycle");
+      gameCards.rollCard = activeCard;
+      dialogue.openCardRoll(6, 6);
+    }
+    // Use Condition 3
+    else if (activeCard === 5) {
+      // Super Fuel
+      console.log("super fuel");
+      gameCards.addTempSpeedBonus(3);
+    } else if (activeCard === 6) {
+      // Safety Suit
+      console.log("safety suit");
+      userList[userIndex].protections.accidents = true;
+      gameCards.addBonusDiff(0, 0.25);
+    } else if (activeCard === 7) {
+      // Bodyguard Voucher
+      console.log("bodyguard voucher");
+      userList[userIndex].protections.nonCryptids = true;
+    } else if (activeCard === 8) {
+      // PTO
+      console.log("pto");
+      gameCards.sendHomePTO();
+    } else if (activeCard === 12) {
+      // Cryptid Repellent
+      console.log("cryptid repellent");
+      userList[userIndex].protections.cryptids = true;
+    }
+  },
+
+  cardRollAction: function (isSuccess) {
+    dialogue.closeDialogueBox();
+    if (gameCards.rollCard === 18) {
+      //Power Cycle
+      if (isSuccess) {
+        gameCards.fixJob(true, true);
+      }
+    }
   },
 
   sendToTraining: function () {
@@ -162,18 +225,138 @@ const gameCards = {
     });
   },
 
-  setBonusDiff: function (bonus) {
-    userList[userIndex].bonusDiff = bonus;
+  sendHomePTO: function () {
+    console.log("PTO");
+    board.clearJobLines();
+    dashboard.turnInfo.jobOutcome = {
+      jobId: userList[userIndex].currentJobIndex,
+      status: 0,
+    };
+    dashboard.turnInfo.newJobChoice = -1;
+
+    // Deactivate roll-to-fix
+    dashboard.rollToFixButton.classList.add("disabled");
+    dashboard.rollToFixButton.removeEventListener(
+      "click",
+      dashboard.openRollToFix
+    );
+    // Update player money
+    dashboard.addMoney(300);
+    // Update player status
+    socket.emit("update player status", {
+      roomId: roomId,
+      userIndex: userIndex,
+      actionStatus: 7,
+    });
+  },
+
+  addBonusDiff: function (dayBonus = 0, weekBonus = 0) {
+    userList[userIndex].bonusDiff.day += dayBonus;
+    userList[userIndex].bonusDiff.week += weekBonus;
     if (userList[userIndex].currentJobIndex >= 0) {
       dashboard.registerJob(userList[userIndex].currentJobIndex);
     }
+  },
+
+  addBonusExp: function (dayBonus = 0, weekBonus = 0) {
+    userList[userIndex].bonusExp.day += dayBonus;
+    userList[userIndex].bonusExp.week += weekBonus;
+    if (userList[userIndex].currentJobIndex >= 0) {
+      dashboard.registerJob(userList[userIndex].currentJobIndex);
+    }
+  },
+
+  addTempSpeedBonus: function (tempDaysAdd) {
+    socket.emit("add speed bonus", {
+      roomId: roomId,
+      userIndex: userIndex,
+      tempDaysAdd,
+    });
+  },
+
+  fixJob: function (pay = true, exp = true) {
+    let jobIndex = dashboard.turnInfo.jobOutcome.jobId;
+    const job = game.jobsArray[jobIndex];
+    const location = jobData.locations[job.locIndex];
+    const type = jobData.types[job.typeIndex];
+    const totalReward =
+      job["base-reward"] * (1 + location.pay + type.diffexpay);
+    let totalExp = 1 + job.exp + location.exp + type.diffexpay;
+
+    game.hasRolledToFix = true;
+
+    // Update turnInfo
+    dashboard.turnInfo.jobOutcome = {
+      jobId: jobIndex,
+      status: 2,
+    };
+    // Update player stats
+    const newMoney = userList[userIndex].money + totalReward;
+    const newExp = userList[userIndex].exp + totalExp * 50;
+    if (pay) {
+      socket.emit("update player stats", {
+        roomId,
+        userIndex,
+        newUserStats: { money: newMoney },
+      });
+    }
+    if (exp) {
+      socket.emit("update player stats", {
+        roomId,
+        userIndex,
+        newUserStats: { exp: newExp },
+      });
+    }
+
+    // Update jobsArray
+    socket.emit("update job status", {
+      roomId,
+      jobId: jobIndex,
+      status: 2,
+    });
+    // Disable roll-to-fix button
+    dashboard.rollToFixButton.classList.add("disabled");
+    dashboard.rollToFixButton.removeEventListener(
+      "click",
+      dashboard.openRollToFix
+    );
+    // Update job preview
+    dashboard.updateJobPreview();
+  },
+
+  // Clear all temporary bonuses and protection from previous day
+  clearDayBonuses: function () {
+    console.log("clearing day bonuses");
+    // Clear bonuses
+    userList[userIndex].bonusDiff.day = 0;
+    userList[userIndex].bonusExp.day = 0;
+  },
+
+  // Clear all temporary bonuses and protections from previous round
+  clearRoundBonuses: function () {
+    console.log("clearing round bonuses");
+    // Clear bonuses
+    userList[userIndex].bonusDiff.week = 0;
+    userList[userIndex].bonusExp.week = 0;
+    // Clear protections
+    userList[userIndex].protections.cryptids = false;
+    userList[userIndex].protections.nonCryptids = false;
+    userList[userIndex].protections.accidents = false;
+    // Return any bonuses from hold cards
   },
 };
 
 // SOCKET.IO
 // Server updates user's card deck
 socket.on("update cards", function (cards) {
-  console.log("cards display updated");
+  console.log("updating client card deck");
   userList[userIndex].cards = cards;
   gameCards.updateCardsDisplay();
+});
+
+socket.on("update speed bonus", function (data) {
+  console.log("updating client speed bonus");
+  for (const property in data) {
+    userList[userIndex].bonusSpeed[property] = data[property];
+  }
 });

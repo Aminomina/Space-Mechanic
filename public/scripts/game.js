@@ -69,6 +69,7 @@ const game = {
     board.homeShips();
     board.clearJobs();
     board.clearJobLines();
+    gameCards.clearRoundBonuses();
 
     dashboard.turnInfo = {
       roomId,
@@ -114,6 +115,9 @@ const game = {
   startTurn: function () {
     console.log("client set to active player");
     const currentJobIndex = userList[userIndex].currentJobIndex;
+    const currentJob = game.jobsArray[currentJobIndex];
+    let isProtected = false;
+
     game.isTurn = true;
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
     if (currentJobIndex >= 0) {
@@ -124,13 +128,33 @@ const game = {
       );
     }
     dashboard.endTurnButton.classList.remove("disabled");
-    // Check if user must roll for hazards
-    const currentJob = game.jobsArray[currentJobIndex];
+
+    // Check if user has hazard protection
     if (
+      currentJob != undefined &&
+      "hazard-type" in currentJob &&
+      ((userList[userIndex].protections.accidents &&
+        (currentJob["hazard-type"] === 10 ||
+          currentJob["hazard-type"] === 15)) ||
+        (userList[userIndex].protections.cryptids &&
+          currentJob["hazard-type"] === 11) ||
+        (userList[userIndex].protections.nonCryptids &&
+          currentJob["hazard-type"] === 21))
+    ) {
+      isProtected = true;
+    }
+    // Check if on PTO
+    if (userList[userIndex].actionStatus === 7) {
+      dashboard.addMoney(300);
+    }
+    // Check if user must roll for hazards
+    else if (
       // Player is on a planet with a hazard
       currentJob != undefined &&
       "hazard-type" in currentJob &&
       currentJob["hazard-type"] != 0 &&
+      // Player is not protected
+      !isProtected &&
       // The current job is not fixed
       currentJob.status !== 2 &&
       // Player is on planet (not in orbit)
@@ -247,8 +271,12 @@ socket.on("update player location", function (data) {
     } else {
       // Player being updated is not client
     }
-  } else if (data.actionStatus === 4 || data.actionStatus === 5) {
-    // At HQ
+  } else if (
+    data.actionStatus === 4 ||
+    data.actionStatus === 5 ||
+    data.actionStatus === 7
+  ) {
+    // At Hospital, HQ or on PTO
     userList[data.userIndex].coordinates = [0, 0];
     userList[data.userIndex].boardCoordinates =
       board.shipPositions[userList.length - 1][data.userIndex];

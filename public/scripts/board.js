@@ -105,18 +105,26 @@ const board = {
     console.log("displaying days-to-loc element");
     const daysToLocElement = document.getElementById("days-to-loc");
     const daysToLocTextElement = daysToLocElement.children[0];
+    let speed;
+
+    // Determine if client has speed bonus
+    if (userList[userIndex].bonusSpeed.tempDays > 0) {
+      speed = 2 * (1 + userList[userIndex].bonusSpeed.hold);
+    } else {
+      speed = 1 + userList[userIndex].bonusSpeed.hold;
+    }
 
     // Determine number of days to location
     if (distance === 0) {
       daysToLocTextElement.textContent = "0 Days";
-    } else if (distance <= 30) {
+    } else if (distance / speed <= 30) {
       daysToLocTextElement.textContent = "1 Day";
     } else {
-      const numDays = Math.floor(distance / 30 + 1);
+      const numDays = Math.floor(1 + distance / (speed * 30));
       daysToLocTextElement.textContent = `${numDays} Days`;
     }
 
-    // Find location of days-to-location icon
+    // Determine location of days-to-location icon
     const midCoordX = (startCoordinates[0] + endCoordinates[0]) / 2;
     const midCoordY = (startCoordinates[1] + endCoordinates[1]) / 2;
     let daysToLocCoordinates = [

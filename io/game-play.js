@@ -166,7 +166,17 @@ module.exports = (socket, io) => {
   // Player ends turn
   socket.on("turn end", (data) => {
     const room = rooms[data.roomId - 1];
+    const user = room.users[data.userIndex];
     let distancePerTurn = 30;
+    let speed;
+
+    // Check to see if user has speed bonus
+    if (user.bonusSpeed.tempDays > 0) {
+      speed = 2 * (1 + user.bonusSpeed.hold);
+    } else {
+      speed = 1 + user.bonusSpeed.hold;
+    }
+    distancePerTurn *= speed;
 
     // Check job outcome
     if ("jobId" in data.jobOutcome && data.jobOutcome.jobId >= 0) {
@@ -201,6 +211,13 @@ module.exports = (socket, io) => {
           userCoordinates,
           distancePerTurn
         );
+      }
+      // Update speed bonus if applicable
+      if (room.users[data.userIndex].bonusSpeed.tempDays > 0) {
+        room.users[data.userIndex].bonusSpeed.tempDays--;
+        io.to(socket.id).emit("update speed bonus", {
+          tempDays: room.users[data.userIndex].bonusSpeed.tempDays,
+        });
       }
     }
     // Player at job site
@@ -249,9 +266,18 @@ module.exports = (socket, io) => {
   // Player updates status
   socket.on("update player status", (data) => {
     const room = rooms[data.roomId - 1];
-    // Player at HQ
     console.log(data.actionStatus);
-    if (data.actionStatus === 5) {
+    if (data.actionStatus === 7) {
+      console.log("updating player location");
+      console.log("SENDING ON PTO");
+      io.to(room.id).emit("update player location", {
+        userIndex: data.userIndex,
+        jobId: -1,
+        actionStatus: 7,
+        coordinates: [0, 0],
+      });
+      // Player at HQ
+    } else if (data.actionStatus === 5) {
       console.log("updating player location");
       io.to(room.id).emit("update player location", {
         userIndex: data.userIndex,
@@ -304,6 +330,11 @@ module.exports = (socket, io) => {
     io.to(room.id).emit("display jobs", {
       jobsArray: room.jobsArray,
       jobIndices: room.jobIndices,
+    });
+    io.to(room.id).emit("update player location", {
+      userIndex: data.userIndex,
+      jobId: data.jobId,
+      actionStatus: 2,
     });
   });
 

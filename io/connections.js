@@ -16,11 +16,14 @@ const setup = {
       isReady: false,
       coordinates: [0, 0],
       boardCoordinates: [0, 0],
-      actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space, 4: in the hospital
+      actionStatus: 0, // 0: home, 1: in transit, 2: at job, 3: in open space, 4: in the hospital, 5: at a training week, 6: in orbit after job was disabled, 7: on PTO
       site: "home base",
       currentJobIndex: -1,
       cards: [],
-      bonusDiff: 0,
+      bonusDiff: { day: 0, week: 0, hold: 0 },
+      bonusExp: { day: 0, week: 0, hold: 0 },
+      bonusSpeed: { tempDays: 0, hold: 0 },
+      protections: { cryptids: false, nonCryptids: false, accidents: false },
     };
     user.color = setup.generatePlayerColor(room.users);
     io.to(socket.id).emit("assign name", user.name, user.id, user.color);

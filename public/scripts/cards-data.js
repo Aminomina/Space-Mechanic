@@ -40,13 +40,16 @@ const cardsData = [
     description:
       "Button ‘er up and go home, or fly to another job. Do not earn any experience points.",
     type: "singleUse",
+    useCondition: 2, //Jobsite, any time
   },
   {
     index: 5,
     name: "Super-Fuel",
     caption: "The champagne of spaceship fuels!",
-    description: "Fill up and get where you’re going in half-time!",
+    description:
+      "Fill up and get where you’re going in half-time! Lasts 3 days of travel.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 6,
@@ -55,6 +58,7 @@ const cardsData = [
     description:
       "Increase job difficulty by 0.25x, but gain total immunity to workplace accidents for the rest of the work week.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 7,
@@ -63,13 +67,16 @@ const cardsData = [
     description:
       "Gain immunity from non-cryptid assailants for the remainder of the week.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 8,
     name: "PTO",
-    caption: "You earned a week of PTO!",
-    description: "[INSERT DESCRIPTION]",
+    caption: "You earned PTO!",
+    description:
+      "Play this card at any time to return home and earn $300 a day for the rest of the work week.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 9,
@@ -78,6 +85,7 @@ const cardsData = [
       "Play this card at the start of any week (after rolling) to choose your job site first.",
     description: "",
     type: "singleUse",
+    useCondition: 0, //Home base, after rolling
   },
   {
     index: 10,
@@ -87,6 +95,7 @@ const cardsData = [
     description:
       "When rolling, combine your experience points and multiply by ⅔. Split money evenly from each job.",
     type: "singleUse",
+    useCondition: 0, //Home base, after rolling
   },
   {
     index: 11,
@@ -96,6 +105,7 @@ const cardsData = [
     description:
       "If they are at a job site, they will miss a roll. For your roll, combine both of your experience points and multiply by ⅔.",
     type: "singleUse",
+    useCondition: 2.1, //Jobsite, before roll-to-fix
   },
   {
     index: 12,
@@ -104,14 +114,16 @@ const cardsData = [
       "Apply on skin and clothing to mask your scent from ghosts, vampires and other cryptids!",
     description: "Lasts one work week.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 13,
     name: "Energy Drink",
     caption:
-      "Play this card at the beginning of any work day and multiply your roll by 1.25x.",
+      "Play this card at the beginning of any work day and add .15x to your experience multiplier.",
     description: "",
     type: "singleUse",
+    useCondition: 2.1, //Jobsite, before roll-to-fix
   },
   {
     index: 14,
@@ -121,37 +133,43 @@ const cardsData = [
     description:
       "Add 0.15x experience to each roll for the rest of the work week after playing.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 15,
     name: "Pilfer",
     caption:
-      "Play this card at the beginning of a round to “borrow” a card from another mechanic.",
+      "Play this card at the beginning of any work week to “borrow” a card from another mechanic.",
     description: "You know, permanently.",
     type: "singleUse",
+    useCondition: 0, //Home base, after rolling
   },
   {
     index: 16,
     name: "Smoke Bomb",
-    caption: "Play this card to escape from any assailant.",
+    caption:
+      "Play this card when attacked by any assailant to escape unharmed!",
     description: "Discard after use",
     type: "singleUse",
+    useCondition: 1, //Play when attacked by an assailant
   },
   {
     index: 17,
     name: "Personal Portal",
     caption: "Your own personal portal!",
     description:
-      "Play this card and instantly travel to any planet. Discard after use.",
+      "Play this card and instantly travel to any available job. Discard after use.",
     type: "singleUse",
+    useCondition: 3, //Can be played any time
   },
   {
     index: 18,
     name: "Power Cycle",
     caption: "Hey, sometimes that’s all it takes.",
     description:
-      "Play this card while working on any job (excluding PMs) and roll 12 to see if the issue is resolved. This will not use up your turn.",
+      "Play this card while working on any job (excluding PMs) and roll a D6 to see if the issue is resolved. This will not use up your turn.",
     type: "singleUse",
+    useCondition: 2, // Jobsite, any time
   },
   // Jobsite Event Cards
   {
@@ -226,7 +244,7 @@ const cardsData = [
     name: "Pirates!",
     caption: "Blozee joot! Pirates are after your ship!",
     description:
-      "Roll to see if you get away! If not, relinquish $1500 or five of your cards, chosen randomly.",
+      "Roll to see if you get away! If not, relinquish $1500 or five of your cards, chosen randomly. If you have played a bodyguard voucher card this turn, you are protected!",
     type: "travelEvent",
   },
   {
@@ -278,7 +296,7 @@ const cardsData = [
 
 const decks = {
   hold: [0, 1, 2, 3],
-  singleUse: [],
+  singleUse: [5, 6, 7, 8, 12],
   jobEvent: [19, 20, 21, 22, 24, 25, 33],
   travelEvent: [27, 28, 31, 33],
 };

@@ -51,13 +51,13 @@ const dashboard = {
     board.clearJobLines();
 
     // Reset turn info, but keep job outcome if user still at site
-    if (userList[userIndex].actionStatus !== 1) {
+    if (userList[userIndex].actionStatus !== 2) {
       dashboard.turnInfo.jobOutcome = {};
     }
     dashboard.turnInfo.newUserStats = {};
 
     // Reset single turn values
-    userList[userIndex].bonusDiff = 0;
+    gameCards.clearDayBonuses();
 
     // Disable buttons
     dashboard.endTurnButton.classList.add("disabled");
@@ -92,6 +92,8 @@ const dashboard = {
       locationStringElement.textContent = `You're in the hospital.`;
     } else if (userList[userIndex].actionStatus === 5) {
       locationStringElement.textContent = `You're at Space Mechanic HQ.`;
+    } else if (userList[userIndex].actionStatus === 7) {
+      locationStringElement.textContent = `You're on vacation.`;
     } else {
       locationStringElement.textContent = "";
     }
@@ -183,9 +185,16 @@ const dashboard = {
       job["base-reward"] * (1 + location.pay + type.diffexpay);
 
     // Calculate total job multiplier
-    const kExp = 2 - 0.999 ** exp;
-    const kDiff =
-      dashboard.currentJobInfo.totalDiff + userList[userIndex].bonusDiff;
+    const bonusDiff =
+      userList[userIndex].bonusDiff.day +
+      userList[userIndex].bonusDiff.week +
+      userList[userIndex].bonusDiff.hold;
+    const bonusExp =
+      userList[userIndex].bonusExp.day +
+      userList[userIndex].bonusExp.week +
+      userList[userIndex].bonusExp.hold;
+    const kExp = 2 - 0.999 ** exp + bonusExp;
+    const kDiff = dashboard.currentJobInfo.totalDiff + bonusDiff;
     dashboard.currentJobMultiplier = kExp / kDiff;
 
     dashboard.turnInfo.newJobChoice = jobId;
@@ -359,13 +368,33 @@ const dashboard = {
       });
     } else {
       console.log("player caught by hazard");
-      // Display roll text
-      // Assailants
+
+      // Caught by Assailants
       if (dashboard.hazard.type % 5 === 1) {
         rollMessageElement.textContent = `Oh no! You got caught by ${dashboard.hazard.string}!`;
-      } else if (dashboard.hazard.type === 30) {
+        rollMessageElement.style.display = "block";
+        // Check if user has smoke bomb
+        if (userList[userIndex].cards.includes(16)) {
+          console.log("may use smoke bomb");
+          options.children[0].textContent = "Escape using smoke bomb?";
+          optionButtonA.textContent = "Yes";
+          optionButtonB.textContent = "No";
+          optionButtonA.className = "";
+          optionButtonB.className = "";
+          options.style.display = "flex";
+          optionButtonA.addEventListener("click", dashboard.assailantSmokeBomb);
+          optionButtonB.addEventListener("click", dashboard.assailantCaught);
+        } else {
+          dashboard.assailantCaught();
+        }
+        return;
+      }
+      // Caught in natural disaster
+      else if (dashboard.hazard.type === 30) {
         rollMessageElement.textContent = `Oh no! You got caught in the ${dashboard.hazard.string}!`;
-      } else {
+      }
+      // Caught by other hazard
+      else {
         rollMessageElement.textContent = `Oh no! You fell victim to ${dashboard.hazard.string}!`;
       }
       rollMessageElement.style.display = "block";
@@ -373,26 +402,6 @@ const dashboard = {
       // Injury
       if (dashboard.hazard.type < 20) {
         dashboard.sendToHospital();
-      }
-      // Loss of cards or money
-      else if (dashboard.hazard.type < 25) {
-        // Player relinquishes cards or money
-        options.children[0].textContent =
-          "You must relinquish $1500 or five of your cards at random.";
-        optionButtonA.textContent = "Relinquish Money";
-        optionButtonB.textContent = "Relinquish Cards";
-        optionButtonA.className = "";
-        optionButtonB.className = "";
-        options.style.display = "flex";
-        optionButtonA.addEventListener(
-          "click",
-          dashboard.assailantRelinquishMoney
-        );
-        optionButtonB.addEventListener(
-          "click",
-          dashboard.assailantRelinquishCards
-        );
-        return;
       }
       // Loss of money
       else if (dashboard.hazard.type < 30) {
@@ -402,6 +411,73 @@ const dashboard = {
       else if (dashboard.hazard.type < 40) {
         dashboard.sendToHospital();
       }
+    }
+
+    // Close window after delay
+    setTimeout(dialogue.closeDialogueBox, 2000);
+  },
+
+  assailantSmokeBomb: function () {
+    console.log("escaping with smoke bomb!");
+    const options = document.getElementById("roll-options");
+    const optionButtonA = document.getElementById("roll-option-a");
+    const optionButtonB = document.getElementById("roll-option-b");
+
+    // Remove Event Listeners
+    optionButtonA.removeEventListener("click", dashboard.assailantSmokeBomb);
+    optionButtonB.removeEventListener("click", dashboard.assailantCaught);
+
+    // Update text
+    options.children[0].textContent = "Escaped!";
+
+    // Discard Smoke Bomb
+    for (let i = 0; i < userList[userIndex].cards.length; i++) {
+      if (userList[userIndex].cards[i] === 16) {
+        gameCards.removeCards([i]);
+        setTimeout(dialogue.closeDialogueBox, 1000);
+        return;
+      }
+    }
+    // Close window after delay
+    setTimeout(dialogue.closeDialogueBox, 1000);
+  },
+
+  assailantCaught: function () {
+    const options = document.getElementById("roll-options");
+    const optionButtonA = document.getElementById("roll-option-a");
+    const optionButtonB = document.getElementById("roll-option-b");
+
+    // Remove Event Listeners
+    optionButtonA.removeEventListener("click", dashboard.assailantSmokeBomb);
+    optionButtonB.removeEventListener("click", dashboard.assailantCaught);
+
+    // Injury
+    if (dashboard.hazard.type < 20) {
+      dashboard.sendToHospital();
+    }
+    // Loss of cards or money
+    else if (dashboard.hazard.type < 25) {
+      //  Player relinquishes cards or money
+      options.children[0].textContent =
+        "You must relinquish $1500 or 5 of your cards at random.";
+      optionButtonA.textContent = "Relinquish Money";
+      optionButtonB.textContent = "Relinquish Cards";
+      optionButtonA.className = "";
+      optionButtonB.className = "";
+      options.style.display = "flex";
+      optionButtonA.addEventListener(
+        "click",
+        dashboard.assailantRelinquishMoney
+      );
+      optionButtonB.addEventListener(
+        "click",
+        dashboard.assailantRelinquishCards
+      );
+      return;
+    }
+    // Loss of money
+    else if (dashboard.hazard.type < 30) {
+      dashboard.addMoney(-300);
     }
 
     // Close window after delay
