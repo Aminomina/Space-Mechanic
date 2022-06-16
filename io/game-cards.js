@@ -33,10 +33,18 @@ module.exports = (socket, io) => {
     console.log("adding speed bonus");
     const room = rooms[data.roomId - 1];
     const user = room.users[data.userIndex];
-    user.bonusSpeed.tempDays += data.tempDaysAdd;
+    if ("tempDays" in data) {
+      console.log("TEMPDAYS");
+      user.bonusSpeed.tempDays += data.tempDaysAdd;
+    } else if ("hold" in data) {
+      console.log("HOLD");
+      user.bonusSpeed.hold = data.hold;
+      console.log(user.bonusSpeed.hold);
+    }
 
     io.to(socket.id).emit("update speed bonus", {
       tempDays: user.bonusSpeed.tempDays,
+      hold: user.bonusSpeed.hold,
     });
   });
 };

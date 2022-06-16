@@ -23,6 +23,8 @@ const setup = {
       bonusDiff: { day: 0, week: 0, hold: 0 },
       bonusExp: { day: 0, week: 0, hold: 0 },
       bonusSpeed: { tempDays: 0, hold: 0 },
+      bonusExpGain: { hold: 0 },
+      bonusMoneyEarn: { hold: 0 },
       protections: { cryptids: false, nonCryptids: false, accidents: false },
     };
     user.color = setup.generatePlayerColor(room.users);

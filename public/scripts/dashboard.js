@@ -597,8 +597,12 @@ const dashboard = {
         status: 2,
       };
       // Update player stats
-      const newMoney = userList[userIndex].money + totalReward;
-      const newExp = userList[userIndex].exp + totalExp * 50;
+      const moneyEarnBonus = userList[userIndex].bonusMoneyEarn.hold;
+      const expGainBonus = userList[userIndex].bonusExpGain.hold;
+      const newMoney =
+        userList[userIndex].money + totalReward * (1 + moneyEarnBonus);
+      const newExp =
+        userList[userIndex].exp + totalExp * 50 * (1 + expGainBonus);
       socket.emit("update player stats", {
         roomId,
         userIndex,
@@ -620,7 +624,9 @@ const dashboard = {
         status: 1,
       };
       // Update player stats
-      const newExp = userList[userIndex].exp + totalExp * 25;
+      const expGainBonus = userList[userIndex].bonusExpGain.hold;
+      const newExp =
+        userList[userIndex].exp + totalExp * 25 * (1 + expGainBonus);
       socket.emit("update player stats", {
         roomId,
         userIndex,

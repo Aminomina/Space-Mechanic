@@ -210,8 +210,10 @@ const gameCards = {
       dashboard.openRollToFix
     );
     // Update player money
-    const newMoney = userList[userIndex].money + 1000;
-    const newExp = userList[userIndex].exp + 150;
+    const moneyEarnBonus = userList[userIndex].bonusMoneyEarn.hold;
+    const expGainBonus = userList[userIndex].bonusExpGain.hold;
+    const newMoney = userList[userIndex].money + 1000 * (1 + moneyEarnBonus);
+    const newExp = userList[userIndex].exp + 150 * (1 + expGainBonus);
     socket.emit("update player stats", {
       roomId,
       userIndex,
@@ -291,8 +293,11 @@ const gameCards = {
       status: 2,
     };
     // Update player stats
-    const newMoney = userList[userIndex].money + totalReward;
-    const newExp = userList[userIndex].exp + totalExp * 50;
+    const moneyEarnBonus = userList[userIndex].bonusMoneyEarn.hold;
+    const expGainBonus = userList[userIndex].bonusExpGain.hold;
+    const newMoney =
+      userList[userIndex].money + totalReward * (1 + moneyEarnBonus);
+    const newExp = userList[userIndex].exp + totalExp * 50 * (1 + expGainBonus);
     if (pay) {
       socket.emit("update player stats", {
         roomId,
@@ -344,6 +349,66 @@ const gameCards = {
     userList[userIndex].protections.accidents = false;
     // Return any bonuses from hold cards
   },
+  updateHoldBonuses: function () {
+    let isLuckyWrench = false;
+    let isTrainingBand = false;
+    let isSilverTongue = false;
+    let isBoosterRocket = false;
+    for (let i = 0; i < userList[userIndex].cards.length; i++) {
+      // Lucky Wrench
+      if (userList[userIndex].cards[i] === 0) {
+        isLuckyWrench = true;
+      }
+      // Training Band
+      else if (userList[userIndex].cards[i] === 1) {
+        isTrainingBand = true;
+      }
+      // Silver Tongue
+      else if (userList[userIndex].cards[i] === 2) {
+        isSilverTongue = true;
+      }
+      // Booster Rocket
+      else if (userList[userIndex].cards[i] === 3) {
+        isBoosterRocket = true;
+      }
+    }
+    if (isLuckyWrench) {
+      console.log("client has lucky wrench!");
+      userList[userIndex].bonusExp.hold = 0.25;
+    } else {
+      userList[userIndex].bonusExp.hold = 0;
+    }
+    if (isTrainingBand) {
+      console.log("client has training band!");
+      userList[userIndex].bonusExpGain.hold = 0.25;
+    } else {
+      userList[userIndex].bonusExpGain.hold = 0;
+    }
+    if (isSilverTongue) {
+      console.log("client has silver tongue!");
+      userList[userIndex].bonusMoneyEarn.hold = 0.25;
+    } else {
+      userList[userIndex].bonusMoneyEarn.hold = 0;
+    }
+    if (isBoosterRocket) {
+      console.log("client has booster rocket!");
+      socket.emit("add speed bonus", {
+        roomId: roomId,
+        userIndex: userIndex,
+        hold: 0.5,
+      });
+    } else {
+      socket.emit("add speed bonus", {
+        roomId: roomId,
+        userIndex: userIndex,
+        hold: 0,
+      });
+    }
+
+    if (userList[userIndex].currentJobIndex >= 0) {
+      dashboard.registerJob(userList[userIndex].currentJobIndex);
+    }
+  },
 };
 
 // SOCKET.IO
@@ -351,6 +416,7 @@ const gameCards = {
 socket.on("update cards", function (cards) {
   console.log("updating client card deck");
   userList[userIndex].cards = cards;
+  gameCards.updateHoldBonuses();
   gameCards.updateCardsDisplay();
 });
 

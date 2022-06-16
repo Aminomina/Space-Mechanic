@@ -29,7 +29,7 @@ const cardsData = [
     name: "Booster Rocket",
     caption: "You got the booster rocket!",
     description:
-      "Travel between sites at 1.25x speed as long as this card is in your possession.",
+      "Travel between sites at 1.5x speed as long as this card is in your possession.",
     type: "hold",
   },
   // Single Use Cards
@@ -296,7 +296,7 @@ const cardsData = [
 
 const decks = {
   hold: [0, 1, 2, 3],
-  singleUse: [5, 6, 7, 8, 12],
+  singleUse: [4, 5, 6, 7, 8, 12, 13, 18],
   jobEvent: [19, 20, 21, 22, 24, 25, 33],
   travelEvent: [27, 28, 31, 33],
 };
