@@ -388,6 +388,24 @@
   width: 1.5rem;
 }
 
+/* DRAW CARD */
+#draw-card {
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#draw-card-image {
+  height: 5rem;
+  margin: 1rem auto;
+  border-radius: 5px;
+}
+
+#draw-card-button {
+  width: 5rem;
+  margin: 1rem auto;
+}
+
 /* CARD DETAIL */
 #dialogue-box.card-detail {
   top: 10%;

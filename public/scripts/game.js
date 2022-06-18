@@ -226,6 +226,11 @@ socket.on("start game", function () {
   dialogue.openAllRollDice();
 });
 
+// Start of round
+socket.on("start round", function () {
+  setTimeout(game.startRound, 2000);
+});
+
 // Start of turn
 socket.on("start turn", function () {
   game.startTurn();

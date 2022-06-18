@@ -137,7 +137,7 @@ module.exports = (socket, io) => {
     room.jobIndices = [];
     room.round = 1;
     room.day = 1;
-    // Reset some user values for each user
+    // Reset some user values for each user            UPDATE THIS
     for (const user of room.users) {
       user.money = 500;
       user.exp = 0;

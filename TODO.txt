@@ -1,12 +1,12 @@
 BUGS
-- When a card is viewed and closed, it gets disappears from the user's deck the next time a card is drawn
 - End of round/game ranking doesn't work
 - Sometimes fixes a job with a roll smaller than displayed
 - End game display doesn't always come up (could be from escaping roll-to-fix?)
 - Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
 
 HIGH PRIORITY
-- Implement card draws
+- Implement event card draws
+- Put hold cards back into deck when lost
 - Implement use condition 0 (pilfer, go first, etc.)
 - Create demo video, Facebook page for updates
 - Implement cards

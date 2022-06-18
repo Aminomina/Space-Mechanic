@@ -50,7 +50,7 @@ const gameCards = {
 
       // Add event listener
       cardElement.addEventListener("click", function (event) {
-        dialogue.openCardDetail(event.currentTarget.cardIndex, false, i);
+        dialogue.openCardDetail(event.currentTarget.cardIndex, false, false, i);
       });
 
       cardsList.appendChild(cardElement);
@@ -58,8 +58,10 @@ const gameCards = {
   },
   drawnCardAdd: function (event) {
     console.log("adding drawn card to deck");
-    event.target.removeEventListener("click", gameCards.drawnCardAdd);
-    dialogue.closeDialogueBox();
+    if (event) {
+      event.target.removeEventListener("click", gameCards.drawnCardAdd);
+      dialogue.closeDialogueBox();
+    }
     gameCards.addCards([gameCards.drawnCard]);
     gameCards.drawnCard = undefined;
   },
@@ -405,9 +407,24 @@ const gameCards = {
       });
     }
 
-    if (userList[userIndex].currentJobIndex >= 0) {
+    // Check if job needs to be re-registered to account for new bonuses
+    if (
+      userList[userIndex].currentJobIndex >= 0 &&
+      game.jobsArray[userList[userIndex].currentJobIndex].status !== 2
+    ) {
       dashboard.registerJob(userList[userIndex].currentJobIndex);
     }
+  },
+  drawCommodityCard: function () {
+    const drawCardButtonElement = document.getElementById("draw-card-button");
+    drawCardButtonElement.removeEventListener(
+      "click",
+      gameCards.drawCommodityCard
+    );
+    socket.emit("draw commodity card", {
+      roomId: roomId,
+      userIndex: userIndex,
+    });
   },
 };
 
@@ -418,6 +435,14 @@ socket.on("update cards", function (cards) {
   userList[userIndex].cards = cards;
   gameCards.updateHoldBonuses();
   gameCards.updateCardsDisplay();
+});
+
+socket.on("draw card", function (cardIndex) {
+  dialogue.openCardDetail(cardIndex, true, false);
+});
+
+socket.on("draw card vanish", function (cardIndex) {
+  dialogue.openCardDetail(cardIndex, true, true);
 });
 
 socket.on("update speed bonus", function (data) {

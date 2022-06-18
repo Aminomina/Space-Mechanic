@@ -213,7 +213,7 @@ const dashboard = {
         jobId,
         oldJobId,
       });
-      dialogue.closeDialogueBox();
+      // dialogue.closeDialogueBox();
       // dashboard.turnInfo.newJobChoice = jobId;
       // Check if old job had hazard
       let isOldJobHazard;

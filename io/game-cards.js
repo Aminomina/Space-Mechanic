@@ -1,5 +1,9 @@
+const e = require("express");
 const roomData = require("../data/room-data");
 const rooms = roomData.rooms;
+const cardFunctions =
+  require("./helper-functions/card-functions").cardFunctions;
+const gameSetup = require("./helper-functions/setup-functions").gameSetup;
 
 module.exports = (socket, io) => {
   // User adds a card to their deck
@@ -34,10 +38,8 @@ module.exports = (socket, io) => {
     const room = rooms[data.roomId - 1];
     const user = room.users[data.userIndex];
     if ("tempDays" in data) {
-      console.log("TEMPDAYS");
       user.bonusSpeed.tempDays += data.tempDaysAdd;
     } else if ("hold" in data) {
-      console.log("HOLD");
       user.bonusSpeed.hold = data.hold;
       console.log(user.bonusSpeed.hold);
     }
@@ -46,5 +48,52 @@ module.exports = (socket, io) => {
       tempDays: user.bonusSpeed.tempDays,
       hold: user.bonusSpeed.hold,
     });
+  });
+  socket.on("draw commodity card", (data) => {
+    console.log("drawing commodity card");
+    const room = rooms[data.roomId - 1];
+    const singleUseLength = room.decks.singleUse.length;
+    const holdLength = room.decks.hold.length;
+    const commodityLength = singleUseLength + holdLength;
+    let cardIndex;
+
+    //Select a card at random
+    const commodityIndex = Math.floor(Math.random() * commodityLength);
+
+    // Card is singleUse
+    if (commodityIndex < singleUseLength) {
+      console.log("singleUse");
+      cardIndex = room.decks.singleUse.splice(commodityIndex, 1)[0];
+      // Check if last singleUse card was taken
+      if (singleUseLength === 1) {
+        console.log("resetting singleUse deck");
+        cardFunctions.setDeck(room.decks, "singleUse");
+      }
+    }
+    // Card is hold
+    else {
+      console.log("hold");
+      const holdIndex = commodityIndex - singleUseLength;
+      cardIndex = room.decks.hold.splice(holdIndex, 1)[0];
+      room.decks.holdDiscard.push(cardIndex);
+    }
+    io.to(socket.id).emit("draw card vanish", cardIndex);
+    // Check if all players are ready
+    room.users[data.userIndex].isReady = true;
+    let allReady = true;
+    for (const user of room.users) {
+      if (user.isReady === false) {
+        allReady = false;
+      }
+    }
+    if (allReady) {
+      console.log("everyone's ready!");
+      // Reset isReady
+      for (const user of room.users) {
+        user.isReady = false;
+      }
+      // Start Round
+      io.to(room.id).emit("start round");
+    }
   });
 };

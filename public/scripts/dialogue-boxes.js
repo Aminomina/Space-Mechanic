@@ -566,7 +566,12 @@ const dialogue = {
     // if (jobId === userList[userIndex].currentJobIndex) {}
   },
 
-  openCardDetail: function (cardIndex, isDraw = false, deckIndex) {
+  openCardDetail: function (
+    cardIndex,
+    isDraw = false,
+    isVanish = false,
+    deckIndex
+  ) {
     console.log("opening card-detail display");
     console.log(isDraw);
     dialogue.closeDialogueBox();
@@ -586,7 +591,12 @@ const dialogue = {
       document.getElementById("play-card-button-2");
 
     // Change appropriate values
-    titleElement.textContent = cardsData[cardIndex].name;
+    if (isDraw) {
+      titleElement.textContent = `You Drew "${cardsData[cardIndex].name}"`;
+    } else {
+      titleElement.textContent = cardsData[cardIndex].name;
+    }
+
     captionElement.innerHTML = cardsData[cardIndex].caption;
     descriptionElement.innerHTML = cardsData[cardIndex].description;
     playCardButtonElement.classList.remove("disabled");
@@ -666,16 +676,26 @@ const dialogue = {
         dialogue.closeDialogueBox
       );
     }
+    // Card set to vanish
+    else if (isVanish) {
+      playCardButtonElement.style.display = "none";
+      gameCards.drawnCard = cardIndex;
+      gameCards.drawnCardAdd(false);
+      setTimeout(dialogue.openWaitingForPlayers, 2000);
+    }
     // Card is being drawn
     else {
       gameCards.drawnCard = cardIndex;
+      // Single use or hold card
       if (
         cardsData[cardIndex].type === "singleUse" ||
         cardsData[cardIndex].type === "hold"
       ) {
         playCardButtonElement.textContent = "Add to Deck";
         playCardButtonElement.addEventListener("click", gameCards.drawnCardAdd);
-      } else {
+      }
+      // Event card
+      else {
         playCardButtonElement.textContent = "Continue";
         playCardButtonElement.addEventListener(
           "click",
@@ -684,6 +704,24 @@ const dialogue = {
       }
       playCardButtonElement.style.display = "block";
     }
+  },
+
+  // Waiting for Other Players
+  openWaitingForPlayers: function () {
+    console.log("opening waiting for players dialogue");
+    const dialogueMessageElement = document.getElementById("dialogue-message");
+    const dialogueMessageTextElement = document.getElementById(
+      "dialogue-message-text"
+    );
+
+    dialogue.closeDialogueBox();
+
+    dialogueMessageTextElement.textContent = "Waiting for Other Players...";
+
+    // Make elements visible
+    dialogue.dialogueBox.style.display = "block";
+    dialogue.backdropElement.style.display = "block";
+    dialogueMessageElement.style.display = "block";
   },
 
   // Card Roll Window
@@ -750,6 +788,24 @@ const dialogue = {
     // Close window after delay
     setTimeout(gameCards.cardRollAction, 2000, isSuccess);
   },
+  openDrawCommodityCard: function () {
+    console.log("opening draw-card display");
+    dialogue.closeDialogueBox();
+
+    // Define Variables
+    const drawCardElement = document.getElementById("draw-card");
+    const drawCardButtonElement = document.getElementById("draw-card-button");
+
+    drawCardButtonElement.addEventListener(
+      "click",
+      gameCards.drawCommodityCard
+    );
+
+    // Display appropriate elements
+    dialogue.dialogueBox.style.display = "block";
+    drawCardElement.style.display = "flex";
+    dialogue.backdropElement.style.display = "block";
+  },
 };
 
 // EVENT LISTENERS
@@ -787,5 +843,6 @@ socket.on("all roll complete", function (orderArray) {
   // game.reorderPlayers(rankArray);
   game.order = orderArray;
   setTimeout(dialogue.showRollOrder, 1000);
-  setTimeout(game.startRound, 2000);
+  setTimeout(dialogue.openDrawCommodityCard, 2000);
+  // setTimeout(game.startRound, 2000);
 });

@@ -68,6 +68,8 @@ const diceRoll = {
     for (i = 0; i < room.users.length; i++) {
       let index = room.ranks[i] - 1;
       room.order[index] = i;
+      // Reset isReady
+      room.users[i].isReady = false;
     }
     io.to(roomId).emit("all roll complete", room.order);
   },

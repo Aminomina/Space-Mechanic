@@ -18,6 +18,7 @@ for (var i = 0; i < numRooms; i++) {
     jobIndices: [],
     round: 1,
     day: 1,
+    decks: [],
   };
   rooms.push(room);
 }

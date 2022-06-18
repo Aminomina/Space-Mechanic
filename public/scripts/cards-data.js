@@ -36,7 +36,7 @@ const cardsData = [
   {
     index: 4,
     name: "The Golden Wrench",
-    caption: "Fix any machine immediately!",
+    caption: "Play to fix any machine immediately!",
     description:
       "Button ‘er up and go home, or fly to another job. Do not earn any experience points.",
     type: "singleUse",
@@ -56,14 +56,14 @@ const cardsData = [
     name: "Safety Suit",
     caption: "Wear at hazardous sites!",
     description:
-      "Increase job difficulty by 0.25x, but gain total immunity to workplace accidents for the rest of the work week.",
+      "Play to increase job difficulty by 0.25x, but gain total immunity to workplace accidents for the rest of the work week.",
     type: "singleUse",
     useCondition: 3, //Can be played any time
   },
   {
     index: 7,
     name: "Bodyguard Voucher",
-    caption: "Redeem this card for one week of personal bodyguard service!",
+    caption: "Play this card for one week of personal bodyguard service!",
     description:
       "Gain immunity from non-cryptid assailants for the remainder of the week.",
     type: "singleUse",
@@ -293,10 +293,3 @@ const cardsData = [
     type: "travelEvent",
   },
 ];
-
-const decks = {
-  hold: [0, 1, 2, 3],
-  singleUse: [4, 5, 6, 7, 8, 12, 13, 18],
-  jobEvent: [19, 20, 21, 22, 24, 25, 33],
-  travelEvent: [27, 28, 31, 33],
-};
