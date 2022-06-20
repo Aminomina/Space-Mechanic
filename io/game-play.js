@@ -186,7 +186,7 @@ module.exports = (socket, io) => {
     }
 
     // Player is traveling to a job
-    if (data.newJobChoice >= 0) {
+    if (data.newJobChoice >= 0 && !data.delayTransit) {
       // Calculate distance to job
       const jobCoordinates = room.jobsArray[data.newJobChoice].coordinates;
       console.log(data.userIndex);

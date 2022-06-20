@@ -116,7 +116,7 @@ const game = {
     console.log("client set to active player");
     const currentJobIndex = userList[userIndex].currentJobIndex;
     const currentJob = game.jobsArray[currentJobIndex];
-    let isProtected = false;
+    // let isProtected = false;
 
     game.isTurn = true;
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
@@ -129,43 +129,70 @@ const game = {
     }
     dashboard.endTurnButton.classList.remove("disabled");
 
-    // Check if user has hazard protection
-    if (
-      currentJob != undefined &&
-      "hazard-type" in currentJob &&
-      ((userList[userIndex].protections.accidents &&
-        (currentJob["hazard-type"] === 10 ||
-          currentJob["hazard-type"] === 15)) ||
-        (userList[userIndex].protections.cryptids &&
-          currentJob["hazard-type"] === 11) ||
-        (userList[userIndex].protections.nonCryptids &&
-          currentJob["hazard-type"] === 21))
-    ) {
-      isProtected = true;
+    // Reregister job if in transit
+    if (userList[userIndex].actionStatus === 1) {
+      dashboard.registerJob(dashboard.turnInfo.newJobChoice);
     }
+
+    // // Check if user has hazard protection
+    // if (
+    //   currentJob != undefined &&
+    //   "hazard-type" in currentJob &&
+    //   ((userList[userIndex].protections.accidents &&
+    //     (currentJob["hazard-type"] === 10 ||
+    //       currentJob["hazard-type"] === 15)) ||
+    //     (userList[userIndex].protections.cryptids &&
+    //       currentJob["hazard-type"] === 11) ||
+    //     (userList[userIndex].protections.nonCryptids &&
+    //       currentJob["hazard-type"] === 21))
+    // ) {
+    //   isProtected = true;
+    // }
+
     // Check if on PTO
     if (userList[userIndex].actionStatus === 7) {
       dashboard.addMoney(300);
     }
-    // Check if user must roll for hazards
+    // User must draw a transit event card
     else if (
-      // Player is on a planet with a hazard
-      currentJob != undefined &&
-      "hazard-type" in currentJob &&
-      currentJob["hazard-type"] != 0 &&
-      // Player is not protected
-      !isProtected &&
-      // The current job is not fixed
-      currentJob.status !== 2 &&
-      // Player is on planet (not in orbit)
-      currentJob.locIndex != 6
+      userList[userIndex].actionStatus === 1 &&
+      !userList[userIndex].transitCardDrawn
     ) {
-      dashboard.openRollForHazard({
-        type: currentJob["hazard-type"],
-        string: currentJob["hazard-roll-string"],
-        pay: currentJob["hazard-pay"],
-      });
+      userList[userIndex].transitCardDrawn = true;
+      userList[userIndex].jobCardDrawn = false;
+      dialogue.openDrawCard();
     }
+    // User must draw a job event card
+    else if (
+      userList[userIndex].actionStatus === 2 &&
+      !userList[userIndex].jobCardDrawn
+    ) {
+      userList[userIndex].jobCardDrawn = true;
+      userList[userIndex].transitCardDrawn = false;
+      dialogue.openDrawCard();
+    } else {
+      dashboard.checkForHazard();
+    }
+    // // Check if user must roll for hazards
+    // else if (
+    //   // Player is on a planet with a hazard
+    //   currentJob != undefined &&
+    //   "hazard-type" in currentJob &&
+    //   currentJob["hazard-type"] != 0 &&
+    //   // Player is not protected
+    //   !isProtected &&
+    //   // The current job is not fixed
+    //   currentJob.status !== 2 &&
+    //   // Player is on planet (not in orbit)
+    //   currentJob.locIndex != 6
+    // ) {
+    //   dashboard.openRollForHazard({
+    //     type: currentJob["hazard-type"],
+    //     string: currentJob["hazard-roll-string"],
+    //     pay: currentJob["hazard-pay"],
+    //   });
+    // }
+
     // Check if user can roll-to-fix
     if (
       userList[userIndex].actionStatus === 2 &&

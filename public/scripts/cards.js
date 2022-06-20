@@ -64,6 +64,7 @@ const gameCards = {
     }
     gameCards.addCards([gameCards.drawnCard]);
     gameCards.drawnCard = undefined;
+    dashboard.checkForHazard();
   },
 
   drawnCardAction: function (event) {
@@ -74,6 +75,7 @@ const gameCards = {
       // Workplace Accident
       console.log("workplace accident");
       dashboard.sendToHospital();
+      return;
     } else if (gameCards.drawnCard === 20) {
       // Thieves!
       console.log("thieves!");
@@ -84,6 +86,7 @@ const gameCards = {
         affectPlanet: false,
         userIndex,
       });
+      return;
     } else if (gameCards.drawnCard === 21) {
       // Breakfast
       console.log("breakfast");
@@ -110,6 +113,7 @@ const gameCards = {
         affectPlanet: true,
         userIndex,
       });
+      return;
     } else if (gameCards.drawnCard === 27) {
       // Pirates!
       console.log("pirates!");
@@ -130,12 +134,15 @@ const gameCards = {
     } else if (gameCards.drawnCard === 31) {
       // Ship Repairs
       console.log("ship repairs");
+      dashboard.turnInfo.delayTransit = true;
       dashboard.endTurn();
     } else if (gameCards.drawnCard === 33) {
       // Training Week
       gameCards.sendToTraining();
+      return;
     }
     gameCards.drawnCard = undefined;
+    dashboard.checkForHazard();
   },
 
   playCard: function (event) {
@@ -422,8 +429,23 @@ const gameCards = {
       gameCards.drawCommodityCard
     );
     socket.emit("draw commodity card", {
-      roomId: roomId,
-      userIndex: userIndex,
+      roomId,
+      userIndex,
+    });
+  },
+  drawEventCard: function () {
+    const drawCardButtonElement = document.getElementById("draw-card-button");
+    let isJobEvent = false;
+
+    drawCardButtonElement.removeEventListener("click", gameCards.drawEventCard);
+    // At job
+    if (userList[userIndex].actionStatus === 2) {
+      isJobEvent = true;
+    }
+    socket.emit("draw event card", {
+      roomId,
+      userIndex,
+      isJobEvent,
     });
   },
 };

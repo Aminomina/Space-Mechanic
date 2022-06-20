@@ -22,6 +22,11 @@ module.exports = (socket, io) => {
     const user = room.users[data.userIndex];
     const numRemove = data.cardIndices.length;
     for (let i = 0; i < numRemove; i++) {
+      const cardIndex = user.cards[data.cardIndices[i]];
+      if (cardIndex <= 3) {
+        room.decks.hold.push(cardIndex);
+        console.log(room.decks.hold);
+      }
       user.cards[data.cardIndices[i]] = undefined;
     }
     for (let i = user.cards.length - 1; i >= 0; i--) {
@@ -65,7 +70,7 @@ module.exports = (socket, io) => {
       console.log("singleUse");
       cardIndex = room.decks.singleUse.splice(commodityIndex, 1)[0];
       // Check if last singleUse card was taken
-      if (singleUseLength === 1) {
+      if (singleUseLength <= 1) {
         console.log("resetting singleUse deck");
         cardFunctions.setDeck(room.decks, "singleUse");
       }
@@ -95,5 +100,38 @@ module.exports = (socket, io) => {
       // Start Round
       io.to(room.id).emit("start round");
     }
+  });
+  socket.on("draw event card", (data) => {
+    console.log("drawing event card");
+    const room = rooms[data.roomId - 1];
+    const jobEventLength = room.decks.jobEvent.length;
+    const travelEventLength = room.decks.travelEvent.length;
+    let cardIndex;
+
+    // Jobsite Event
+    if (data.isJobEvent) {
+      const jobEventIndex = Math.floor(Math.random() * jobEventLength);
+      console.log("jobEvent");
+      console.log(jobEventIndex);
+      cardIndex = room.decks.jobEvent.splice(jobEventIndex, 1)[0];
+      console.log(cardIndex);
+      if (jobEventLength <= 1) {
+        console.log("resetting jobEvent deck");
+        cardFunctions.setDeck(room.decks, "jobEvent");
+      }
+    }
+    // Travel Event
+    else {
+      const travelEventIndex = Math.floor(Math.random() * travelEventLength);
+      console.log("travelEvent");
+      cardIndex = room.decks.travelEvent.splice(travelEventIndex, 1)[0];
+      if (travelEventLength <= 1) {
+        console.log("resetting travelEvent deck");
+        cardFunctions.setDeck(room.decks, "travelEvent");
+      }
+    }
+
+    // Prompt user to draw card
+    io.to(socket.id).emit("draw card", cardIndex);
   });
 };

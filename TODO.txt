@@ -5,8 +5,6 @@ BUGS
 - Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
 
 HIGH PRIORITY
-- Implement event card draws
-- Put hold cards back into deck when lost
 - Implement use condition 0 (pilfer, go first, etc.)
 - Create demo video, Facebook page for updates
 - Implement cards

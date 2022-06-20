@@ -26,6 +26,8 @@ const setup = {
       bonusExpGain: { hold: 0 },
       bonusMoneyEarn: { hold: 0 },
       protections: { cryptids: false, nonCryptids: false, accidents: false },
+      transitCardDrawn: false,
+      jobCardDrawn: false,
     };
     user.color = setup.generatePlayerColor(room.users);
     io.to(socket.id).emit("assign name", user.name, user.id, user.color);

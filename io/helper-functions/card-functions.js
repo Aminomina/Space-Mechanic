@@ -8,11 +8,17 @@ const cardFunctions = {
     } else if (deckKey === "holdDiscard") {
       decks.holdDiscard = [];
     } else if (deckKey === "singleUse") {
-      decks.singleUse = [4, 5, 6, 7, 8, 12, 13, 16, 18];
+      decks.singleUse = [
+        4, 5, 5, 6, 6, 7, 7, 8, 12, 12, 13, 13, 16, 16, 18, 18,
+      ];
     } else if (deckKey === "jobEvent") {
-      decks.jobEvent = [19, 20, 21, 22, 24, 25, 33];
+      decks.jobEvent = [
+        6, 6, 8, 12, 13, 13, 16, 16, 18, 19, 20, 21, 21, 22, 22, 24, 25, 33,
+      ];
     } else if (deckKey === "travelEvent") {
-      decks.travelEvent = [27, 28, 31, 33];
+      decks.travelEvent = [
+        5, 5, 7, 7, 8, 12, 12, 13, 16, 18, 18, 27, 28, 28, 29, 29, 31, 31, 33,
+      ];
     }
   },
 };

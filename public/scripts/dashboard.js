@@ -12,6 +12,7 @@ const dashboard = {
     jobOutcome: {},
     newUserStats: {},
     currentJobMultiplier: undefined,
+    delayTransit: false,
   },
   currentJobInfo: {
     totalDiff: undefined,
@@ -30,6 +31,11 @@ const dashboard = {
     );
     game.isTurn = false;
     game.hasRolledToFix = false;
+
+    //Reset job event card draw when player is going to a new job
+    if (dashboard.turnInfo.newJobChoice !== -1) {
+      userList[userIndex].jobCardDrawn = false;
+    }
 
     //Player has abandoned a job
     if (
@@ -55,6 +61,7 @@ const dashboard = {
       dashboard.turnInfo.jobOutcome = {};
     }
     dashboard.turnInfo.newUserStats = {};
+    dashboard.turnInfo.delayTransit = false;
 
     // Reset single turn values
     gameCards.clearDayBonuses();
@@ -281,6 +288,46 @@ const dashboard = {
     dashboard.turnInfo.newJobChoice = -1;
     dashboard.updateJobPreview();
     dashboard.updateLocationString();
+  },
+  checkForHazard: function () {
+    const currentJobIndex = userList[userIndex].currentJobIndex;
+    const currentJob = game.jobsArray[currentJobIndex];
+    let isProtected = false;
+
+    // Check if user has hazard protection
+    if (
+      currentJob != undefined &&
+      "hazard-type" in currentJob &&
+      ((userList[userIndex].protections.accidents &&
+        (currentJob["hazard-type"] === 10 ||
+          currentJob["hazard-type"] === 15)) ||
+        (userList[userIndex].protections.cryptids &&
+          currentJob["hazard-type"] === 11) ||
+        (userList[userIndex].protections.nonCryptids &&
+          currentJob["hazard-type"] === 21))
+    ) {
+      isProtected = true;
+    }
+
+    // Check if user must roll for hazards
+    if (
+      // Player is on a planet with a hazard
+      currentJob != undefined &&
+      "hazard-type" in currentJob &&
+      currentJob["hazard-type"] != 0 &&
+      // Player is not protected
+      !isProtected &&
+      // The current job is not fixed
+      currentJob.status !== 2 &&
+      // Player is on planet (not in orbit)
+      currentJob.locIndex != 6
+    ) {
+      dashboard.openRollForHazard({
+        type: currentJob["hazard-type"],
+        string: currentJob["hazard-roll-string"],
+        pay: currentJob["hazard-pay"],
+      });
+    }
   },
   sendToHospital: function () {
     // Player spends rest of week in hospital

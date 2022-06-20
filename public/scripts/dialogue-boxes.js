@@ -788,18 +788,22 @@ const dialogue = {
     // Close window after delay
     setTimeout(gameCards.cardRollAction, 2000, isSuccess);
   },
-  openDrawCommodityCard: function () {
-    console.log("opening draw-card display");
+  openDrawCard: function (isRoundStart = false) {
+    console.log("opening draw-commodity-card display");
     dialogue.closeDialogueBox();
 
     // Define Variables
     const drawCardElement = document.getElementById("draw-card");
     const drawCardButtonElement = document.getElementById("draw-card-button");
 
-    drawCardButtonElement.addEventListener(
-      "click",
-      gameCards.drawCommodityCard
-    );
+    if (isRoundStart) {
+      drawCardButtonElement.addEventListener(
+        "click",
+        gameCards.drawCommodityCard
+      );
+    } else {
+      drawCardButtonElement.addEventListener("click", gameCards.drawEventCard);
+    }
 
     // Display appropriate elements
     dialogue.dialogueBox.style.display = "block";
@@ -843,6 +847,6 @@ socket.on("all roll complete", function (orderArray) {
   // game.reorderPlayers(rankArray);
   game.order = orderArray;
   setTimeout(dialogue.showRollOrder, 1000);
-  setTimeout(dialogue.openDrawCommodityCard, 2000);
+  setTimeout(dialogue.openDrawCard, 2000, true);
   // setTimeout(game.startRound, 2000);
 });
