@@ -1,0 +1,11 @@
+GIT/GITHUB COMMANDS:
+git add -A:		Stage changes for commit
+git commit -m "":	Commits project with a message
+git push origin:	Pushes commit to GitHub
+
+TESTING:
+npm start:		Open the project on a test local server
+CTRL+C:			Close test local server
+
+update personal access token (VS CODE, not Terminal):
+CTRL+SHFT+P, GitHub: Set Personal Access Token
