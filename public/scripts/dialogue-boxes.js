@@ -22,8 +22,10 @@ const dialogue = {
 
   openEndOfRoundDisplay: function (moneyOrder, rankArray) {
     console.log("opening end-of-round display");
+    console.log(moneyOrder);
+    console.log(rankArray);
     dialogue.closeDialogueBox();
-    // Definte Variables
+    // Define Variables
     const endOfRoundDisplayElement = document.getElementById("end-of-round");
     const playerEntryElements = document.querySelectorAll(".rank-player-entry");
     const playerRankElements = document.querySelectorAll(".rank-player-rank");
@@ -97,7 +99,7 @@ const dialogue = {
     if (winners.length === 1) {
       winnerMessageElement.textContent = `${winners[0]} wins!`;
     } else if (winners.length === 2) {
-      winnerMessageElement = `${winners[0]} and ${winners[1]} win!`;
+      winnerMessageElement.textContent = `${winners[0]} and ${winners[1]} win!`;
     } else {
       for (let i = 0; i < winners.length - 1; i++) {
         winnerMessageElement.textContent += `${winners[0]}, `;
@@ -384,6 +386,11 @@ const dialogue = {
 
   closeDialogueBox: function () {
     console.log("closing dialogue box");
+    // Variables
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
+
     for (const sectionElement of dialogue.dialogueBox.children) {
       sectionElement.style.display = "none";
     }
@@ -391,11 +398,16 @@ const dialogue = {
     dialogue.backdropElement.style.display = "none";
     dialogue.dialogueBox.className = "";
 
+    // Remove Event Listeners
     dialogue.closeWindowElement.removeEventListener(
       "click",
       dialogue.closeDialogueBox
     );
     dialogue.backdropElement.removeEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
+    dialogueMessageButtonElement.removeEventListener(
       "click",
       dialogue.closeDialogueBox
     );
@@ -634,7 +646,6 @@ const dialogue = {
           isPlayable = true;
         }
         // Condition 2.1, player's turn, Roll-to-fix is active
-        console.log("CHECKING ISPLAYABLE");
         console.log(dashboard.rollToFixButton.classList.contains("disabled"));
         if (
           cardsData[cardIndex].useCondition === 2 &&
@@ -713,6 +724,9 @@ const dialogue = {
     const dialogueMessageTextElement = document.getElementById(
       "dialogue-message-text"
     );
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
 
     dialogue.closeDialogueBox();
 
@@ -722,6 +736,43 @@ const dialogue = {
     dialogue.dialogueBox.style.display = "block";
     dialogue.backdropElement.style.display = "block";
     dialogueMessageElement.style.display = "block";
+    dialogueMessageButtonElement.style.display = "none";
+  },
+
+  // Beginning of turn Dialogue
+  openStartTurnDialogue: function () {
+    console.log("opening beginning of turn dialogue");
+    const dialogueMessageElement = document.getElementById("dialogue-message");
+    const dialogueMessageTextElement = document.getElementById(
+      "dialogue-message-text"
+    );
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
+    const locationStringElement = document.getElementById("location-string");
+
+    dialogue.closeDialogueBox();
+
+    dialogueMessageTextElement.textContent = locationStringElement.textContent;
+    dialogueMessageButtonElement.textContent = "OK";
+
+    // Make Elements visible
+    dialogue.dialogueBox.style.display = "block";
+    dialogue.backdropElement.style.display = "block";
+    dialogueMessageElement.style.display = "block";
+    dialogueMessageButtonElement.style.display = "block";
+    dialogue.showDialogueControls(true, false);
+
+    // Event listeners
+    dialogue.closeWindowElement.addEventListener(
+      "click",
+      dialogue.closeDrawCard
+    );
+    dialogue.backdropElement.addEventListener("click", dialogue.closeDrawCard);
+    dialogueMessageButtonElement.addEventListener(
+      "click",
+      dialogue.closeDrawCard
+    );
   },
 
   // Card Roll Window
@@ -795,13 +846,27 @@ const dialogue = {
     // Define Variables
     const drawCardElement = document.getElementById("draw-card");
     const drawCardButtonElement = document.getElementById("draw-card-button");
+    const locationHeadingElement = document.getElementById(
+      "draw-card-location-heading"
+    );
+    const locationStringElement = document.getElementById("location-string");
 
     if (isRoundStart) {
+      locationHeadingElement.style.display = "none";
       drawCardButtonElement.addEventListener(
         "click",
         gameCards.drawCommodityCard
       );
     } else {
+      if (userList[userIndex].actionStatus === 2) {
+        const locationName =
+          game.jobsArray[userList[userIndex].currentJobIndex].name;
+        locationHeadingElement.textContent = `You've arrived on ${locationName}.`;
+        locationHeadingElement.style.display = "block";
+      } else {
+        locationHeadingElement.textContent = locationStringElement.textContent;
+        locationHeadingElement.style.display = "block";
+      }
       drawCardButtonElement.addEventListener("click", gameCards.drawEventCard);
     }
 
@@ -809,6 +874,11 @@ const dialogue = {
     dialogue.dialogueBox.style.display = "block";
     drawCardElement.style.display = "flex";
     dialogue.backdropElement.style.display = "block";
+  },
+  closeDrawCard: function () {
+    console.log("closing draw card dialogue");
+    dialogue.closeDialogueBox();
+    dashboard.checkForHazard();
   },
 };
 

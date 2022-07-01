@@ -1,18 +1,15 @@
 BUGS
-- End of round/game ranking doesn't work
-- Sometimes fixes a job with a roll smaller than displayed
 - End game display doesn't always come up (could be from escaping roll-to-fix?)
 - Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
+- Info displays "1 weeks," should say "1 week"
+- Player rankings should update right away instead of after card draw
+- Sometimes fixes a job with a roll smaller than displayed (still happening?)
 
 HIGH PRIORITY
-- Implement use condition 0 (pilfer, go first, etc.)
+- Find and fix bugs
+- Implement use condition 0 cards (pilfer, go first, etc.)
+- Implement remaining cards
 - Create demo video, Facebook page for updates
-- Implement cards
-  - Start with a small number of test cards
-  - Work out basic functionality
-  - STEPS:
-    - Create small test decks
-    - Individually code outcome for playing each card
 - Messages saying "It's your turn," "You've arrived on ____," etc.
 
 LOW PRIORITY

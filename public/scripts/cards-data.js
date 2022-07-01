@@ -288,7 +288,8 @@ const cardsData = [
   {
     index: 33,
     name: "Training Week",
-    caption: "Skip the remainder of the week training at Space Mechanic HQ.",
+    caption:
+      "Skip the remainder of the week training at Starfield Mechanics HQ.",
     description: "Get paid $1000 and earn 150 experience points.",
     type: "travelEvent",
   },

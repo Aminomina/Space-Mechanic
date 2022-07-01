@@ -98,7 +98,7 @@ const dashboard = {
     } else if (userList[userIndex].actionStatus === 4) {
       locationStringElement.textContent = `You're in the hospital.`;
     } else if (userList[userIndex].actionStatus === 5) {
-      locationStringElement.textContent = `You're at Space Mechanic HQ.`;
+      locationStringElement.textContent = `You're at Starfield Mechanics HQ.`;
     } else if (userList[userIndex].actionStatus === 7) {
       locationStringElement.textContent = `You're on vacation.`;
     } else {
@@ -290,9 +290,27 @@ const dashboard = {
     dashboard.updateLocationString();
   },
   checkForHazard: function () {
+    console.log("checking for hazard");
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
     const currentJobIndex = userList[userIndex].currentJobIndex;
     const currentJob = game.jobsArray[currentJobIndex];
     let isProtected = false;
+
+    // Remove Event Listeners
+    dialogue.closeWindowElement.removeEventListener(
+      "click",
+      dashboard.checkForHazard
+    );
+    dialogue.backdropElement.removeEventListener(
+      "click",
+      dashboard.checkForHazard
+    );
+    dialogueMessageButtonElement.removeEventListener(
+      "click",
+      dashboard.checkForHazard
+    );
 
     // Check if user has hazard protection
     if (

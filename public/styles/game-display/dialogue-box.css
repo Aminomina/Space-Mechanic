@@ -427,3 +427,8 @@
 #play-card-button {
   margin: 1rem auto;
 }
+
+/* DIALOGUE MESSAGE */
+#dialogue-message-button {
+  margin: auto;
+}

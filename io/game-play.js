@@ -80,44 +80,91 @@ function rankReset(room) {
   }
 
   // Determine player ranking
-  let moneyArray = new Array(room.users.length);
-  for (let i = 0; i < room.users.length; i++) {
-    moneyArray[i] = room.users[i].money;
-  }
+  let moneyArray = [];
+  let moneyRanks = new Array(room.users.length).fill(undefined);
+  let listRanks = new Array(room.users.length).fill(undefined);
 
-  const moneyOrder = new Array(room.users.length).fill(0);
-  const rankArray = new Array(room.users.length);
-  let rank = 0;
-  let money;
-  money = Math.max(...moneyArray);
-  for (let i = 0; i < moneyArray.length; i++) {
-    if (moneyArray[i] === money) {
-      if (money !== -1) {
-        moneyOrder[rank] = i;
+  for (const user of room.users) {
+    moneyArray.push(user.money);
+  }
+  console.log(moneyArray);
+
+  let rankIndex = 1;
+  let moneyRankIndex = 1;
+  let numTied = 0;
+  let usersRanked = false;
+  while (!usersRanked) {
+    // Determine player(s) with most money, rank
+    let currentMax = Math.max(...moneyArray);
+    for (let i = 0; i < moneyArray.length; i++) {
+      if (moneyArray[i] === currentMax) {
+        numTied++;
+        listRanks[i] = rankIndex;
+        moneyRanks[i] = moneyRankIndex;
         moneyArray[i] = -1;
-        rank++;
+        rankIndex++;
       }
     }
+    moneyRankIndex += numTied;
+    numTied = 0;
+    // Determine if all players have been ranked
+
+    usersRanked = true;
+    for (const rank of moneyRanks) {
+      if (rank === undefined) {
+        usersRanked = false;
+      }
+    }
+    console.log(moneyArray);
+    console.log(moneyRanks);
+    console.log(listRanks);
   }
 
-  rankArray[moneyOrder[0]] = 1;
-
-  for (let j = 1; j < moneyOrder.length; j++) {
-    // Tie
-    if (
-      room.users[moneyOrder[j - 1]].money === room.users[moneyOrder[j]].money
-    ) {
-      rankArray[moneyOrder[j]] = rankArray[moneyOrder[j - 1]];
-      // console.log(`119 rankArray${rankArray}`);
-    }
-    // No tie
-    else {
-      rankArray[moneyOrder[j]] = j + 1;
-      // console.log(`125 rankArray${rankArray}`);
-    }
+  let listOrder = new Array(room.users.length).fill(undefined);
+  for (let i = 0; i < listRanks.length; i++) {
+    listOrder[listRanks[i] - 1] = i;
   }
 
-  return { moneyOrder, rankArray };
+  console.log(moneyRanks);
+  console.log(listRanks);
+  console.log(listOrder);
+  // for (let i = 0; i < room.users.length; i++) {
+  //   moneyArray[i] = room.users[i].money;
+  // }
+
+  // const moneyOrder = new Array(room.users.length).fill(0);
+  // const rankArray = new Array(room.users.length);
+  // let rank = 0;
+  // let money;
+  // money = Math.max(...moneyArray);
+  // for (let i = 0; i < moneyArray.length; i++) {
+  //   if (moneyArray[i] === money) {
+  //     if (money !== -1) {
+  //       moneyOrder[rank] = i;
+  //       moneyArray[i] = -1;
+  //       rank++;
+  //     }
+  //   }
+  // }
+
+  // rankArray[moneyOrder[0]] = 1;
+
+  // for (let j = 1; j < moneyOrder.length; j++) {
+  //   // Tie
+  //   if (
+  //     room.users[moneyOrder[j - 1]].money === room.users[moneyOrder[j]].money
+  //   ) {
+  //     rankArray[moneyOrder[j]] = rankArray[moneyOrder[j - 1]];
+  //     // console.log(`119 rankArray${rankArray}`);
+  //   }
+  //   // No tie
+  //   else {
+  //     rankArray[moneyOrder[j]] = j + 1;
+  //     // console.log(`125 rankArray${rankArray}`);
+  //   }
+  // }
+
+  return { listOrder, moneyRanks };
 }
 
 // End the round
@@ -241,7 +288,8 @@ module.exports = (socket, io) => {
       room.activeUserIndex = 0;
       room.day++;
       console.log(`Day ${room.day}`);
-      if (room.day > 5) {
+      //                                                            DEBUG set back to 5 days
+      if (room.day > 1) {
         // Reset round data and calculate player rankings
         const rankData = rankReset(room);
         // Check if game over

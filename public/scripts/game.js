@@ -134,21 +134,6 @@ const game = {
       dashboard.registerJob(dashboard.turnInfo.newJobChoice);
     }
 
-    // // Check if user has hazard protection
-    // if (
-    //   currentJob != undefined &&
-    //   "hazard-type" in currentJob &&
-    //   ((userList[userIndex].protections.accidents &&
-    //     (currentJob["hazard-type"] === 10 ||
-    //       currentJob["hazard-type"] === 15)) ||
-    //     (userList[userIndex].protections.cryptids &&
-    //       currentJob["hazard-type"] === 11) ||
-    //     (userList[userIndex].protections.nonCryptids &&
-    //       currentJob["hazard-type"] === 21))
-    // ) {
-    //   isProtected = true;
-    // }
-
     // Check if on PTO
     if (userList[userIndex].actionStatus === 7) {
       dashboard.addMoney(300);
@@ -171,27 +156,9 @@ const game = {
       userList[userIndex].transitCardDrawn = false;
       dialogue.openDrawCard();
     } else {
-      dashboard.checkForHazard();
+      // dashboard.checkForHazard();
+      dialogue.openStartTurnDialogue();
     }
-    // // Check if user must roll for hazards
-    // else if (
-    //   // Player is on a planet with a hazard
-    //   currentJob != undefined &&
-    //   "hazard-type" in currentJob &&
-    //   currentJob["hazard-type"] != 0 &&
-    //   // Player is not protected
-    //   !isProtected &&
-    //   // The current job is not fixed
-    //   currentJob.status !== 2 &&
-    //   // Player is on planet (not in orbit)
-    //   currentJob.locIndex != 6
-    // ) {
-    //   dashboard.openRollForHazard({
-    //     type: currentJob["hazard-type"],
-    //     string: currentJob["hazard-roll-string"],
-    //     pay: currentJob["hazard-pay"],
-    //   });
-    // }
 
     // Check if user can roll-to-fix
     if (
@@ -379,12 +346,14 @@ socket.on("update active player", function (activeUserIndex) {
 
 // Server starts a new round
 socket.on("end round", function (data) {
-  game.endRound(data.moneyOrder, data.rankArray);
+  game.endRound(data.listOrder, data.moneyRanks);
 });
 
 // Server ends the round
 socket.on("end game", function (data) {
-  game.endGame(data.moneyOrder, data.rankArray);
+  console.log(data.rankArray);
+  console.log(data.moneyOrder);
+  game.endGame(data.listOrder, data.moneyRanks);
 });
 
 // Server resets the game
