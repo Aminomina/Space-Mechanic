@@ -60,9 +60,13 @@ const info = {
     const currentRoundElement = document.getElementById("info-current-round");
     const endConditionElement = document.getElementById("info-end-condition");
 
-    currentRoundElement.textContent = `Week ${game.currentRound}`;
+    currentRoundElement.textContent = `Week ${game.currentRound}, Day ${game.currentDay}`;
     if (game.endConditionType === "rounds") {
-      endConditionElement.textContent = `Playing ${game.endConditionRounds} weeks`;
+      if (+game.endConditionRounds === 1) {
+        endConditionElement.textContent = `Playing ${game.endConditionRounds} week`;
+      } else {
+        endConditionElement.textContent = `Playing ${game.endConditionRounds} weeks`;
+      }
     } else if (game.endConditionType === "money") {
       endConditionElement.textContent = `Goal: $${game.endConditionMoney}`;
     }

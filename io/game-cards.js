@@ -40,11 +40,14 @@ module.exports = (socket, io) => {
   });
   socket.on("add speed bonus", (data) => {
     console.log("adding speed bonus");
+    console.log(data);
     const room = rooms[data.roomId - 1];
     const user = room.users[data.userIndex];
-    if ("tempDays" in data) {
+    if ("tempDaysAdd" in data) {
       user.bonusSpeed.tempDays += data.tempDaysAdd;
-    } else if ("hold" in data) {
+      console.log(user.bonusSpeed.tempDays);
+    }
+    if ("hold" in data) {
       user.bonusSpeed.hold = data.hold;
       console.log(user.bonusSpeed.hold);
     }
@@ -82,24 +85,7 @@ module.exports = (socket, io) => {
       cardIndex = room.decks.hold.splice(holdIndex, 1)[0];
       room.decks.holdDiscard.push(cardIndex);
     }
-    io.to(socket.id).emit("draw card vanish", cardIndex);
-    // Check if all players are ready
-    room.users[data.userIndex].isReady = true;
-    let allReady = true;
-    for (const user of room.users) {
-      if (user.isReady === false) {
-        allReady = false;
-      }
-    }
-    if (allReady) {
-      console.log("everyone's ready!");
-      // Reset isReady
-      for (const user of room.users) {
-        user.isReady = false;
-      }
-      // Start Round
-      io.to(room.id).emit("start round");
-    }
+    io.to(socket.id).emit("draw card round start", cardIndex);
   });
   socket.on("draw event card", (data) => {
     console.log("drawing event card");

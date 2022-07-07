@@ -14,6 +14,7 @@ const dialogue = {
   isDieRolled: false,
   activeJobs: [],
   rollResult: undefined,
+  closeDialogueTimeout: undefined,
 
   // METHODS
   randomInt: function (intVal) {
@@ -269,6 +270,7 @@ const dialogue = {
     dialogue.allRollXButtons[userIndex].style.display = "none";
     tieMessageElement.style.display = "none";
     rollPlayersListElement.style.display = "flex";
+    info.showPlayerList();
   },
 
   openJobDetail: function (event) {
@@ -324,13 +326,30 @@ const dialogue = {
     }
     planetStatsElements[1].textContent =
       "Base Reward: $" + dialogue.activeJobs[0]["base-reward"];
-    if ("hazard-pay" in dialogue.activeJobs[0]) {
-      planetStatsElements[2].textContent =
+    if (dialogue.activeJobs[0]["hazard-type"] !== 0) {
+      let hazardType;
+      if (dialogue.activeJobs[0]["hazard-type"] === 21) {
+        hazardType = "Assailant";
+      } else if (
+        dialogue.activeJobs[0]["hazard-type"] === 10 ||
+        dialogue.activeJobs[0]["hazard-type"] === 15
+      ) {
+        hazardType = "Accident";
+      } else if (dialogue.activeJobs[0]["hazard-type"] === 11) {
+        hazardType = "Cryptid";
+      } else if (dialogue.activeJobs[0]["hazard-type"] === 30) {
+        hazardType = "Natural Disaster";
+      }
+      planetStatsElements[2].textContent = `Hazard Type: ${hazardType}`;
+      planetStatsElements[3].textContent =
         "Hazard Pay: $" + dialogue.activeJobs[0]["hazard-pay"] + "/Day";
       planetStatsElements[2].style.display = "block";
+      planetStatsElements[3].style.display = "block";
     } else {
       planetStatsElements[2].textContent = "";
+      planetStatsElements[3].textContent = "";
       planetStatsElements[2].style.display = "none";
+      planetStatsElements[3].style.display = "none";
     }
     console.log(dialogue.activeJobs[0].name);
     planetDetailImage.src = `/images/planet-detail/${dialogue.activeJobs[0].name.toLowerCase()}.png`;
@@ -386,6 +405,8 @@ const dialogue = {
 
   closeDialogueBox: function () {
     console.log("closing dialogue box");
+    // Remove Timeout
+    clearTimeout(dialogue.closeDialogueTimeout);
     // Variables
     const dialogueMessageButtonElement = document.getElementById(
       "dialogue-message-button"
@@ -581,7 +602,7 @@ const dialogue = {
   openCardDetail: function (
     cardIndex,
     isDraw = false,
-    isVanish = false,
+    isRoundStart = false,
     deckIndex
   ) {
     console.log("opening card-detail display");
@@ -646,9 +667,8 @@ const dialogue = {
           isPlayable = true;
         }
         // Condition 2.1, player's turn, Roll-to-fix is active
-        console.log(dashboard.rollToFixButton.classList.contains("disabled"));
-        if (
-          cardsData[cardIndex].useCondition === 2 &&
+        else if (
+          cardsData[cardIndex].useCondition === 2.1 &&
           game.isTurn &&
           !dashboard.rollToFixButton.classList.contains("disabled")
         ) {
@@ -656,7 +676,7 @@ const dialogue = {
         }
         // Condition 3, player's turn
         else if (
-          Math.floor(cardsData[cardIndex].useCondition === 3) &&
+          Math.floor(cardsData[cardIndex].useCondition) === 3 &&
           game.isTurn
         ) {
           isPlayable = true;
@@ -687,13 +707,13 @@ const dialogue = {
         dialogue.closeDialogueBox
       );
     }
-    // Card set to vanish
-    else if (isVanish) {
-      playCardButtonElement.style.display = "none";
-      gameCards.drawnCard = cardIndex;
-      gameCards.drawnCardAdd(false);
-      setTimeout(dialogue.openWaitingForPlayers, 2000);
-    }
+    // Round Start
+    // else if (isRoundStart) {
+    //   playCardButtonElement.style.display = "none";
+    //   gameCards.drawnCard = cardIndex;
+    //   gameCards.drawnCardAdd(false);
+    //   setTimeout(dialogue.openWaitingForPlayers, 2000);
+    // }
     // Card is being drawn
     else {
       gameCards.drawnCard = cardIndex;
@@ -703,7 +723,18 @@ const dialogue = {
         cardsData[cardIndex].type === "hold"
       ) {
         playCardButtonElement.textContent = "Add to Deck";
-        playCardButtonElement.addEventListener("click", gameCards.drawnCardAdd);
+        // Round Start
+        if (isRoundStart) {
+          playCardButtonElement.addEventListener(
+            "click",
+            gameCards.drawnCardAddRoundStart
+          );
+        } else {
+          playCardButtonElement.addEventListener(
+            "click",
+            gameCards.drawnCardAdd
+          );
+        }
       }
       // Event card
       else {
@@ -772,6 +803,44 @@ const dialogue = {
     dialogueMessageButtonElement.addEventListener(
       "click",
       dialogue.closeDrawCard
+    );
+  },
+
+  // Generic dialogue message
+  openMessageDialogue: function (message) {
+    console.log("opening generic dialogue message");
+    const dialogueMessageElement = document.getElementById("dialogue-message");
+    const dialogueMessageTextElement = document.getElementById(
+      "dialogue-message-text"
+    );
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
+
+    dialogue.closeDialogueBox();
+
+    dialogueMessageTextElement.textContent = message;
+    dialogueMessageButtonElement.textContent = "OK";
+
+    // Make Elements visible
+    dialogue.dialogueBox.style.display = "block";
+    dialogue.backdropElement.style.display = "block";
+    dialogueMessageElement.style.display = "block";
+    dialogueMessageButtonElement.style.display = "block";
+    dialogue.showDialogueControls(true, false);
+
+    // Event listeners
+    dialogue.closeWindowElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
+    dialogue.backdropElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
+    );
+    dialogueMessageButtonElement.addEventListener(
+      "click",
+      dialogue.closeDialogueBox
     );
   },
 
@@ -877,6 +946,24 @@ const dialogue = {
   },
   closeDrawCard: function () {
     console.log("closing draw card dialogue");
+    const dialogueMessageButtonElement = document.getElementById(
+      "dialogue-message-button"
+    );
+
+    // Remove Event Listeners
+    dialogue.closeWindowElement.removeEventListener(
+      "click",
+      dialogue.closeDrawCard
+    );
+    dialogue.backdropElement.removeEventListener(
+      "click",
+      dialogue.closeDrawCard
+    );
+    dialogueMessageButtonElement.removeEventListener(
+      "click",
+      dialogue.closeDrawCard
+    );
+
     dialogue.closeDialogueBox();
     dashboard.checkForHazard();
   },
@@ -918,5 +1005,4 @@ socket.on("all roll complete", function (orderArray) {
   game.order = orderArray;
   setTimeout(dialogue.showRollOrder, 1000);
   setTimeout(dialogue.openDrawCard, 2000, true);
-  // setTimeout(game.startRound, 2000);
 });

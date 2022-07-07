@@ -509,6 +509,7 @@ const board = {
 // Server sends the planet array for a new round
 socket.on("display jobs", function (data) {
   console.log("displaying jobs");
+  console.log(data.jobsArray);
   // Clear previous jobs
   board.clearJobs();
   // Sync client's job array with new array from server

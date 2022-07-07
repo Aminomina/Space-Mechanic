@@ -195,6 +195,30 @@ function endGame(io, room, rankData) {
 }
 
 module.exports = (socket, io) => {
+  // User is ready for round start
+  socket.on("ready for round start", (data) => {
+    const room = rooms[data.roomId - 1];
+    //                                                                        CODE HERE
+
+    // Check if all players are ready
+    room.users[data.userIndex].isReady = true;
+    let allReady = true;
+    for (const user of room.users) {
+      if (!user.isReady) {
+        allReady = false;
+      }
+    }
+    if (allReady) {
+      console.log("everyone's ready!");
+      // Reset isReady
+      for (const user of room.users) {
+        user.isReady = false;
+      }
+      // Start Round
+      io.to(room.id).emit("start round");
+    }
+  });
+
   // User emits a message
   socket.on("chat message", (data) => {
     const room = rooms[data.roomId - 1];
@@ -288,8 +312,7 @@ module.exports = (socket, io) => {
       room.activeUserIndex = 0;
       room.day++;
       console.log(`Day ${room.day}`);
-      //                                                            DEBUG set back to 5 days
-      if (room.day > 1) {
+      if (room.day > 5) {
         // Reset round data and calculate player rankings
         const rankData = rankReset(room);
         // Check if game over

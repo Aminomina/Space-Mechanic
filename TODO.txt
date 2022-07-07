@@ -1,9 +1,8 @@
 BUGS
-- End game display doesn't always come up (could be from escaping roll-to-fix?)
-- Escaping roll-to-fix and pressing end turn too fast results in roll-for hazard/end of round closing (single player)
-- Info displays "1 weeks," should say "1 week"
-- Player rankings should update right away instead of after card draw
-- Sometimes fixes a job with a roll smaller than displayed (still happening?)
+
+BUGS THAT MAY BE GONE
+- Sometimes fixes a job with a roll smaller than displayed
+- Not drawing card during travel first turn
 
 HIGH PRIORITY
 - Find and fix bugs
@@ -11,6 +10,38 @@ HIGH PRIORITY
 - Implement remaining cards
 - Create demo video, Facebook page for updates
 - Messages saying "It's your turn," "You've arrived on ____," etc.
+- Add graphics
+  - Error pages
+  - Planet icons
+  - Planet detail
+  - Card detail
+  - Card icons
+  - Hazard detail
+  - Game over?
+  - Activity icons
+    - On vacation (sunglasses)
+    - In hospital (red cross)
+    - Training (wrench)
+    - In open space (floaty astronaut (with mechanic hat))
+    - On planet (icon for that planet)
+  - Hazard icons
+
+SUGGESTIONS FROM TESTING
+- Make pictures for different dice numbers
+  - Roll certain higher number as opposed to having weird-sided dice
+- Expand rules section
+  - Job types, locations, planet effects, etc.
+  - Cryptids, assailants, and accidents
+  - Full rules page that opens in a new tab
+- More clearly define cryptids, etc. (Icon for each hazard?)
+- Pick new job message after fixing?
+- Show icon for cards played next to player info icon
+- Option to play on one tab (party mode)
+- Way back into game if refresh or hit back
+  - Code that appears on waiting room screen?
+  - Also in settings
+  - Bypassed if player is logged into an account
+- Orbit planet when job is completed
 
 LOW PRIORITY
 - Add sounds, music
@@ -24,23 +55,9 @@ LOW PRIORITY
 - Add money, exp change animations
 - Add vanishing message bubble at top
   - Could display turns, player actions, etc.
-- Enlarge player icon on turn?
+- Enlarge player icon on turn or display arrow?
 - Create some distinction for player's piece, tab
   (marker, flipped color pattern?)
-- Add graphics
-  - Error pages
-  - Planet icons
-  - Planet detail
-  - Card detail
-  - Card icons
-  - Hazard detail
-  - Game over?
-  - Activity icons
-    - On vacation (sunglasses)
-    - In hospital (red cross)
-    - Training (wrench)
-    - In open space (floaty astronaut)
-    - On planet (icon for that planet)
 - Format for simplicity and clarity
   - Make more use of player colors
     - Job lines and days-to-loc icon
@@ -61,13 +78,39 @@ BETA FEATURES
 - Radhok
 - Add custom mechanic-related emoticons in chat
   - Expressions, but on a person with a mechanic hat
+    - winter clothes
   - Various mechanic actions
   - Tools
   - Pigeon
   - Ship icons
+    - Guppy
+    - Freighter
+    - Cruise ship
+    - Sattelite
   - Planets
   - References to other illustrations, actions in game
+    - Dice
+    - Tropical Drink
+    - Money, EXP icons
+    - Space mechanic alphabet
+    - RSC box
+    - Robot arm
+    - Tool box
+    - mechanic hat
+    - statues?
+    - coffee cup
+    - trees
+    - swooping bird
+    - evil princesses
+    - pressure dials
+    - strong calf
+    - gears
+    - steam
+  - pride flags/other icons with pride colors
 - Additional color choices
 - Additional player icons
 - Accounts
   - Allow you to rejoin a game if you get disconnected
+- Character types with abilities
+- Cheat codes entered in chat
+  - Special ship designs and color schemes

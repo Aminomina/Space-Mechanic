@@ -120,7 +120,7 @@ const cardsData = [
     index: 13,
     name: "Energy Drink",
     caption:
-      "Play this card at the beginning of any work day and add .15x to your experience multiplier.",
+      "Play this card at the beginning of any work day and add 0.3x to your experience multiplier.",
     description: "",
     type: "singleUse",
     useCondition: 2.1, //Jobsite, before roll-to-fix

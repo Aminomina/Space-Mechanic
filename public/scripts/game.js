@@ -19,6 +19,7 @@ const game = {
   endConditionRounds: 10,
   endConditionMoney: 10000,
   currentRound: 1,
+  currentDay: 1,
 
   // METHODS
   // Close waiting room screen and start the game
@@ -92,10 +93,12 @@ const game = {
       user.site = "home base";
     }
 
+    game.currentDay = 1;
     game.currentRound++;
 
     info.updateRoundInfo();
     dashboard.updateLocationString();
+    dashboard.updateJobPreview();
     dialogue.openEndOfRoundDisplay(moneyOrder, rankArray);
   },
 
@@ -222,7 +225,7 @@ socket.on("start game", function () {
 
 // Start of round
 socket.on("start round", function () {
-  setTimeout(game.startRound, 2000);
+  game.startRound();
 });
 
 // Start of turn
@@ -342,6 +345,12 @@ socket.on("update active player", function (activeUserIndex) {
   console.log(`active player set to ${userList[activeUserIndex].name}`);
   game.activeUserIndex = activeUserIndex;
   info.showPlayerList();
+
+  // New day
+  if (activeUserIndex === 0) {
+    game.currentDay++;
+    info.updateRoundInfo();
+  }
 });
 
 // Server starts a new round

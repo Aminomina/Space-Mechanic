@@ -66,16 +66,38 @@ const gameCards = {
     gameCards.drawnCard = undefined;
     dashboard.checkForHazard();
   },
+  drawnCardAddRoundStart: function (event) {
+    console.log("adding drawn card to deck");
+    if (event) {
+      event.target.removeEventListener(
+        "click",
+        gameCards.drawnCardAddRoundStart
+      );
+      dialogue.closeDialogueBox();
+    }
+    gameCards.addCards([gameCards.drawnCard]);
+    gameCards.drawnCard = undefined;
+    socket.emit("ready for round start", {
+      roomId,
+      userIndex,
+    });
+    dialogue.openWaitingForPlayers();
+  },
 
   drawnCardAction: function (event) {
     console.log("taking drawn card action");
-    event.target.removeEventListener("click", gameCards.drawnCardAction);
     dialogue.closeDialogueBox();
     if (gameCards.drawnCard === 19) {
       // Workplace Accident
       console.log("workplace accident");
-      dashboard.sendToHospital();
-      return;
+      if (!userList[userIndex].protections.accidents) {
+        dashboard.sendToHospital();
+        return;
+      } else {
+        console.log("protected!");
+        dialogue.openMessageDialogue("You were protected from the accident!");
+        return;
+      }
     } else if (gameCards.drawnCard === 20) {
       // Thieves!
       console.log("thieves!");
@@ -143,6 +165,7 @@ const gameCards = {
     }
     gameCards.drawnCard = undefined;
     dashboard.checkForHazard();
+    event.target.removeEventListener("click", gameCards.drawnCardAction);
   },
 
   playCard: function (event) {
@@ -161,7 +184,7 @@ const gameCards = {
     } else if (activeCard === 13) {
       // Energy Drink
       console.log("energy drink");
-      gameCards.addBonusExp(0.15);
+      gameCards.addBonusExp(0.3);
     } else if (activeCard === 18) {
       // Power Cycle
       console.log("power cycle");
@@ -286,6 +309,7 @@ const gameCards = {
   },
 
   fixJob: function (pay = true, exp = true) {
+    console.log("fixing job");
     let jobIndex = dashboard.turnInfo.jobOutcome.jobId;
     const job = game.jobsArray[jobIndex];
     const location = jobData.locations[job.locIndex];
@@ -295,6 +319,8 @@ const gameCards = {
     let totalExp = 1 + job.exp + location.exp + type.diffexpay;
 
     game.hasRolledToFix = true;
+    // Temporarily change status in client to avoid getting overwritten by bonus changes
+    job.status = 2;
 
     // Update turnInfo
     dashboard.turnInfo.jobOutcome = {
@@ -323,6 +349,7 @@ const gameCards = {
     }
 
     // Update jobsArray
+    console.log(jobIndex);
     socket.emit("update job status", {
       roomId,
       jobId: jobIndex,
@@ -463,12 +490,13 @@ socket.on("draw card", function (cardIndex) {
   dialogue.openCardDetail(cardIndex, true, false);
 });
 
-socket.on("draw card vanish", function (cardIndex) {
+socket.on("draw card round start", function (cardIndex) {
   dialogue.openCardDetail(cardIndex, true, true);
 });
 
 socket.on("update speed bonus", function (data) {
   console.log("updating client speed bonus");
+  console.log(data);
   for (const property in data) {
     userList[userIndex].bonusSpeed[property] = data[property];
   }

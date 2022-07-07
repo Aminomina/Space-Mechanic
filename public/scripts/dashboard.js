@@ -20,6 +20,7 @@ const dashboard = {
     totalReward: undefined,
   },
   hasRolledToFix: false,
+  hazardsRolled: [],
   hazard: {},
   // METHODS
   endTurn: function () {
@@ -31,6 +32,7 @@ const dashboard = {
     );
     game.isTurn = false;
     game.hasRolledToFix = false;
+    dashboard.hazardsRolled = [];
 
     //Reset job event card draw when player is going to a new job
     if (dashboard.turnInfo.newJobChoice !== -1) {
@@ -297,6 +299,7 @@ const dashboard = {
     const currentJobIndex = userList[userIndex].currentJobIndex;
     const currentJob = game.jobsArray[currentJobIndex];
     let isProtected = false;
+    let hasRolledForHazard = false;
 
     // Remove Event Listeners
     dialogue.closeWindowElement.removeEventListener(
@@ -311,6 +314,13 @@ const dashboard = {
       "click",
       dashboard.checkForHazard
     );
+
+    // Check if user has already rolled for hazard
+    for (const jobIndex of dashboard.hazardsRolled) {
+      if (jobIndex === currentJobIndex) {
+        hasRolledForHazard = true;
+      }
+    }
 
     // Check if user has hazard protection
     if (
@@ -335,11 +345,14 @@ const dashboard = {
       currentJob["hazard-type"] != 0 &&
       // Player is not protected
       !isProtected &&
+      // Player has not already rolled for hazard
+      !hasRolledForHazard &&
       // The current job is not fixed
       currentJob.status !== 2 &&
       // Player is on planet (not in orbit)
       currentJob.locIndex != 6
     ) {
+      dashboard.hazardsRolled.push(currentJobIndex);
       dashboard.openRollForHazard({
         type: currentJob["hazard-type"],
         string: currentJob["hazard-roll-string"],
@@ -378,15 +391,15 @@ const dashboard = {
     const rollMessageElement = document.getElementById("roll-message");
     const options = document.getElementById("roll-options");
     if (+hazard.type < 15) {
-      dialogue.openRollDice(6);
-    } else if (+hazard.type < 20) {
-      dialogue.openRollDice(3);
+      dialogue.openRollDice(1); // 6
+    } else if (+hazard.type < 20 || hazard.string === "pirates") {
+      dialogue.openRollDice(1); // 3
     } else if (+hazard.type < 25) {
-      dialogue.openRollDice(9);
+      dialogue.openRollDice(1); // 9
     } else if (+hazard.type < 30) {
-      dialogue.openRollDice(4);
+      dialogue.openRollDice(1); // 4
     } else if (+hazard.type < 40) {
-      dialogue.openRollDice(12);
+      dialogue.openRollDice(1); // 12
     }
 
     rollHeadingElement.textContent = `Roll for ${hazard.string}!`;
@@ -475,11 +488,20 @@ const dashboard = {
       // Natural Disaster
       else if (dashboard.hazard.type < 40) {
         dashboard.sendToHospital();
+        let numCards = userList[userIndex].cards.length;
+        gameCards.removeCardsRandom(numCards);
+        setTimeout(
+          dialogue.openMessageDialogue,
+          2000,
+          "Lost cards in the storm..."
+        );
+        // dialogue.openMessageDialogue("Lost cards in the storm...");
+        return;
       }
     }
 
     // Close window after delay
-    setTimeout(dialogue.closeDialogueBox, 2000);
+    dialogue.closeDialogueTimeout = setTimeout(dialogue.closeDialogueBox, 2000);
   },
 
   assailantSmokeBomb: function () {
@@ -499,12 +521,15 @@ const dashboard = {
     for (let i = 0; i < userList[userIndex].cards.length; i++) {
       if (userList[userIndex].cards[i] === 16) {
         gameCards.removeCards([i]);
-        setTimeout(dialogue.closeDialogueBox, 1000);
+        dialogue.closeDialogueTimeout = setTimeout(
+          dialogue.closeDialogueBox,
+          1000
+        );
         return;
       }
     }
     // Close window after delay
-    setTimeout(dialogue.closeDialogueBox, 1000);
+    dialogue.closeDialogueTimeout = setTimeout(dialogue.closeDialogueBox, 1000);
   },
 
   assailantCaught: function () {
@@ -522,31 +547,69 @@ const dashboard = {
     }
     // Loss of cards or money
     else if (dashboard.hazard.type < 25) {
-      //  Player relinquishes cards or money
-      options.children[0].textContent =
-        "You must relinquish $1500 or 5 of your cards at random.";
-      optionButtonA.textContent = "Relinquish Money";
-      optionButtonB.textContent = "Relinquish Cards";
-      optionButtonA.className = "";
-      optionButtonB.className = "";
-      options.style.display = "flex";
-      optionButtonA.addEventListener(
-        "click",
-        dashboard.assailantRelinquishMoney
-      );
-      optionButtonB.addEventListener(
-        "click",
-        dashboard.assailantRelinquishCards
-      );
-      return;
+      const numCards = userList[userIndex].cards.length;
+      const numMoney = +userList[userIndex].money;
+      // User does not have enough money/cards, take whatever there is more of
+      if (numCards < 5 || numMoney < 1500) {
+        if (numMoney > numCards * 300) {
+          if (numMoney < 1500) {
+            let message = `Surrendered $${numMoney}...`;
+            setTimeout(dialogue.openMessageDialogue, 2000, message);
+            // dialogue.openMessageDialogue(`Surrendered $${numMoney}...`);
+          } else {
+            setTimeout(
+              dialogue.openMessageDialogue,
+              2000,
+              "Surrendered $1500..."
+            );
+            // dialogue.openMessageDialogue("Surrendered $1500...");
+          }
+          dashboard.addMoney(-1500);
+        } else {
+          if (numCards < 5) {
+            let message = `Surrendered ${numCards} cards...`;
+            setTimeout(dialogue.openMessageDialogue, 2000, message);
+            // dialogue.openMessageDialogue(`Surrendered ${numCards} cards...`);
+          } else {
+            setTimeout(
+              dialogue.openMessageDialogue,
+              2000,
+              "Surrendered 5 cards"
+            );
+            // dialogue.openMessageDialogue("Surrendered 5 cards");
+          }
+          gameCards.removeCardsRandom(5);
+        }
+      } else {
+        //  Player relinquishes cards or money
+        options.children[0].textContent =
+          "You must relinquish $1500 or 5 of your cards at random.";
+        optionButtonA.textContent = "Relinquish Money";
+        optionButtonB.textContent = "Relinquish Cards";
+        optionButtonA.className = "";
+        optionButtonB.className = "";
+        options.style.display = "flex";
+        optionButtonA.addEventListener(
+          "click",
+          dashboard.assailantRelinquishMoney
+        );
+        optionButtonB.addEventListener(
+          "click",
+          dashboard.assailantRelinquishCards
+        );
+        return;
+      }
     }
     // Loss of money
     else if (dashboard.hazard.type < 30) {
       dashboard.addMoney(-300);
+      setTimeout(dialogue.openMessageDialogue, 2000, "Surrendered $300...");
+      // dialogue.openMessageDialogue("Surrendered $300...");
+      return;
     }
 
     // Close window after delay
-    setTimeout(dialogue.closeDialogueBox, 2000);
+    dialogue.closeDialogueTimeout = setTimeout(dialogue.closeDialogueBox, 2000);
   },
 
   assailantRelinquishMoney: function () {
@@ -567,6 +630,8 @@ const dashboard = {
 
     dialogue.closeDialogueBox();
     dashboard.addMoney(-1500);
+    setTimeout(dialogue.openMessageDialogue, 2000, "Surrendered $1500...");
+    // dialogue.openMessageDialogue("Surrendered $1500...");
   },
 
   assailantRelinquishCards: function () {
@@ -587,6 +652,8 @@ const dashboard = {
 
     dialogue.closeDialogueBox();
     gameCards.removeCardsRandom(5);
+    setTimeout(dialogue.openMessageDialogue, 2000, "Surrendered 5 cards...");
+    // dialogue.openMessageDialogue("Surrendered 5 cards...");
   },
 
   openRollToFix: function () {
@@ -703,7 +770,7 @@ const dashboard = {
     dashboard.updateJobPreview();
 
     // Close window after delay
-    setTimeout(dialogue.closeDialogueBox, 2000);
+    dialogue.closeDialogueTimeout = setTimeout(dialogue.closeDialogueBox, 2000);
   },
   closeRollToFix: function (rollResult) {
     console.log("closing roll-to-fix");

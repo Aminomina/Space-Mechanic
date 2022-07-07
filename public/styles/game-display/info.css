@@ -45,6 +45,7 @@
 /* Players Tab */
 
 #round-info {
+  font-size: 0.9rem;
   display: flex;
   justify-content: space-between;
   margin: 0.5rem;
