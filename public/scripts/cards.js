@@ -113,10 +113,12 @@ const gameCards = {
       // Breakfast
       console.log("breakfast");
       gameCards.addBonusDiff(-0.25, 0);
+      dashboard.checkForHazard();
     } else if (gameCards.drawnCard === 22) {
       // Chatty Client
       console.log("chatty client");
       gameCards.addBonusDiff(0.25, 0);
+      dashboard.checkForHazard();
     } else if (gameCards.drawnCard === 24) {
       // Safety Inspector
       console.log("safety inspector");
@@ -164,7 +166,6 @@ const gameCards = {
       return;
     }
     gameCards.drawnCard = undefined;
-    dashboard.checkForHazard();
     event.target.removeEventListener("click", gameCards.drawnCardAction);
   },
 

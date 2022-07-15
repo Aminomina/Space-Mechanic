@@ -125,6 +125,7 @@ const game = {
     dashboard.endTurnButton.addEventListener("click", dashboard.endTurn);
     if (currentJobIndex >= 0) {
       console.log("activating roll-to-fix");
+      dashboard.openDashboardDisplay();
       dashboard.rollToFixButton.addEventListener(
         "click",
         dashboard.openRollToFix

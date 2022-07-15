@@ -391,15 +391,15 @@ const dashboard = {
     const rollMessageElement = document.getElementById("roll-message");
     const options = document.getElementById("roll-options");
     if (+hazard.type < 15) {
-      dialogue.openRollDice(1); // 6
+      dialogue.openRollDice(6); // 6
     } else if (+hazard.type < 20 || hazard.string === "pirates") {
-      dialogue.openRollDice(1); // 3
+      dialogue.openRollDice(3); // 3
     } else if (+hazard.type < 25) {
-      dialogue.openRollDice(1); // 9
+      dialogue.openRollDice(9); // 9
     } else if (+hazard.type < 30) {
-      dialogue.openRollDice(1); // 4
+      dialogue.openRollDice(4); // 4
     } else if (+hazard.type < 40) {
-      dialogue.openRollDice(1); // 12
+      dialogue.openRollDice(12); // 12
     }
 
     rollHeadingElement.textContent = `Roll for ${hazard.string}!`;
@@ -791,27 +791,33 @@ const dashboard = {
       newUserStats: { money: newMoney },
     });
   },
+  openDashboardDisplay: function () {
+    console.log("dashboard opened");
+    const dashboardElement = document.getElementById("dashboard");
+    const cardsElement = document.getElementById("cards");
+
+    cardsElement.style.display = "none";
+    dashboardElement.style.display = "flex";
+  },
+  openCardsDisplay: function () {
+    console.log("cards opened");
+    const dashboardElement = document.getElementById("dashboard");
+    const cardsElement = document.getElementById("cards");
+
+    dashboardElement.style.display = "none";
+    cardsElement.style.display = "flex";
+
+    gameCards.updateCardsDisplay();
+  },
 };
 
 // EVENT LISTENERS
 // Dashboard Button Pressed
 dashboard.dashboardButton.addEventListener("click", function () {
-  console.log("dashboard opened");
-  const dashboardElement = document.getElementById("dashboard");
-  const cardsElement = document.getElementById("cards");
-
-  cardsElement.style.display = "none";
-  dashboardElement.style.display = "flex";
+  dashboard.openDashboardDisplay();
 });
 
 // Cards Button Pressed
 dashboard.cardsButton.addEventListener("click", function () {
-  console.log("cards opened");
-  const dashboardElement = document.getElementById("dashboard");
-  const cardsElement = document.getElementById("cards");
-
-  dashboardElement.style.display = "none";
-  cardsElement.style.display = "flex";
-
-  gameCards.updateCardsDisplay();
+  dashboard.openCardsDisplay();
 });

@@ -1,4 +1,6 @@
 BUGS
+- Rankings not always working (showing player's name twice)
+  - Client side code?
 
 BUGS THAT MAY BE GONE
 - Sometimes fixes a job with a roll smaller than displayed
